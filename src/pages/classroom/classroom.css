@@ -1,0 +1,138 @@
+/* Layout */
+.classroom-container {
+  min-height: 100vh;
+  background: #f3f4f6;
+  font-family: Arial, sans-serif;
+
+  /* Center everything */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* Main content */
+.main-content-classroom {
+  width: 100%;
+  max-width: 1400px;
+  padding: 35px 80px;
+}
+
+.classroom-title {
+  text-align: center;
+  font-size: 50px;
+  font-family: 'Montserrat Regular', sans-serif;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-family: 'Montserrat Regular', sans-serif;
+  margin-top: 30px;
+  font-size: 2rem;
+  margin-bottom: 15px;
+  color: var(--text);
+}
+
+/* ✅ Responsive for portrait phones */
+@media (max-width: 768px) {
+  .main-content-classroom {
+    padding: 20px 15px;
+  }
+  
+  .classroom-title {
+    font-size: 32px;
+    margin-bottom: 15px;
+  }
+  
+  .section-title {
+    font-size: 1.5rem;
+    margin-top: 20px;
+    margin-bottom: 12px;
+  }
+}
+
+/* ✅ Portrait tablets */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .main-content-classroom {
+    padding: 30px 40px;
+  }
+  
+  .classroom-title {
+    font-size: 42px;
+  }
+  
+  .section-title {
+    font-size: 1.8rem;
+    margin-top: 25px;
+  }
+}
+
+/* ✅ Landscape tablets (iPad, etc.) */
+@media (min-width: 768px) and (max-width: 1200px) and (orientation: landscape) {
+  .main-content-classroom {
+    padding: 30px 50px;
+  }
+  
+  .classroom-title {
+    font-size: 45px;
+  }
+  
+  .section-title {
+    font-size: 1.9rem;
+  }
+}
+
+/* ✅ Landscape phones */
+@media (max-width: 768px) and (orientation: landscape) {
+  .main-content-classroom {
+    padding: 15px 20px;
+  }
+  
+  .classroom-title {
+    font-size: 28px;
+    margin-bottom: 12px;
+  }
+  
+  .section-title {
+    font-size: 1.3rem;
+    margin-top: 15px;
+    margin-bottom: 10px;
+  }
+}
+
+/* ✅ Small phones in landscape (like iPhone 12 Pro) */
+@media (max-width: 900px) and (max-height: 500px) and (orientation: landscape) {
+  .main-content-classroom {
+    padding: 10px 15px;
+  }
+  
+  .classroom-title {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .section-title {
+    font-size: 1.2rem;
+    margin-top: 12px;
+    margin-bottom: 8px;
+  }
+}
+
+/* ✅ Small-height landscape (iPhone 14 Pro Max & similar) */
+@media (max-width: 950px) and (max-height: 500px) and (orientation: landscape) {
+  .main-content-classroom {
+    padding: 10px 15px;
+  }
+  
+  .classroom-title {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .section-title {
+    font-size: 1.2rem;
+    margin-top: 12px;
+    margin-bottom: 8px;
+  }
+}

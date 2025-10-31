@@ -1,0 +1,312 @@
+.ctm-dialog {
+    border: none;
+    padding: 0;
+    background: transparent;
+    margin: 0;
+
+    /* center the dialog box in the viewport */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.ctm-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.ctm-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid #e7e7e7;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+
+    /* sizing */
+    max-width: 540px;
+    width: 92vw;
+    max-height: 90dvh;
+    overflow: auto;
+}
+
+.ctm-title {
+    margin: 0 0 14px 0;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.ctm-label {
+    display: block;
+    font-size: 16px;
+    color: var(--text);
+    margin-bottom: 8px;
+}
+
+.ctm-input {
+    width: 100%;
+    margin-top: 6px;
+    padding: 10px 12px;
+    border: 1px solid #d6d6d6;
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+}
+
+.ctm-input:focus {
+    border-color: #5b8def;
+    box-shadow: 0 0 0 3px rgba(91, 141, 239, 0.15);
+}
+
+.ctm-error {
+    margin: 10px 0 0;
+    color: #b00020;
+    font-size: 13px;
+}
+
+.ctm-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.ctm-btn {
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.05s ease, box-shadow 0.2s ease;
+}
+
+.ctm-btn:active {
+    transform: translateY(1px);
+}
+
+.ctm-btn-ghost {
+    background: transparent;
+    border-color: #dcdcdc;
+    color: #333;
+}
+
+.ctm-btn-primary {
+    background: #111827;
+    color: white;
+}
+
+.ctm-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Checkbox row */
+.ctm-checkrow {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 12px;
+}
+
+.ctm-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+}
+
+/* ✅ Responsive for portrait phones */
+@media (max-width: 768px) {
+  .ctm-card {
+    border-radius: 12px;
+    padding: 16px;
+    width: 95vw;
+  }
+  
+  .ctm-title {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+  
+  .ctm-label {
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  
+  .ctm-input {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+  
+  .ctm-error {
+    font-size: 12px;
+  }
+  
+  .ctm-actions {
+    gap: 8px;
+    margin-top: 14px;
+  }
+  
+  .ctm-btn {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+  
+  .ctm-checkrow {
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  
+  .ctm-check {
+    font-size: 13px;
+    gap: 5px;
+  }
+}
+
+/* ✅ Portrait tablets */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .ctm-card {
+    padding: 18px;
+  }
+  
+  .ctm-title {
+    font-size: 17px;
+  }
+  
+  .ctm-label {
+    font-size: 15px;
+  }
+  
+  .ctm-checkrow {
+    gap: 12px;
+  }
+}
+
+/* ✅ Landscape tablets (iPad, etc.) */
+@media (min-width: 768px) and (max-width: 1200px) and (orientation: landscape) {
+  .ctm-card {
+    max-width: 500px;
+  }
+}
+
+/* ✅ Landscape phones */
+@media (max-width: 768px) and (orientation: landscape) {
+  .ctm-card {
+    padding: 14px;
+    width: 96vw;
+    max-height: 85dvh;
+  }
+  
+  .ctm-title {
+    font-size: 15px;
+    margin-bottom: 10px;
+  }
+  
+  .ctm-label {
+    font-size: 13px;
+    margin-bottom: 5px;
+  }
+  
+  .ctm-input {
+    padding: 7px 9px;
+    font-size: 12px;
+  }
+  
+  .ctm-error {
+    font-size: 11px;
+    margin-top: 8px;
+  }
+  
+  .ctm-actions {
+    gap: 7px;
+    margin-top: 12px;
+  }
+  
+  .ctm-btn {
+    padding: 7px 10px;
+    font-size: 13px;
+  }
+  
+  .ctm-checkrow {
+    gap: 8px;
+    margin-top: 8px;
+  }
+  
+  .ctm-check {
+    font-size: 12px;
+  }
+}
+
+/* ✅ Small phones in landscape (like iPhone 12 Pro) */
+@media (max-width: 900px) and (max-height: 500px) and (orientation: landscape) {
+  .ctm-card {
+    padding: 12px;
+    max-height: 80dvh;
+  }
+  
+  .ctm-title {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  
+  .ctm-label {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+  
+  .ctm-input {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+  
+  .ctm-btn {
+    padding: 6px 9px;
+    font-size: 12px;
+  }
+  
+  .ctm-checkrow {
+    gap: 6px;
+    margin-top: 6px;
+  }
+  
+  .ctm-check {
+    font-size: 11px;
+  }
+}
+
+/* ✅ Small-height landscape (iPhone 14 Pro Max & similar) */
+@media (max-width: 950px) and (max-height: 500px) and (orientation: landscape) {
+  .ctm-card {
+    padding: 12px;
+    max-height: 80dvh;
+  }
+  
+  .ctm-title {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  
+  .ctm-label {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+  
+  .ctm-input {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+  
+  .ctm-btn {
+    padding: 6px 9px;
+    font-size: 12px;
+  }
+  
+  .ctm-checkrow {
+    gap: 6px;
+    margin-top: 6px;
+  }
+  
+  .ctm-check {
+    font-size: 11px;
+  }
+}

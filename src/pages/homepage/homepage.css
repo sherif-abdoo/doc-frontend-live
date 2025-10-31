@@ -1,0 +1,759 @@
+/* HomePage.css */
+
+.homepage-container {
+  padding: 20px;
+  background-color: #f5f5f5;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Grid Layouts */
+.top-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+  flex: 0 0 auto;
+}
+
+.bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+}
+
+.left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+}
+
+/* Card Base Styles */
+.card {
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.quiz-card,
+.homework-card,
+.todo-card {
+  background-color: var(--chemCard);
+  height: 100%;
+  min-height: 0;
+}
+
+.leaderboard-card {
+  background-color: var(--chemCard);
+  flex: 1;
+  min-height: 0;
+}
+
+.card-title {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #1a1a1a;
+  margin-top: 0;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.card-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.card-list-item {
+  font-size: 16px;
+  margin-bottom: 8px;
+  color: #2c2c2c;
+}
+
+/* Homework Card */
+.homework-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #2c2c2c;
+}
+
+/* To-Do Card */
+.todo-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #2c2c2c;
+}
+
+.todo-checkbox {
+  margin-right: 10px;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.todo-item .completed {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+/* Quote Carousel */
+.quote-carousel {
+  border-radius: 24px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.carousel-btn {
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  padding: 0 16px;
+  color: var(--text);
+  transition: opacity 0.2s;
+}
+
+.carousel-btn:hover {
+  opacity: 0.7;
+}
+
+.quote-content {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.quote-icon img {
+  width: 60px;
+  height: 60px;
+}
+
+.quote-text {
+  font-size: 15px;
+  font-style: italic;
+  margin-bottom: 8px;
+  color: var(--text);
+  margin-top: 0;
+}
+
+.quote-author {
+  font-size: 13px;
+  color: #666;
+  margin: 0;
+}
+
+.carousel-dots {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #D0D0D0;
+  transition: background-color 0.3s;
+}
+
+.dot.active {
+  background-color: var(--heroPrimaryButton);
+}
+
+/* Leaderboard Card */
+.leaderboard-rank {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 12px;
+  margin-top: 0;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.leaderboard-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #2c2c2c;
+}
+
+.leader-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.leaderboard-name {
+  font-size: 16px;
+}
+
+.medal {
+  font-size: 18px;
+}
+
+.medal img {
+  width: 28px;
+  height: 28px;
+}
+
+.score {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+/* Calendar Card */
+.calendar-card {
+  background-color: #FFE4C4;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 0;
+}
+
+.calendar-title {
+  font-size: 48px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+/* ✅ Mobile Portrait - Single Column Layout */
+@media (max-width: 768px) {
+  .homepage-container {
+    padding: 12px;
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+
+  /* Change to single column layout */
+  .top-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .bottom-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .left-column {
+    gap: 12px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Card adjustments */
+  .card {
+    padding: 16px;
+    min-height: 150px;
+    max-height: none;
+  }
+
+  .quiz-card,
+  .homework-card,
+  .todo-card,
+  .leaderboard-card {
+    height: auto;
+  }
+
+  .card-title {
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+
+  .card-list {
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  /* Quote carousel mobile adjustments */
+  .quote-carousel {
+    padding: 16px;
+    flex-direction: row;
+    gap: 12px;
+    min-height: 120px;
+  }
+
+  .carousel-btn {
+    font-size: 24px;
+    padding: 8px;
+  }
+
+  .quote-content {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .quote-icon img {
+    width: 45px;
+    height: 45px;
+  }
+
+  .quote-text {
+    font-size: 13px;
+  }
+
+  .quote-author {
+    font-size: 11px;
+  }
+
+  /* Calendar card - more height on mobile */
+  .calendar-card {
+    min-height: 400px;
+    height: 400px;
+    padding: 10px;
+  }
+
+  /* Leaderboard adjustments */
+  .leaderboard-card {
+    min-height: 200px;
+  }
+
+  .leaderboard-rank {
+    font-size: 14px;
+  }
+
+  .leaderboard-name {
+    font-size: 14px;
+  }
+
+  .score {
+    font-size: 16px;
+  }
+
+  /* Homework and quiz items */
+  .homework-item,
+  .todo-item {
+    font-size: 14px;
+  }
+}
+
+/* ✅ Small phones (< 375px) */
+@media (max-width: 375px) {
+  .homepage-container {
+    padding: 10px;
+  }
+
+  .top-grid,
+  .bottom-grid {
+    gap: 10px;
+  }
+
+  .card {
+    padding: 14px;
+  }
+
+  .card-title {
+    font-size: 20px;
+  }
+
+  .quote-carousel {
+    padding: 12px;
+  }
+
+  .quote-icon img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .calendar-card {
+    min-height: 350px;
+    height: 350px;
+  }
+}
+
+/* ✅ Portrait tablets */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .homepage-container {
+    padding: 16px;
+  }
+
+  .top-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .bottom-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .left-column {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .card {
+    padding: 18px;
+  }
+
+  .card-title {
+    font-size: 24px;
+  }
+
+  .quote-carousel {
+    padding: 20px;
+  }
+
+  .quote-text {
+    font-size: 14px;
+  }
+
+  .quote-icon img {
+    width: 55px;
+    height: 55px;
+  }
+
+  .calendar-card {
+    min-height: 450px;
+  }
+
+  .card-list-item,
+  .homework-item,
+  .todo-item {
+    font-size: 15px;
+  }
+}
+
+/* ✅ Landscape tablets (iPad, etc.) */
+@media (min-width: 768px) and (max-width: 1200px) and (orientation: landscape) {
+  .homepage-container {
+    padding: 16px;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .top-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .bottom-grid {
+    grid-template-columns: 1fr 1.5fr;
+    gap: 12px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  .card-title {
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+
+  .card-list-item,
+  .homework-item,
+  .todo-item {
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+
+  .quote-carousel {
+    padding: 16px;
+  }
+
+  .quote-text {
+    font-size: 13px;
+  }
+
+  .quote-author {
+    font-size: 11px;
+  }
+
+  .quote-icon img {
+    width: 50px;
+    height: 50px;
+  }
+
+  .carousel-btn {
+    font-size: 24px;
+    padding: 0 10px;
+  }
+
+  .leaderboard-rank {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .leaderboard-name {
+    font-size: 14px;
+  }
+
+  .score {
+    font-size: 16px;
+  }
+
+  .calendar-title {
+    font-size: 42px;
+  }
+}
+
+/* ✅ Landscape phones */
+@media (max-width: 768px) and (orientation: landscape) {
+  .homepage-container {
+    padding: 10px;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .top-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .bottom-grid {
+    grid-template-columns: 1fr 1.8fr;
+    gap: 10px;
+  }
+
+  .left-column {
+    gap: 10px;
+  }
+
+  .card {
+    padding: 12px;
+  }
+
+  .card-title {
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+
+  .card-list-item,
+  .homework-item,
+  .todo-item {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .todo-checkbox {
+    width: 12px;
+    height: 12px;
+  }
+
+  .quote-carousel {
+    padding: 12px;
+  }
+
+  .quote-text {
+    font-size: 11px;
+  }
+
+  .quote-author {
+    font-size: 9px;
+  }
+
+  .quote-icon img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .carousel-btn {
+    font-size: 20px;
+    padding: 0 8px;
+  }
+
+  .carousel-dots {
+    margin-top: 6px;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  .leaderboard-rank {
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+
+  .leaderboard-name {
+    font-size: 12px;
+  }
+
+  .medal img {
+    width: 20px;
+    height: 20px;
+  }
+
+  .score {
+    font-size: 14px;
+  }
+
+  .calendar-title {
+    font-size: 36px;
+  }
+}
+
+/* ✅ Small phones in landscape (like iPhone 12 Pro) */
+@media (max-width: 900px) and (max-height: 500px) and (orientation: landscape) {
+  .homepage-container {
+    padding: 8px;
+  }
+
+  .top-grid,
+  .bottom-grid {
+    gap: 8px;
+  }
+
+  .top-grid {
+    margin-bottom: 8px;
+  }
+
+  .card {
+    padding: 10px;
+  }
+
+  .card-title {
+    font-size: 16px;
+    margin-bottom: 6px;
+  }
+
+  .card-list-item,
+  .homework-item,
+  .todo-item {
+    font-size: 11px;
+    margin-bottom: 3px;
+  }
+
+  .quote-carousel {
+    padding: 10px;
+  }
+
+  .quote-text {
+    font-size: 10px;
+  }
+
+  .quote-author {
+    font-size: 8px;
+  }
+
+  .quote-icon img {
+    width: 35px;
+    height: 35px;
+  }
+
+  .carousel-btn {
+    font-size: 18px;
+    padding: 0 6px;
+  }
+
+  .leaderboard-rank {
+    font-size: 11px;
+  }
+
+  .leaderboard-name {
+    font-size: 11px;
+  }
+
+  .medal img {
+    width: 18px;
+    height: 18px;
+  }
+
+  .score {
+    font-size: 12px;
+  }
+
+  .calendar-title {
+    font-size: 32px;
+  }
+
+  .calendar-card {
+    min-height: 250px;
+    height: auto;
+  }
+
+  /* Make submit buttons smaller */
+  .homework-item button,
+  .quiz-card button {
+    height: 28px !important;
+    width: 100px !important;
+    font-size: 11px !important;
+  }
+}
+
+/* ✅ Small-height landscape (iPhone 14 Pro Max & similar) */
+@media (max-width: 950px) and (max-height: 500px) and (orientation: landscape) {
+  .homepage-container {
+    padding: 8px;
+    overflow-y: auto;
+  }
+
+  .top-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .bottom-grid {
+    grid-template-columns: 1fr 2fr;
+    gap: 8px;
+  }
+
+  .card {
+    padding: 10px;
+  }
+
+  .card-title {
+    font-size: 16px;
+    margin-bottom: 6px;
+  }
+
+  .card-list {
+    max-height: 120px;
+    overflow-y: auto;
+  }
+
+  .quote-carousel {
+    padding: 10px;
+    min-height: auto;
+  }
+
+  .leaderboard-card {
+    min-height: auto;
+  }
+
+  .calendar-card {
+    min-height: 300px;
+  }
+}

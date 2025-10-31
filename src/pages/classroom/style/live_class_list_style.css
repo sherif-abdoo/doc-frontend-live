@@ -1,0 +1,72 @@
+.empty-message {
+  font-size: 2rem;
+  display: block;                /* make it a block we can center */
+  width: fit-content;            /* shrink box to text width */
+  max-width: 100%;               /* don't overflow on small screens */
+  padding: 1rem 1.2rem;            /* give the background some breathing room */
+  border-radius: 12px;           /* optional: nicer pill */
+  background-color: #6b7280;
+  color: #fff;                   /* or var(--text-on-dark) if you have one */
+  margin: 20px auto;             /* center horizontally */
+  text-align: center;            /* center text inside the pill */
+}
+
+
+.live-class-list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ✅ Responsive for portrait phones */
+@media (max-width: 768px) {
+  .empty-message {
+    font-size: 1.2rem;
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
+    margin: 15px auto;
+  }
+}
+
+/* ✅ Portrait tablets */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .empty-message {
+    font-size: 1.6rem;
+    padding: 0.9rem 1.1rem;
+    margin: 18px auto;
+  }
+}
+
+/* ✅ Landscape tablets (iPad, etc.) */
+@media (min-width: 768px) and (max-width: 1200px) and (orientation: landscape) {
+  .empty-message {
+    font-size: 1.8rem;
+  }
+}
+
+/* ✅ Landscape phones */
+@media (max-width: 768px) and (orientation: landscape) {
+  .empty-message {
+    font-size: 1rem;
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    margin: 12px auto;
+  }
+}
+
+/* ✅ Small phones in landscape (like iPhone 12 Pro) */
+@media (max-width: 900px) and (max-height: 500px) and (orientation: landscape) {
+  .empty-message {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.7rem;
+    margin: 10px auto;
+  }
+}
+
+/* ✅ Small-height landscape (iPhone 14 Pro Max & similar) */
+@media (max-width: 950px) and (max-height: 500px) and (orientation: landscape) {
+  .empty-message {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.7rem;
+    margin: 10px auto;
+  }
+}

@@ -1,0 +1,61 @@
+/* Layout */
+.page {
+  min-height: 100vh;
+  background: #f3f4f6;
+  font-family: Arial, sans-serif;
+
+  /* Center everything */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* Content layout */
+.content {
+  width: 100%;
+  max-width: 1200px;
+  padding: 30px;
+}
+
+/* ✅ Responsive for portrait phones */
+@media (max-width: 768px) {
+  .content {
+    padding: 15px;
+  }
+}
+
+/* ✅ Portrait tablets */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .content {
+    padding: 25px;
+  }
+}
+
+/* ✅ Landscape tablets (iPad, etc.) */
+@media (min-width: 768px) and (max-width: 1200px) and (orientation: landscape) {
+  .content {
+    padding: 25px;
+  }
+}
+
+/* ✅ Landscape phones */
+@media (max-width: 768px) and (orientation: landscape) {
+  .content {
+    padding: 15px 20px;
+  }
+}
+
+/* ✅ Small phones in landscape (like iPhone 12 Pro) */
+@media (max-width: 900px) and (max-height: 500px) and (orientation: landscape) {
+  .content {
+    padding: 10px 15px;
+  }
+}
+
+/* ✅ Small-height landscape (iPhone 14 Pro Max & similar) */
+@media (max-width: 950px) and (max-height: 500px) and (orientation: landscape) {
+  .content {
+    padding: 10px 15px;
+  }
+}

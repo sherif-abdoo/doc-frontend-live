@@ -1,0 +1,121 @@
+.feature-slider {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.feature-slider-track {
+    display: flex;
+    height: 100%;
+    will-change: transform;
+}
+
+.feature-slide {
+    min-width: 100%;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.feature-slider-dots {
+    position: absolute;
+    left: 50%;
+    bottom: 3.5%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 5;
+}
+
+.feature-slider-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.15);
+    border: none;
+    outline: none;
+    cursor: pointer;
+    transition: transform 200ms ease, background 200ms ease, width 200ms ease;
+}
+
+.feature-slider-dot.is-active {
+    width: 28px;
+    background: #278ae0;
+}
+
+.feature-slider-dot.is-active:hover {
+    background: #278ae0;
+    transform: scale(1.1);
+}
+
+.feature-slider-dot:hover {
+    background: rgba(0, 0, 0, 0.3);
+    transform: scale(1.1);
+}
+
+.feature-slider-dot:focus-visible {
+    outline: 2px solid rgba(0, 123, 255, 0.8);
+    outline-offset: 2px;
+}
+
+@media (max-width: 1023px) and (min-width: 768px) {
+    .feature-slider {
+        height: 100vh;
+    }
+    
+    .feature-slider-dots {
+        bottom: 4%;
+        gap: 10px;
+    }
+    
+    .feature-slider-dot {
+        width: 11px;
+        height: 11px;
+    }
+    
+    .feature-slider-dot.is-active {
+        width: 26px;
+    }
+}
+
+@media (max-width: 767px) and (min-width: 480px) {
+    .feature-slider {
+        height: 100vh;
+    }
+    
+    .feature-slider-dots {
+        bottom: 5%;
+        gap: 8px;
+    }
+    
+    .feature-slider-dot {
+        width: 10px;
+        height: 10px;
+    }
+    
+    .feature-slider-dot.is-active {
+        width: 24px;
+    }
+}
+
+@media (max-width: 479px) {
+    .feature-slider {
+        height: 100vh;
+    }
+    
+    .feature-slider-dots {
+        bottom: 6%;
+        gap: 6px;
+    }
+    
+    .feature-slider-dot {
+        width: 8px;
+        height: 8px;
+    }
+    
+    .feature-slider-dot.is-active {
+        width: 20px;
+    }
+}

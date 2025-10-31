@@ -1,0 +1,58 @@
+.layout-wrapper {
+  display: flex;
+  min-height: 100vh;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.layout-content {
+  flex: 1;
+  padding-left: 100px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ✅ Responsive for portrait phones */
+@media (max-width: 768px) {
+  .layout-content {
+    padding-left: 0;
+    padding-top: 70px; /* Space for hamburger button */
+  }
+}
+
+/* ✅ Portrait tablets */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .layout-content {
+    padding-left: 90px;
+  }
+}
+
+/* ✅ Landscape tablets (iPad, etc.) */
+@media (min-width: 768px) and (max-width: 1200px) and (orientation: landscape) {
+  .layout-content {
+    padding-left: 90px;
+  }
+}
+
+/* ✅ Landscape phones */
+@media (max-width: 768px) and (orientation: landscape) {
+  .layout-content {
+    padding-left: 0;
+    padding-top: 60px; /* Space for hamburger button */
+  }
+}
+
+/* ✅ Small phones in landscape (like iPhone 12 Pro) */
+@media (max-width: 900px) and (max-height: 500px) and (orientation: landscape) {
+  .layout-content {
+    padding-left: 0;
+    padding-top: 55px; /* Smaller space for compact hamburger */
+  }
+}
+
+/* ✅ Small-height landscape (iPhone 14 Pro Max & similar) */
+@media (max-width: 950px) and (max-height: 500px) and (orientation: landscape) {
+  .layout-content {
+    padding-left: 0;
+    padding-top: 55px;
+  }
+}

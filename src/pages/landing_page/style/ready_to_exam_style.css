@@ -1,0 +1,209 @@
+.ready-to-exam {
+    height: 100vh;
+    width: 100%;
+    background-image: url("../../../../public/assets/landing_page/CallToAction-Background.png");
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    background-repeat: no-repeat;
+    align-items: center;
+    background-size: cover;
+    background-position: center;
+}
+
+.ready-to-exam-title{
+    color : var(--text);
+    font-size: 80px;
+    font-family: "Montserrat Medium", sans-serif;
+}
+
+.ready-to-exam-content{
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    padding: 0 70px;
+}
+
+.ready-to-exam-action{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    height: 70%;
+    gap: 50px;
+}
+
+.ready-to-exam-description{
+    text-align: center;
+    color: var(--text);
+    font-size: 50px;
+    width: 90%;
+    font-weight: bold;
+    font-family: "Montserrat Thin", sans-serif;
+    font-weight: 700;
+}
+
+.ready-img{
+    height: 550px;
+    width: auto;
+}
+
+@media (min-width: 1440px) {
+    .ready-to-exam-title{
+        font-size: 80px;
+    }
+    .ready-to-exam-description{
+        font-size: 50px;
+    }
+    .ready-img{
+        height: 550px;
+    }
+}
+
+@media (max-width: 1439px) and (min-width: 1024px) {
+    .ready-to-exam-title{
+        font-size: 70px;
+    }
+    .ready-to-exam-description{
+        font-size: 45px;
+    }
+    .ready-img{
+        height: 450px;
+    }
+}
+
+@media (max-width: 1023px) and (min-width: 768px) and (orientation: landscape) {
+    .ready-to-exam-title{
+        font-size: 2.8rem;
+    }
+    .ready-to-exam-description{
+        font-size: 1.8rem;
+    }
+    .ready-img{
+        height: 300px;
+    }
+    .ready-to-exam-content{
+        padding: 0 40px;
+    }
+    .ready-to-exam-action{
+        gap: 30px;
+    }
+}
+
+@media (max-width: 1023px) and (min-width: 768px) and (orientation: portrait) {
+    .ready-to-exam-title{
+        font-size: 3rem;
+    }
+    .ready-to-exam-description{
+        font-size: 2rem;
+        width: 100%;
+    }
+    .ready-img{
+        display: none; 
+    }
+    .ready-to-exam-content{
+        justify-content: center;
+        padding: 0 40px;
+    }
+    .ready-to-exam-action{
+        gap: 40px;
+        height: auto;
+    }
+}
+
+@media (max-width: 767px) and (min-width: 480px) and (orientation: landscape) {
+    .ready-to-exam-title{
+        font-size: 2.5rem;
+    }
+    .ready-to-exam-description{
+        font-size: 1.5rem;
+    }
+    .ready-img{
+        height: 200px;
+    }
+    .ready-to-exam-content{
+        padding: 0 20px;
+    }
+    .ready-to-exam-action{
+        gap: 20px;
+    }
+}
+
+@media (max-width: 767px) and (min-width: 480px) and (orientation: portrait) {
+    .ready-to-exam-title{
+        font-size: 2.2rem;
+    }
+    .ready-to-exam-description{
+        font-size: 1.3rem;
+        width: 100%;
+    }
+    .ready-img{
+        display: none;
+    }
+    .ready-to-exam-content{
+        justify-content: center;
+        padding: 0 30px;
+    }
+    .ready-to-exam-action{
+        gap: 30px;
+        height: auto;
+    }
+}
+
+@media (max-width: 479px) and (orientation: landscape) {
+    .ready-to-exam-title{
+        font-size: 1.5rem;
+    }
+    .ready-to-exam-description{
+        font-size: 1.2rem;
+    }
+    .ready-img{
+        height: 150px;
+    }
+    .ready-to-exam-content{
+        padding: 0 15px;
+    }
+    .ready-to-exam-action{
+        gap: 15px;
+    }
+}
+
+@media (max-width: 479px) and (orientation: portrait) {
+    .ready-to-exam {
+        justify-content: center;
+        gap: 40px;
+        padding: 20px 0;
+    }
+    
+    .ready-to-exam-title{
+        font-size: 1.8rem;
+        text-align: center;
+        padding: 0 20px;
+    }
+    .ready-to-exam-description{
+        font-size: 1.1rem;
+        width: 100%;
+    }
+    .ready-img{
+        display: none; 
+    }
+    .ready-to-exam-content{
+        justify-content: center;
+        padding: 0 20px;
+    }
+    .ready-to-exam-action{
+        gap: 1.5625rem; 
+        height: auto;
+    }
+}
+
+@media (max-width: 320px) and (orientation: portrait) {
+    .ready-to-exam-title{
+        font-size: 1.5rem;
+    }
+    .ready-to-exam-description{
+        font-size: 1rem;
+    }
+}

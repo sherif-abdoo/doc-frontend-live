@@ -1,0 +1,21 @@
+.secondary-btn {
+    background-color: transparent;
+    padding: clamp(0.75rem, 2vw, 1rem) clamp(1.5rem, 3vw, 2.5rem);
+    border: 1.5px solid;
+    border-radius: 9999px;
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    
+    /* Centering properties */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.secondary-btn:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}

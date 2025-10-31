@@ -1,0 +1,62 @@
+/* Table */
+.table {
+  width: 1000px;      /* bigger table */
+  max-width: 1000px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* ✅ Responsive for portrait phones */
+@media (max-width: 768px) {
+  .table {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 8px;
+  }
+}
+
+/* ✅ Portrait tablets */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .table {
+    width: 90%;
+    max-width: 700px;
+  }
+}
+
+/* ✅ Landscape tablets (iPad, etc.) */
+@media (min-width: 768px) and (max-width: 1200px) and (orientation: landscape) {
+  .table {
+    width: 95%;
+    max-width: 900px;
+  }
+}
+
+/* ✅ Landscape phones */
+@media (max-width: 768px) and (orientation: landscape) {
+  .table {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 8px;
+  }
+}
+
+/* ✅ Small phones in landscape (like iPhone 12 Pro) */
+@media (max-width: 900px) and (max-height: 500px) and (orientation: landscape) {
+  .table {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 6px;
+  }
+}
+
+/* ✅ Small-height landscape (iPhone 14 Pro Max & similar) */
+@media (max-width: 950px) and (max-height: 500px) and (orientation: landscape) {
+  .table {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 6px;
+  }
+}

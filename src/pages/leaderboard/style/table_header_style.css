@@ -1,0 +1,82 @@
+.table-header {
+  display: grid;
+  grid-template-columns: 2fr 6fr 4fr;
+  padding: 12px 20px;
+  background: #bae6fd;
+  font-weight: 600;
+  color: var(--text);
+  font-size: 35px;
+  font-family: "Montserrat Bold";
+}
+
+.col {
+  display: flex;
+  align-items: center;
+}
+
+.col.rank {
+  font-family: "Montserrat Regular";
+}
+
+.col.name {
+  font-family: "Montserrat Regular";
+}
+
+.col.grade {
+  justify-content: flex-end;
+  text-align: right;
+  font-family: "Montserrat Regular";
+}
+
+/* ✅ Responsive for portrait phones */
+@media (max-width: 768px) {
+  .table-header {
+    grid-template-columns: 1.5fr 5fr 3fr;
+    padding: 10px 12px;
+    font-size: 18px;
+  }
+}
+
+/* ✅ Portrait tablets */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .table-header {
+    grid-template-columns: 1.5fr 5.5fr 3.5fr;
+    padding: 12px 16px;
+    font-size: 28px;
+  }
+}
+
+/* ✅ Landscape tablets (iPad, etc.) */
+@media (min-width: 768px) and (max-width: 1200px) and (orientation: landscape) {
+  .table-header {
+    padding: 12px 18px;
+    font-size: 30px;
+  }
+}
+
+/* ✅ Landscape phones */
+@media (max-width: 768px) and (orientation: landscape) {
+  .table-header {
+    grid-template-columns: 1.5fr 5fr 3fr;
+    padding: 8px 12px;
+    font-size: 16px;
+  }
+}
+
+/* ✅ Small phones in landscape (like iPhone 12 Pro) */
+@media (max-width: 900px) and (max-height: 500px) and (orientation: landscape) {
+  .table-header {
+    grid-template-columns: 1.5fr 5fr 3fr;
+    padding: 6px 10px;
+    font-size: 14px;
+  }
+}
+
+/* ✅ Small-height landscape (iPhone 14 Pro Max & similar) */
+@media (max-width: 950px) and (max-height: 500px) and (orientation: landscape) {
+  .table-header {
+    grid-template-columns: 1.5fr 5fr 3fr;
+    padding: 6px 10px;
+    font-size: 14px;
+  }
+}

@@ -1,0 +1,160 @@
+.feed-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.feed-content {
+  width: 100%;
+  max-width: 1300px;
+  padding: 40px 60px;
+}
+
+.feed-title {
+  font-size: 50px;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  margin-bottom: 40px;
+  font-family: 'Montserrat Regular', sans-serif;
+}
+
+.feed-list {
+  border-radius: 12px;
+  padding: 30px 40px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.feed-loading,
+.feed-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6b7280;
+  font-size: 18px;
+  font-family: 'Montserrat Regular', sans-serif;
+}
+
+/* ✅ Responsive for portrait phones */
+@media (max-width: 768px) {
+  .feed-content {
+    padding: 24px 16px;
+  }
+
+  .feed-title {
+    font-size: 32px;
+    margin-bottom: 24px;
+  }
+
+  .feed-list {
+    padding: 20px 16px;
+    border-radius: 8px;
+  }
+
+  .feed-loading,
+  .feed-empty {
+    padding: 40px 16px;
+    font-size: 16px;
+  }
+}
+
+/* ✅ Portrait tablets */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .feed-content {
+    padding: 32px 40px;
+  }
+
+  .feed-title {
+    font-size: 42px;
+    margin-bottom: 32px;
+  }
+
+  .feed-list {
+    padding: 24px 32px;
+  }
+
+  .feed-loading,
+  .feed-empty {
+    padding: 50px 20px;
+    font-size: 17px;
+  }
+}
+
+/* ✅ Landscape tablets (iPad, etc.) */
+@media (min-width: 768px) and (max-width: 1200px) and (orientation: landscape) {
+  .feed-content {
+    padding: 32px 48px;
+    max-width: 1100px;
+  }
+
+  .feed-title {
+    font-size: 44px;
+    margin-bottom: 32px;
+  }
+
+  .feed-list {
+    padding: 28px 36px;
+  }
+}
+
+/* ✅ Landscape phones */
+@media (max-width: 768px) and (orientation: landscape) {
+  .feed-content {
+    padding: 20px 24px;
+  }
+
+  .feed-title {
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+
+  .feed-list {
+    padding: 16px 20px;
+    border-radius: 8px;
+  }
+
+  .feed-loading,
+  .feed-empty {
+    padding: 30px 16px;
+    font-size: 15px;
+  }
+}
+
+/* ✅ Small phones in landscape (like iPhone 12 Pro) */
+@media (max-width: 900px) and (max-height: 500px) and (orientation: landscape) {
+  .feed-content {
+    padding: 16px 20px;
+  }
+
+  .feed-title {
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+
+  .feed-list {
+    padding: 12px 16px;
+  }
+
+  .feed-loading,
+  .feed-empty {
+    padding: 24px 12px;
+    font-size: 14px;
+  }
+}
+
+/* ✅ Small-height landscape (iPhone 14 Pro Max & similar) */
+@media (max-width: 950px) and (max-height: 500px) and (orientation: landscape) {
+  .feed-content {
+    padding: 16px 24px;
+  }
+
+  .feed-title {
+    font-size: 26px;
+    margin-bottom: 16px;
+  }
+
+  .feed-list {
+    padding: 12px 20px;
+  }
+}

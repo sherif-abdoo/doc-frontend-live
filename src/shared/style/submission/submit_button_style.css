@@ -1,0 +1,111 @@
+.submit-btn {
+  background: var(--bioCard);
+  border: none;
+  padding: 12px 20px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 15px auto;
+  cursor: pointer;
+  font-family: 'Montserrat Medium', sans-serif;
+  font-size: 25px;
+  color: var(--text);
+}
+
+.submit-btn:hover {
+  background: #c2ffaf;
+}
+
+.icon {
+  height: 30px;
+  width: 30px;
+}
+
+/* ✅ Responsive for portrait phones */
+@media (max-width: 768px) {
+  .submit-btn {
+    padding: 10px 16px;
+    gap: 6px;
+    margin: 12px auto;
+    font-size: 18px;
+  }
+  
+  .icon {
+    height: 22px;
+    width: 22px;
+  }
+}
+
+/* ✅ Portrait tablets */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .submit-btn {
+    padding: 11px 18px;
+    gap: 7px;
+    margin: 14px auto;
+    font-size: 22px;
+  }
+  
+  .icon {
+    height: 26px;
+    width: 26px;
+  }
+}
+
+/* ✅ Landscape tablets (iPad, etc.) */
+@media (min-width: 768px) and (max-width: 1200px) and (orientation: landscape) {
+  .submit-btn {
+    padding: 11px 18px;
+    font-size: 23px;
+  }
+  
+  .icon {
+    height: 28px;
+    width: 28px;
+  }
+}
+
+/* ✅ Landscape phones */
+@media (max-width: 768px) and (orientation: landscape) {
+  .submit-btn {
+    padding: 8px 14px;
+    gap: 5px;
+    margin: 10px auto;
+    font-size: 16px;
+  }
+  
+  .icon {
+    height: 20px;
+    width: 20px;
+  }
+}
+
+/* ✅ Small phones in landscape (like iPhone 12 Pro) */
+@media (max-width: 900px) and (max-height: 500px) and (orientation: landscape) {
+  .submit-btn {
+    padding: 7px 12px;
+    gap: 4px;
+    margin: 8px auto;
+    font-size: 14px;
+  }
+  
+  .icon {
+    height: 18px;
+    width: 18px;
+  }
+}
+
+/* ✅ Small-height landscape (iPhone 14 Pro Max & similar) */
+@media (max-width: 950px) and (max-height: 500px) and (orientation: landscape) {
+  .submit-btn {
+    padding: 7px 12px;
+    gap: 4px;
+    margin: 8px auto;
+    font-size: 14px;
+  }
+  
+  .icon {
+    height: 18px;
+    width: 18px;
+  }
+}

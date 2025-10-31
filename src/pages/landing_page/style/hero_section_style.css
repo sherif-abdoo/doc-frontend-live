@@ -1,0 +1,238 @@
+.heroSection {
+    background: var(--heroSection);
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 56px;
+    padding: 64px 80px;
+    box-sizing: border-box;
+    margin-inline: auto;
+    flex-wrap: wrap;
+  }
+  
+  .left-section {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    flex: 1 1 400px;
+    max-width: 650px;
+  }
+  
+  .heroTitle {
+    color: var(--text);
+    font-size: clamp(28px, 6vw, 50px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+    margin: 0;
+    font-family: "Montserrat Medium", sans-serif;
+  }
+  
+  .heroText {
+    color: var(--text);
+    font-size: clamp(16px, 2.2vw, 27px);
+    line-height: 1.55;
+    margin: 0;
+    max-width: clamp(200px, 55vw, 800px);
+    font-family: "Montserrat Thin", sans-serif;
+    font-weight: 700;
+  }
+  
+  .hero-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    flex-wrap: wrap;
+  }
+  
+  .right-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1 1 300px;
+  }
+  
+  .right-section img {
+    width: min(400px, 90%);
+    height: auto;
+    display: block;
+  }
+
+  @media screen and (max-width: 1024px) and (orientation: landscape) {
+    .heroSection {
+      padding: 40px 60px;
+      gap: 40px;
+    }
+    
+    .heroTitle {
+      font-size: clamp(24px, 5vw, 40px);
+    }
+    
+    .heroText {
+      font-size: clamp(14px, 2vw, 22px);
+    }
+    
+    .right-section img {
+      width: min(300px, 80%);
+    }
+  }
+
+  @media screen and (orientation: portrait) {
+    .heroSection {
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+      padding: 60px 40px;
+      gap: 40px;
+    }
+    
+    .left-section {
+      align-items: center;
+      text-align: center;
+      max-width: 100%;
+      flex: none;
+    }
+    
+    .heroTitle {
+      text-align: center;
+      font-size: clamp(32px, 8vw, 48px);
+    }
+    
+    .heroText {
+      text-align: center;
+      font-size: clamp(18px, 4vw, 28px);
+      max-width: 90%;
+    }
+    
+    .hero-buttons {
+      justify-content: center;
+      gap: 20px;
+    }
+    
+    .right-section {
+      display: none;
+    }
+  }
+
+  @media screen and (max-width: 480px) and (orientation: portrait) {
+    .heroSection {
+      padding: 40px 20px;
+      gap: 30px;
+    }
+    
+    .left-section {
+      gap: 30px;
+    }
+    
+    .heroTitle {
+      font-size: clamp(28px, 7vw, 36px);
+    }
+    
+    .heroText {
+      font-size: clamp(16px, 4vw, 20px);
+      max-width: 95%;
+    }
+    
+    .hero-buttons {
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      width: 100%;
+    }
+  }
+
+  @media screen and (min-width: 481px) and (max-width: 768px) and (orientation: portrait) {
+    .heroSection {
+      padding: 50px 30px;
+    }
+    
+    .heroTitle {
+      font-size: clamp(36px, 7vw, 42px);
+    }
+    
+    .heroText {
+      font-size: clamp(20px, 4vw, 24px);
+    }
+  }
+
+  @media screen and (min-width: 769px) and (max-width: 1024px) and (orientation: portrait) {
+    .heroSection {
+      padding: 60px 50px;
+    }
+    
+    .heroTitle {
+      font-size: clamp(40px, 6vw, 46px);
+    }
+    
+    .heroText {
+      font-size: clamp(22px, 3vw, 26px);
+    }
+  }
+
+  @media screen and (max-height: 300px) and (orientation: landscape) {
+    .heroSection {
+      padding: 20px 35px;
+      gap: 30px;
+    }
+    
+    .left-section {
+      gap: 20px;
+    }
+    
+    .heroTitle {
+      font-size: clamp(20px, 4vw, 32px);
+    }
+    
+    .heroText {
+      font-size: clamp(12px, 2vw, 18px);
+      max-width: 100%;
+    }
+    
+    .hero-buttons {
+      gap: 15px;
+    }
+    
+    .right-section img {
+      width: min(250px, 70%);
+    }
+  }
+
+  @media screen and (max-height: 400px) and (max-width: 670px) and (orientation: landscape) {
+    .heroSection {
+      padding: 20px 35px;
+      gap: 30px;
+    }
+    
+    .left-section {
+      gap: 20px;
+      max-width: 50%;
+    }
+    
+    .heroTitle {
+      font-size: clamp(20px, 4vw, 32px);
+    }
+    
+    .heroText {
+      font-size: clamp(12px, 2vw, 18px);
+      max-width: 100%;
+    }
+    
+    .hero-buttons {
+      gap: 15px;
+    }
+    
+    .right-section{
+      max-width: 43%;
+    }
+    .right-section img {
+      width: min(300px, 70%);
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .hero-buttons button {
+      min-width: 200px;
+    }
+  }

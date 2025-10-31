@@ -1,0 +1,87 @@
+/* dialog shell (matches create topic modal vibe) */
+.ays-dialog {
+    border: none;
+    padding: 0;
+    background: transparent;
+    margin: 0;
+
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.ays-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.4);
+}
+
+/* card */
+.ays-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid #e7e7e7;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+
+    max-width: 420px;
+    width: 92vw;
+}
+
+.ays-title {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.ays-message {
+    margin: 4px 0 14px 0;
+    font-size: 15px;
+    color: #374151;
+}
+
+/* actions */
+.ays-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.ays-btn {
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.05s ease, box-shadow 0.2s ease, background 0.2s ease;
+    font-size: 14px;
+}
+
+.ays-btn:active {
+    transform: translateY(1px);
+}
+
+.ays-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ghost (No) */
+.ays-btn-ghost {
+    background: rgba(17, 24, 39, 0.04);
+    color: #111827;
+    border-color: #dcdcdc;
+}
+.ays-btn-ghost:hover:not(:disabled) {
+    background: rgba(17, 24, 39, 0.08);
+}
+
+/* primary (Sure) */
+.ays-btn-primary {
+    background: #111827;
+    color: #ffffff;
+}
+.ays-btn-primary:hover:not(:disabled) {
+    box-shadow: 0 6px 18px rgba(17, 24, 39, 0.25);
+}

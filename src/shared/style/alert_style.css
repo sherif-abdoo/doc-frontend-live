@@ -1,0 +1,16 @@
+/* Top-centered fixed alert */
+.alert-fixed-top {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(520px, 92vw);
+    z-index: 1400; /* above main content */
+    animation: alert-slide-down 140ms ease-out;
+}
+
+/* subtle entrance */
+@keyframes alert-slide-down {
+    from { transform: translate(-50%, -8px); opacity: 0; }
+    to   { transform: translate(-50%, 0);   opacity: 1; }
+}

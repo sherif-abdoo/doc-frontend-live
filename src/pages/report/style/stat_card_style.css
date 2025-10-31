@@ -1,0 +1,239 @@
+.stat-card {
+  background: var(--chemCard);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: none;
+  border: none;
+  min-height: 120px;
+  min-width: 260px;
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-header {
+  font-size: 29px;
+  color: #000;
+  margin-bottom: 15px;
+  min-width: 20%;
+}
+
+.stat-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+}
+
+.grade-display {
+  padding: 0px 25px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.grade-letter {
+  font-size: 80px;
+  color: #000;
+  line-height: 1;
+}
+
+.grade-score {
+  font-size: 20px;
+  color: #000;
+  margin-top: 2px;
+}
+
+.stat-value {
+  display: flex;
+  align-items: center;
+}
+
+.value-text {
+  font-size: 30px;
+  color: #000;
+}
+
+/* ✅ Responsive for portrait phones */
+@media (max-width: 768px) {
+  .stat-card {
+    border-radius: 15px;
+    padding: 15px;
+    min-height: 100px;
+    min-width: 100%;
+  }
+  
+  .stat-header {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .grade-display {
+    padding: 0px 15px;
+    gap: 6px;
+  }
+  
+  .grade-letter {
+    font-size: 50px;
+  }
+  
+  .grade-score {
+    font-size: 16px;
+  }
+  
+  .value-text {
+    font-size: 22px;
+  }
+}
+
+/* ✅ Portrait tablets */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .stat-card {
+    border-radius: 18px;
+    padding: 18px;
+    min-height: 110px;
+  }
+  
+  .stat-header {
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+  
+  .grade-display {
+    padding: 0px 20px;
+    gap: 7px;
+  }
+  
+  .grade-letter {
+    font-size: 65px;
+  }
+  
+  .grade-score {
+    font-size: 18px;
+  }
+  
+  .value-text {
+    font-size: 26px;
+  }
+}
+
+/* ✅ Landscape tablets (iPad, etc.) */
+@media (min-width: 768px) and (max-width: 1200px) and (orientation: landscape) {
+  .stat-card {
+    padding: 18px;
+    min-height: 110px;
+  }
+  
+  .stat-header {
+    font-size: 26px;
+  }
+  
+  .grade-display {
+    padding: 0px 22px;
+  }
+  
+  .grade-letter {
+    font-size: 70px;
+  }
+  
+  .grade-score {
+    font-size: 19px;
+  }
+  
+  .value-text {
+    font-size: 28px;
+  }
+}
+
+/* ✅ Landscape phones */
+@media (max-width: 768px) and (orientation: landscape) {
+  .stat-card {
+    border-radius: 12px;
+    padding: 12px;
+    min-height: 90px;
+    min-width: 100%;
+  }
+  
+  .stat-header {
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+  
+  .grade-display {
+    padding: 0px 12px;
+    gap: 5px;
+  }
+  
+  .grade-letter {
+    font-size: 40px;
+  }
+  
+  .grade-score {
+    font-size: 14px;
+  }
+  
+  .value-text {
+    font-size: 20px;
+  }
+}
+
+/* ✅ Small phones in landscape (like iPhone 12 Pro) */
+@media (max-width: 900px) and (max-height: 500px) and (orientation: landscape) {
+  .stat-card {
+    border-radius: 10px;
+    padding: 10px;
+    min-height: 80px;
+  }
+  
+  .stat-header {
+    font-size: 16px;
+    margin-bottom: 6px;
+  }
+  
+  .grade-display {
+    padding: 0px 10px;
+    gap: 4px;
+  }
+  
+  .grade-letter {
+    font-size: 35px;
+  }
+  
+  .grade-score {
+    font-size: 12px;
+  }
+  
+  .value-text {
+    font-size: 18px;
+  }
+}
+
+/* ✅ Small-height landscape (iPhone 14 Pro Max & similar) */
+@media (max-width: 950px) and (max-height: 500px) and (orientation: landscape) {
+  .stat-card {
+    border-radius: 10px;
+    padding: 10px;
+    min-height: 80px;
+  }
+  
+  .stat-header {
+    font-size: 16px;
+    margin-bottom: 6px;
+  }
+  
+  .grade-display {
+    padding: 0px 10px;
+    gap: 4px;
+  }
+  
+  .grade-letter {
+    font-size: 35px;
+  }
+  
+  .grade-score {
+    font-size: 12px;
+  }
+  
+  .value-text {
+    font-size: 18px;
+  }
+}

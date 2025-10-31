@@ -1,0 +1,161 @@
+/* Live class */
+.live-class {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--chemCard);
+  padding: 0px 20px;
+  border-radius: 15px;
+  margin-bottom: 10px;
+}
+
+.live-info {
+  min-width: 30%;
+}
+
+.live-info h2 {
+  margin: 0 0 5px;
+  font-family: "Montserrat Regular";
+  color: var(--text);
+}
+
+.live-info p {
+  font-family: "Montserrat Thin";
+  font-weight: 700;
+  color: var(--text);
+}
+
+.live-info p strong {
+  font-family: "Montserrat Regular";
+  color: var(--text);
+}
+
+.teacher-img {
+  width: 200px;
+  height: auto;
+  opacity: 0.5;
+}
+
+/* ✅ Responsive for portrait phones */
+@media (max-width: 768px) {
+  .live-class {
+    flex-direction: column;
+    padding: 15px;
+    text-align: center;
+  }
+  
+  .live-info {
+    min-width: 100%;
+    margin-bottom: 15px;
+  }
+  
+  .live-info h2 {
+    font-size: 1.3rem;
+  }
+  
+  .live-info p {
+    font-size: 0.9rem;
+  }
+  
+  .teacher-img {
+    width: 120px;
+    margin-bottom: 15px;
+  }
+}
+
+/* ✅ Portrait tablets */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .live-class {
+    padding: 15px 18px;
+  }
+  
+  .live-info h2 {
+    font-size: 1.5rem;
+  }
+  
+  .teacher-img {
+    width: 160px;
+  }
+}
+
+/* ✅ Landscape tablets (iPad, etc.) */
+@media (min-width: 768px) and (max-width: 1200px) and (orientation: landscape) {
+  .live-class {
+    padding: 10px 18px;
+  }
+  
+  .teacher-img {
+    width: 180px;
+  }
+}
+
+/* ✅ Landscape phones */
+@media (max-width: 768px) and (orientation: landscape) {
+  .live-class {
+    flex-direction: row;
+    padding: 10px 15px;
+  }
+  
+  .live-info {
+    min-width: 40%;
+  }
+  
+  .live-info h2 {
+    font-size: 1.1rem;
+    margin-bottom: 3px;
+  }
+  
+  .live-info p {
+    font-size: 0.8rem;
+  }
+  
+  .teacher-img {
+    width: 100px;
+  }
+}
+
+/* ✅ Small phones in landscape (like iPhone 12 Pro) */
+@media (max-width: 900px) and (max-height: 500px) and (orientation: landscape) {
+  .live-class {
+    padding: 8px 12px;
+  }
+  
+  .live-info h2 {
+    font-size: 1rem;
+  }
+  
+  .live-info p {
+    font-size: 0.75rem;
+  }
+  
+  .teacher-img {
+    width: 80px;
+  }
+}
+
+/* ✅ Small-height landscape (iPhone 14 Pro Max & similar) */
+@media (max-width: 950px) and (max-height: 500px) and (orientation: landscape) {
+  .live-class {
+    padding: 8px 12px;
+  }
+  
+  .live-info h2 {
+    font-size: 1rem;
+  }
+  
+  .live-info p {
+    font-size: 0.75rem;
+  }
+  
+  .teacher-img {
+    width: 80px;
+  }
+}
+
+.live-class-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}

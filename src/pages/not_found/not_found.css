@@ -1,0 +1,54 @@
+.not-found-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+  padding: 2rem;
+  background: #fff;
+}
+
+.not-found-img {
+  max-width: 300px;
+  margin-bottom: 2rem;
+}
+
+.not-found-container h1 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  font-family: "Montserrat Bold", sans-serif;
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+.not-found-container p {
+  font-size: 1.5rem;
+  font-family: 'Montserrat Medium', sans-serif;
+  color: var(--text);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.back-home-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;                /* a bit more space for bigger icon */
+  background: #4cafef;
+  color: white;
+  padding: 12px 26px;       /* slightly larger button */
+  border-radius: 28px;
+  font-family: "Montserrat Regular";
+  font-weight: 600;
+  font-size: 1.05rem;
+  text-decoration: none;
+  transition: background 0.2s ease-in-out;
+}
+
+.back-home-btn:hover {
+  background: #3b9bd6;
+}
+
+.back-icon {
+  flex-shrink: 0;
+}

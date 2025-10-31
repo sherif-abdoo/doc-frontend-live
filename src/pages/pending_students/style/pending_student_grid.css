@@ -1,0 +1,45 @@
+/* Center the grid within the page */
+.pending-grid-wrapper {
+    display: flex;
+    justify-content: center;   /* horizontal center */
+    width: 100%;
+    padding: 20px 16px;        /* breathing room from edges */
+    box-sizing: border-box;
+}
+
+/* Your existing topic-grid spec, with a max-width to keep it centered and tidy */
+.topic-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+    gap: 4rem;
+    padding-bottom: 20px;
+    padding-top: 50px;
+    width: 100%;
+    max-width: 1200px;         /* controls max grid width */
+    margin: 0 auto;            /* centers the grid block */
+}
+
+/* Empty state stays centered and fills the width of the grid area */
+.empty-topic-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #666;
+
+    min-height: 60vh;          /* optional: nice vertical centering when empty */
+}
+
+.empty-topic-grid img {
+    width: 200px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.empty-topic-grid p {
+    font-size: 25px;
+    color: var(--text);
+    font-family: "Montserrat Regular", sans-serif;
+}

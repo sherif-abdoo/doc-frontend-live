@@ -1,0 +1,161 @@
+/* Video Lessons - Horizontal Scroll */
+.lesson-scroll {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;   /* hide vertical scroll */
+  padding-bottom: 10px;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth; /* nice smooth scroll */
+}
+
+.lesson-scroll::-webkit-scrollbar {
+  height: 10px; /* scrollbar thickness */
+}
+
+.lesson-scroll::-webkit-scrollbar-thumb {
+  background: var(--heroPrimaryButton);
+  border-radius: 5px;
+}
+
+.lesson-scroll::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.empty-lesson-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 50px;
+}
+
+.empty-lesson-container img {
+  width: 150px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.empty-lesson-container p {
+  font-size: 18px;
+  color: var(--text);
+  font-family: "Montserrat Regular", sans-serif;
+}
+
+/* ✅ Responsive for portrait phones */
+@media (max-width: 768px) {
+  .lesson-scroll::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  .empty-lesson-container {
+    margin-top: 30px;
+  }
+  
+  .empty-lesson-container img {
+    width: 100px;
+    margin-bottom: 15px;
+  }
+  
+  .empty-lesson-container p {
+    font-size: 14px;
+  }
+}
+
+/* ✅ Portrait tablets */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .lesson-scroll::-webkit-scrollbar {
+    height: 8px;
+  }
+  
+  .empty-lesson-container {
+    margin-top: 40px;
+  }
+  
+  .empty-lesson-container img {
+    width: 120px;
+    margin-bottom: 18px;
+  }
+  
+  .empty-lesson-container p {
+    font-size: 16px;
+  }
+}
+
+/* ✅ Landscape tablets (iPad, etc.) */
+@media (min-width: 768px) and (max-width: 1200px) and (orientation: landscape) {
+  .lesson-scroll::-webkit-scrollbar {
+    height: 9px;
+  }
+  
+  .empty-lesson-container {
+    margin-top: 45px;
+  }
+  
+  .empty-lesson-container img {
+    width: 130px;
+  }
+  
+  .empty-lesson-container p {
+    font-size: 17px;
+  }
+}
+
+/* ✅ Landscape phones */
+@media (max-width: 768px) and (orientation: landscape) {
+  .lesson-scroll::-webkit-scrollbar {
+    height: 5px;
+  }
+  
+  .empty-lesson-container {
+    margin-top: 20px;
+  }
+  
+  .empty-lesson-container img {
+    width: 80px;
+    margin-bottom: 12px;
+  }
+  
+  .empty-lesson-container p {
+    font-size: 13px;
+  }
+}
+
+/* ✅ Small phones in landscape (like iPhone 12 Pro) */
+@media (max-width: 900px) and (max-height: 500px) and (orientation: landscape) {
+  .lesson-scroll::-webkit-scrollbar {
+    height: 4px;
+  }
+  
+  .empty-lesson-container {
+    margin-top: 15px;
+  }
+  
+  .empty-lesson-container img {
+    width: 70px;
+    margin-bottom: 10px;
+  }
+  
+  .empty-lesson-container p {
+    font-size: 12px;
+  }
+}
+
+/* ✅ Small-height landscape (iPhone 14 Pro Max & similar) */
+@media (max-width: 950px) and (max-height: 500px) and (orientation: landscape) {
+  .lesson-scroll::-webkit-scrollbar {
+    height: 4px;
+  }
+  
+  .empty-lesson-container {
+    margin-top: 15px;
+  }
+  
+  .empty-lesson-container img {
+    width: 70px;
+    margin-bottom: 10px;
+  }
+  
+  .empty-lesson-container p {
+    font-size: 12px;
+  }
+}

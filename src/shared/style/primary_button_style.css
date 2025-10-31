@@ -1,0 +1,23 @@
+.custom-btn {
+    color: white;
+    padding: clamp(0.75rem, 2vw, 1rem) clamp(2rem, 4vw, 3rem);
+    border: none;
+    border-radius: 9999px;
+    font-size: 3rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+  
+  .custom-btn:hover {
+    opacity: 0.85;
+  }
+
+  @media screen and (max-height: 400px) and (max-width: 670px) and (orientation: landscape) {
+    .custom-btn {
+        font-size: 2rem;
+        padding: 0.6rem 1rem;
+        width: auto;  
+    }
+  }

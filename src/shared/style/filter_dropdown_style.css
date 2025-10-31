@@ -1,0 +1,31 @@
+.filter-dropdown {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-family: "Montserrat Regular", sans-serif;
+}
+
+.filter-label {
+    font-size: 0.9rem;
+    color: var(--text);
+}
+
+.filter-select {
+    min-width: 170px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.12);
+    background: #fff;
+    color: var(--text);
+    outline: none;
+}
+
+.filter-select:focus {
+    border-color: rgba(0,0,0,0.2);
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.06);
+}
+
+.filter-select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

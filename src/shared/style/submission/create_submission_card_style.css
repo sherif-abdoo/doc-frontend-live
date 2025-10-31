@@ -1,0 +1,154 @@
+/* src/style/submission/create_submission_card.css */
+
+.create-submission-card {
+    background-color: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 160px;
+    outline: none; /* we'll handle focus styles */
+}
+
+.create-submission-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+}
+
+.create-submission-card:focus-visible {
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.35); /* subtle focus ring */
+}
+
+.create-submission-card.is-loading {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.create-submission-inner {
+    text-align: center;
+    display: grid;
+    place-items: center;
+}
+
+.plus-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #6c757d;
+    line-height: 1;
+    user-select: none;
+}
+
+.create-title {
+    color: #6c757d;
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+
+/* ✅ Responsive for portrait phones */
+@media (max-width: 768px) {
+  .create-submission-card {
+    border-radius: 10px;
+    padding: 12px;
+    min-height: 120px;
+  }
+  
+  .plus-icon {
+    font-size: 2rem;
+    margin-bottom: 0.7rem;
+  }
+  
+  .create-title {
+    font-size: 0.9rem;
+  }
+}
+
+/* ✅ Portrait tablets */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .create-submission-card {
+    padding: 14px;
+    min-height: 140px;
+  }
+  
+  .plus-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.85rem;
+  }
+  
+  .create-title {
+    font-size: 1rem;
+  }
+}
+
+/* ✅ Landscape tablets (iPad, etc.) */
+@media (min-width: 768px) and (max-width: 1200px) and (orientation: landscape) {
+  .create-submission-card {
+    padding: 15px;
+    min-height: 150px;
+  }
+  
+  .plus-icon {
+    font-size: 2.7rem;
+    margin-bottom: 0.9rem;
+  }
+}
+
+/* ✅ Landscape phones */
+@media (max-width: 768px) and (orientation: landscape) {
+  .create-submission-card {
+    border-radius: 8px;
+    padding: 10px;
+    min-height: 100px;
+  }
+  
+  .plus-icon {
+    font-size: 1.8rem;
+    margin-bottom: 0.6rem;
+  }
+  
+  .create-title {
+    font-size: 0.85rem;
+  }
+}
+
+/* ✅ Small phones in landscape (like iPhone 12 Pro) */
+@media (max-width: 900px) and (max-height: 500px) and (orientation: landscape) {
+  .create-submission-card {
+    border-radius: 6px;
+    padding: 8px;
+    min-height: 90px;
+  }
+  
+  .plus-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .create-title {
+    font-size: 0.8rem;
+  }
+}
+
+/* ✅ Small-height landscape (iPhone 14 Pro Max & similar) */
+@media (max-width: 950px) and (max-height: 500px) and (orientation: landscape) {
+  .create-submission-card {
+    border-radius: 6px;
+    padding: 8px;
+    min-height: 90px;
+  }
+  
+  .plus-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .create-title {
+    font-size: 0.8rem;
+  }
+}

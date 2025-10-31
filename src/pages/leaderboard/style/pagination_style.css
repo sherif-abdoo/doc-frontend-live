@@ -1,0 +1,165 @@
+/* Pagination */
+.pagination {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.pagination button {
+  width: 55px;
+  height: 55px;
+  border: none;
+  border-radius: 100%;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  cursor: pointer;
+  font-weight: 500;
+  font-family: "Montserrat Regular";
+  font-size: 25px;
+}
+
+.pagination button:hover:not(:disabled) {
+  opacity: 0.5;
+}
+
+.pagination button.active {
+  background: var(--heroPrimaryButton);
+  color: white;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.content {
+  flex: 1;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* center horizontally */
+}
+
+.pagination .dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-family: "Montserrat Regular";
+  color: #6b7280; /* gray */
+  width: 40px; /* smaller than buttons */
+}
+
+/* ✅ Responsive for portrait phones */
+@media (max-width: 768px) {
+  .pagination {
+    margin-top: 16px;
+    gap: 6px;
+  }
+  
+  .pagination button {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+  
+  .pagination .dots {
+    font-size: 18px;
+    width: 30px;
+  }
+}
+
+/* ✅ Portrait tablets */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .pagination {
+    margin-top: 20px;
+    gap: 7px;
+  }
+  
+  .pagination button {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+  
+  .pagination .dots {
+    font-size: 22px;
+    width: 35px;
+  }
+}
+
+/* ✅ Landscape tablets (iPad, etc.) */
+@media (min-width: 768px) and (max-width: 1200px) and (orientation: landscape) {
+  .pagination {
+    margin-top: 20px;
+  }
+  
+  .pagination button {
+    width: 50px;
+    height: 50px;
+    font-size: 22px;
+  }
+  
+  .pagination .dots {
+    font-size: 24px;
+    width: 38px;
+  }
+}
+
+/* ✅ Landscape phones */
+@media (max-width: 768px) and (orientation: landscape) {
+  .pagination {
+    margin-top: 12px;
+    gap: 5px;
+  }
+  
+  .pagination button {
+    width: 35px;
+    height: 35px;
+    font-size: 14px;
+  }
+  
+  .pagination .dots {
+    font-size: 16px;
+    width: 25px;
+  }
+}
+
+/* ✅ Small phones in landscape (like iPhone 12 Pro) */
+@media (max-width: 900px) and (max-height: 500px) and (orientation: landscape) {
+  .pagination {
+    margin-top: 10px;
+    gap: 4px;
+  }
+  
+  .pagination button {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+  
+  .pagination .dots {
+    font-size: 14px;
+    width: 22px;
+  }
+}
+
+/* ✅ Small-height landscape (iPhone 14 Pro Max & similar) */
+@media (max-width: 950px) and (max-height: 500px) and (orientation: landscape) {
+  .pagination {
+    margin-top: 10px;
+    gap: 4px;
+  }
+  
+  .pagination button {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+  
+  .pagination .dots {
+    font-size: 14px;
+    width: 22px;
+  }
+}

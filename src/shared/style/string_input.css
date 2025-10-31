@@ -1,0 +1,59 @@
+.si-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.si-label {
+    font-family: "Montserrat Bold";
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--text);
+}
+
+.si-input-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.si-input {
+    width: 100%;
+    border: none;
+    border-bottom: 2px solid var(--inputBaseLine);
+    outline: none;
+    background: transparent;
+    padding: 8px 32px 8px 0; /* space for the checkmark */
+    font-size: 18px;
+    color: var(--inputSubText);
+    font-family: "Montserrat Regular";
+}
+
+.si-input:focus {
+    border-bottom-color: var(--inputFocusLine);
+}
+
+.si-input::placeholder {
+    color: color-mix(in srgb, var(--text) 50%, transparent);
+}
+
+.si-check {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 22px;
+    stroke: var(--inputAccent, #10C6F5);
+    stroke-width: 3;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.si-input-row.valid .si-check {
+    opacity: 1;
+}

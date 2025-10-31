@@ -1,0 +1,244 @@
+.about-course-view {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    text-align: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.about-course-title {
+    color: var(--text);
+    font-size: clamp(40px, 8vw, 75px);
+    font-family: 'Montserrat Bold', sans-serif;
+    line-height: 1.2;
+    margin-bottom: 20px;
+}
+
+.about-course-description {
+    color: var(--text);
+    width: min(90%, 950px);
+    font-size: clamp(18px, 4vw, 30px);
+    font-family: 'Montserrat Regular', sans-serif;
+    line-height: 1.5;
+    margin-bottom: 40px;
+}
+
+.about-course-cards {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: stretch;
+    width: 100%;
+    max-width: 1400px;
+}
+
+.about-course-footer {
+    color: var(--text);
+    font-size: clamp(35px, 7vw, 75px);
+    font-family: 'Montserrat Bold', sans-serif;
+    line-height: 1.2;
+    margin-top: 60px;
+}
+
+@media (min-width: 1440px) {
+    .about-course-description {
+        margin-top: 25px;
+        font-size: clamp(20px, 5vw, 30px);
+        width: min(80%, 1150px);
+    }
+    .about-course-cards {
+        gap: 2.5rem;
+        flex-direction: row;
+    }
+}
+
+@media (max-width: 1439px) and (min-width: 1024px) {
+    .about-course-title {
+        font-size: clamp(40px, 8vw, 70px);
+    }
+    .about-course-description {
+        font-size: clamp(18px, 5vw, 30px);
+    }
+    .about-course-cards {
+        gap: 2rem;
+        flex-direction: row;
+    }
+}
+
+@media (max-width: 1023px) and (min-width: 768px) and (orientation: landscape) {
+    .about-course-view {
+        padding: 15px;
+    }
+    .about-course-title {
+        font-size: clamp(35px, 6vw, 60px);
+        margin-bottom: 15px;
+    }
+    .about-course-description {
+        font-size: clamp(16px, 3vw, 25px);
+        margin-bottom: 30px;
+        width: min(95%, 900px);
+    }
+    .about-course-cards {
+        flex-direction: row;
+        gap: 1.5rem;
+        max-width: 100%;
+    }
+    .about-course-footer {
+        font-size: clamp(30px, 5vw, 55px);
+        margin-top: 40px;
+    }
+}
+
+@media (max-width: 1023px) and (min-width: 768px) and (orientation: portrait) {
+    .about-course-view {
+        padding: 20px;
+    }
+    .about-course-title {
+        font-size: clamp(40px, 7vw, 65px);
+        margin-bottom: 20px;
+    }
+    .about-course-description {
+        font-size: clamp(18px, 4vw, 24px);
+        margin-bottom: 35px;
+        width: min(90%, 700px);
+    }
+    .about-course-cards {
+        flex-direction: column;
+        gap: 2rem;
+        align-items: center;
+        max-width: 500px;
+    }
+    .about-course-footer {
+        font-size: clamp(35px, 6vw, 60px);
+        margin-top: 50px;
+    }
+}
+
+@media (max-width: 767px) and (min-width: 480px) and (orientation: landscape) {
+    .about-course-view {
+        padding: 10px;
+    }
+    .about-course-title {
+        font-size: clamp(28px, 5vw, 45px);
+        margin-bottom: 10px;
+    }
+    .about-course-description {
+        font-size: clamp(14px, 3vw, 18px);
+        margin-bottom: 20px;
+        width: min(95%, 600px);
+    }
+    .about-course-cards {
+        flex-direction: row;
+        gap: 1rem;
+        max-width: 100%;
+    }
+    .about-course-footer {
+        font-size: clamp(25px, 4vw, 40px);
+        margin-top: 30px;
+    }
+}
+
+@media (max-width: 767px) and (min-width: 480px) and (orientation: portrait) {
+    .about-course-view {
+        padding: 20px 15px;
+    }
+    .about-course-title {
+        font-size: clamp(32px, 6vw, 50px);
+        margin-bottom: 15px;
+    }
+    .about-course-description {
+        font-size: clamp(16px, 4vw, 20px);
+        margin-bottom: 30px;
+        width: min(95%, 400px);
+    }
+    .about-course-cards {
+        flex-direction: column;
+        gap: 1.5rem;
+        align-items: center;
+        max-width: 350px;
+    }
+    .about-course-footer {
+        font-size: clamp(28px, 5vw, 45px);
+        margin-top: 40px;
+    }
+}
+
+@media (max-width: 479px) and (orientation: landscape) {
+    .about-course-view {
+        padding: 8px;
+    }
+    .about-course-title {
+        font-size: clamp(24px, 4vw, 35px);
+        margin-bottom: 8px;
+    }
+    .about-course-description {
+        font-size: clamp(12px, 2.5vw, 16px);
+        margin-bottom: 15px;
+        width: min(98%, 500px);
+    }
+    .about-course-cards {
+        flex-direction: row;
+        gap: 0.8rem;
+        max-width: 100%;
+    }
+    .about-course-footer {
+        font-size: clamp(20px, 3vw, 30px);
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 479px) and (orientation: portrait) {
+    .about-course-view {
+        padding: 15px 10px;
+    }
+    .about-course-title {
+        font-size: clamp(28px, 5vw, 40px);
+        margin-bottom: 12px;
+    }
+    .about-course-description {
+        font-size: clamp(14px, 3.5vw, 18px);
+        margin-bottom: 25px;
+        width: min(98%, 300px);
+    }
+    .about-course-cards {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+        max-width: 280px;
+    }
+    .about-course-footer {
+        font-size: clamp(24px, 4vw, 35px);
+        margin-top: 35px;
+    }
+}
+
+@media (max-width: 320px) {
+    .about-course-view {
+        padding: 10px 8px;
+    }
+    .about-course-title {
+        font-size: clamp(24px, 5vw, 32px);
+        margin-bottom: 10px;
+    }
+    .about-course-description {
+        font-size: clamp(12px, 3vw, 16px);
+        margin-bottom: 20px;
+        width: 98%;
+    }
+    .about-course-cards {
+        flex-direction: column;
+        gap: 0.8rem;
+        align-items: center;
+        max-width: 260px;
+    }
+    .about-course-footer {
+        font-size: clamp(20px, 4vw, 28px);
+        margin-top: 30px;
+    }
+}
