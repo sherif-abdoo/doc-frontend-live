@@ -15,7 +15,6 @@ import ForgotPasswordModal from "./forget_password_model";
 
 const API_BASE = process.env.REACT_APP_API_BASE;
 
-
 export default function Login() {
     useEffect(() => {
         document.title = "Login - Dr. Omar Khalid";
@@ -89,8 +88,15 @@ export default function Login() {
         }
     };
 
+    // allow Enter key to submit
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+            onLogin();
+        }
+    };
+
     return (
-        <div className={"sign_up_container"}>
+        <div className={"sign_up_container"} onKeyDown={handleKeyDown}>
             {/* top-center alert */}
             <AlertBanner
                 open={alertState.open}
@@ -109,7 +115,10 @@ export default function Login() {
                         onChange={setEmail}
                         value={email}
                         validate={isEmail}
+                        autoComplete="username"
                     />
+
+                    {/* 👁️ StringInput now shows the eye icon automatically when isPassword is true */}
                     <StringInput
                         title={"Password"}
                         isPassword
@@ -117,6 +126,7 @@ export default function Login() {
                         onChange={setPassword}
                         value={password}
                         validate={passOk}
+                        autoComplete="current-password"
                     />
                 </div>
 

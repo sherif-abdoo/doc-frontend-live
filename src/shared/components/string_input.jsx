@@ -18,17 +18,16 @@ export default function StringInput({
                                         placeholder = "",
                                         isPassword = false,
                                         validate = () => false,
-                                        value,                 // controlled (optional)
-                                        onChange,              // controlled callback (optional)
+                                        value,
+                                        onChange,
                                         name,
                                         autoComplete = "off",
                                         disabled = false,
                                         ...rest
                                     }) {
-    // internal state only used when "value" is undefined (uncontrolled mode)
     const [inner, setInner] = useState(value ?? "");
+    const [showPassword, setShowPassword] = useState(false);
 
-    // keep internal state in sync if parent switches from uncontrolled -> controlled or updates value
     useEffect(() => {
         if (value !== undefined) setInner(value);
     }, [value]);
@@ -46,9 +45,7 @@ export default function StringInput({
 
     const handleChange = (e) => {
         const next = e.target.value;
-        // update internal state only when uncontrolled
         if (value === undefined) setInner(next);
-        // always notify parent if provided
         onChange?.(next);
     };
 
@@ -56,10 +53,10 @@ export default function StringInput({
         <div className="si-wrap">
             {title ? <label className="si-label">{title.toUpperCase()}</label> : null}
 
-            <div className={`si-input-row ${valid ? "valid" : ""}`}>
+            <div className={`si-input-row ${valid ? "valid" : ""}`} style={{ position: "relative" }}>
                 <input
                     className="si-input"
-                    type={isPassword ? "password" : "text"}
+                    type={isPassword && !showPassword ? "password" : "text"}
                     name={name}
                     placeholder={placeholder}
                     value={current}
@@ -69,7 +66,49 @@ export default function StringInput({
                     {...rest}
                 />
 
-                {/* cyan check when valid */}
+                {/* ✅ show/hide password toggle (only if isPassword) */}
+                {isPassword && (
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword((s) => !s)}
+                        tabIndex={-1}
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                        style={{
+                            position: "absolute",
+                            right: "8px",
+                            top: "50%",
+                            transform: "translateY(-50%)",
+                            background: "transparent",
+                            border: "none",
+                            padding: 0,
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            opacity: 0.75,
+                        }}
+                    >
+                        {showPassword ? (
+                            /* 👁️ HIDE ICON */
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
+                                 stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                                 viewBox="0 0 24 24">
+                                <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.16 21.16 0 0 1 5.06-7.94"/>
+                                <path d="M1 1l22 22"/>
+                                <path d="M14.12 14.12A3 3 0 0 1 9.88 9.88"/>
+                            </svg>
+                        ) : (
+                            /* 👁️ SHOW ICON */
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
+                                 stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                                 viewBox="0 0 24 24">
+                                <path d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        )}
+                    </button>
+                )}
+
+                {/* ✅ cyan check */}
                 <svg className="si-check" viewBox="0 0 24 24" aria-hidden="true">
                     <polyline points="20 6 9 17 4 12" />
                 </svg>

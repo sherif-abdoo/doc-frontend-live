@@ -18,11 +18,8 @@ import {
 } from "../../utils/validator";
 import AUTH_FEATURE_CARDS from "./cards";
 
-// ✅ new import (shared cards)
-
 const API_BASE = process.env.REACT_APP_API_BASE;
 const ADMIN_PASSKEY = process.env.REACT_APP_ADMIN_PASSKEY;
-
 
 const STUDENT_REGISTER = `${API_BASE}/student/studentRegister`;
 const ADMIN_REGISTER = `${API_BASE}/admin/adminRegister`;
@@ -82,7 +79,7 @@ export default function SignUp() {
         passOk(clean.password) &&
         clean.password === clean.confirm;
 
-    var step2OK =
+    let step2OK =
         isPhoneEG11(clean.studentPhoneNumber) &&
         isPhoneEG11(clean.parentPhoneNumber) &&
         isEmail(clean.parentEmail);
@@ -90,17 +87,18 @@ export default function SignUp() {
     const step3OK =
         isNonEmpty(clean.group) && isNonEmpty(clean.semester) && isDateYMD(clean.birthDate);
 
-    var apiKey;
+    let apiKey;
+    let isAdmin;
 
-    var isAdmin;
     if (isAdminPasskey(parentEmail) || isAdminPasskey(parentPhone)) {
       isAdmin = true;
       apiKey = ADMIN_REGISTER;
-      step2OK = isPhoneEG11(clean.studentPhoneNumber);
+      step2OK = isPhoneEG11(clean.studentPhoneNumber); // admin shortcut
     } else {
       isAdmin = false;
       apiKey = STUDENT_REGISTER;
     }
+
     if (!step2OK) { setStep(2); return; }
     if (!step1OK) { setStep(1); return; }
     if (!step3OK) { setStep(3); return; }
@@ -119,11 +117,9 @@ export default function SignUp() {
       name: clean.studentName,
       email: clean.studentEmail,
       password: clean.password,
-      phoneNumber: clean.studentPhoneNumber, // ✅ fixed: was clean.phone (undefined)
+      phoneNumber: clean.studentPhoneNumber,
       group: clean.group,
     };
-
-    console.log(payload);
 
     setLoading(true);
     try {
@@ -199,12 +195,15 @@ export default function SignUp() {
                       value={email}
                       validate={isEmail}
                   />
+
+                  {/* 🔐 Use shared StringInput with built-in eye toggle */}
                   <StringInput
                       title={"Password"}
                       isPassword
                       placeholder={"********"}
                       onChange={setPassword}
                       value={password}
+                      autoComplete="new-password"
                       validate={passOk}
                   />
                   <StringInput
@@ -213,6 +212,7 @@ export default function SignUp() {
                       placeholder={"********"}
                       onChange={setConfirm}
                       value={confirm}
+                      autoComplete="new-password"
                       validate={confirmOk}
                   />
                 </>
@@ -225,7 +225,7 @@ export default function SignUp() {
                       placeholder={"01XXXXXXXXX"}
                       onChange={setPhone}
                       value={phone}
-                      validate={isPhoneEG11} // student phone must always be valid
+                      validate={isPhoneEG11}
                   />
                   <StringInput
                       title={"Parent Phone Number"}
@@ -297,7 +297,6 @@ export default function SignUp() {
                   </div>
                 </>
             )}
-
           </div>
 
           <div className="sign_up_footer">
