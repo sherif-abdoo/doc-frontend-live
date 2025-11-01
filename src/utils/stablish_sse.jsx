@@ -4,21 +4,7 @@ import { useAuth } from "../context/authContext";
 import { getAccessToken } from "../utils/authFetch";
 
 // Resolve API base (env → fallback to localhost:4000)
-const API_BASE = (() => {
-    // Vite
-    if (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL) {
-        return import.meta.env.VITE_API_URL;
-    }
-    // CRA / Node
-    if (typeof process !== "undefined" && process.env) {
-        const envBase =
-            process.env.VITE_API_URL ||
-            process.env.REACT_APP_API_URL ||
-            process.env.API_URL;
-        if (envBase) return envBase;
-    }
-    return "http://localhost:4000";
-})();
+const API_BASE = process.env.REACT_APP_API_BASE;
 
 const joinUrl = (base, endpoint) => {
     if (/^https?:\/\//i.test(endpoint)) return endpoint;

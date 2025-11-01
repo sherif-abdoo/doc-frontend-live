@@ -90,7 +90,7 @@ const SubmissionList = ({
     const [savingEdit, setSavingEdit] = useState(false);
 
     // Admin "unmarked submissions" view state
-    const [adminView, setAdminView] = useState(false);
+    const [ adminView, setAdminView] = useState(false);
     const [adminSubs, setAdminSubs] = useState([]);
     const [adminLoading, setAdminLoading] = useState(false);
     const [adminError, setAdminError] = useState("");
@@ -324,6 +324,23 @@ const SubmissionList = ({
         setMarkModalOpen(true);
     };
 
+    // after: const openMarkModal = (row) => { ... };
+    const handleMarkedSuccess = () => {
+        const removedId = markRow?.submissionId;         // which row we opened the modal for
+        if (removedId == null) return;
+
+        setAdminSubs((prev) => prev.filter((s) => s.submissionId !== removedId));
+        setMarkModalOpen(false);
+        setMarkRow(null);
+
+        setAlertState({
+            open: true,
+            error: false,
+            message: "✅ Submission marked and removed from the list.",
+        });
+    };
+
+
     // ----- View PDF: GET /admin/findSubmissionById/{submissionId} then open answers URL -----
     const handleViewPdf = async (row) => {
         const subId = row?.submissionId;
@@ -483,7 +500,8 @@ const SubmissionList = ({
                 </div>
 
                 {/* Admin-only controls */}
-                {!authLoading && isAdmin && (
+                {/* Admin-only controls → use same condition as Create (assistant OR doc) */}
+                {!authLoading && canCreate && (
                     <div style={{ display: "flex", gap: 8 }}>
                         {!adminView ? (
                             <button
@@ -523,6 +541,7 @@ const SubmissionList = ({
                         )}
                     </div>
                 )}
+
             </div>
 
             <div className="submissions-list">
@@ -673,13 +692,11 @@ const SubmissionList = ({
             <MarkSubmissionModal
                 open={markModalOpen}
                 onClose={() => setMarkModalOpen(false)}
-                submissionId={markRow?.submissionId}  // ✅ passing submissionId
+                submissionId={markRow?.submissionId}
                 authFetch={authFetch}
-                onMarked={(pdfUrl, score) => {
-                    console.log("Marked submission:", { pdfUrl, score });
-                    // Optionally update admin list or show success banner
-                }}
+                onMarked={handleMarkedSuccess}
             />
+
         </>
     );
 };
