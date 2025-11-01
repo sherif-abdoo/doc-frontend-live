@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 import appColors from "./app_colors";
 import { useAuth } from "../../hooks/useAuth";
 import { isAssistant, isDoc } from "../../utils/roles"; // ✅ import role helpers
+import { clearAccessToken } from "../../utils/authFetch";
 
 const Sidebar = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -140,6 +141,20 @@ const Sidebar = () => {
                 to="/feed"
                 onClick={isMobile ? closeSidebar : undefined}
             />
+            <SidebarButton
+                icon={"/assets/Sidebar/Logout.png"}
+                label="Log out"
+                isExpanded={isExpanded}
+                active={location.pathname === "/login"}
+                to="/login"
+                onClick={() => {
+                  clearAccessToken();              // ✅ remove token
+                  if (isMobile) closeSidebar();    // ✅ close sidebar on mobile
+                  window.location.reload();        // ✅ refresh tab
+                }}
+            />
+
+
           </div>
         </div>
       </>
