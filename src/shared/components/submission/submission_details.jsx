@@ -185,9 +185,9 @@ const SubmissionDetails = ({ type }) => {
                                 <div style={{ marginBottom: 12, opacity: 0.9 }}>
                                     <small>
                                         <strong>Marked by:</strong>{" "}
-                                        <span>{answerData.assistant ?? "–"}</span>{" "}
+                                        <span>{answerData.assistant ?? "—"}</span>{" "}
                                         • <strong>Score:</strong>{" "}
-                                        <span>{answerData.score ?? "–"}</span>{" "}
+                                        <span>{answerData.score ?? "—"}</span>{" "}
                                         {answerData.markedAt ? (
                                             <>
                                                 • <strong>Marked at:</strong>{" "}
@@ -220,36 +220,36 @@ const SubmissionDetails = ({ type }) => {
                             {t !== "material" && (
                                 <div style={{ marginBottom: 12, opacity: 0.85 }}>
                                     <small>
-                                        Subject: <strong>{subject || "–"}</strong> • Semester:{" "}
-                                        <strong>{assignData.semester || "–"}</strong> • Mark:{" "}
-                                        <strong>{assignData.mark ?? "–"}</strong>
+                                        Subject: <strong>{subject || "—"}</strong> • Semester:{" "}
+                                        <strong>{assignData.semester || "—"}</strong> • Mark:{" "}
+                                        <strong>{assignData.mark ?? "—"}</strong>
                                     </small>
                                 </div>
                             )}
 
                             {t === "quiz" ? (
-                                // QUIZ: Show buttons instead of PDF
+                                // QUIZ: Show centered larger buttons
                                 isSubmitted ? (
                                     <SubmittedMessage type={type} />
                                 ) : (
-                                    <div style={{ display: "grid", gap: 10, maxWidth: 260, margin: "0 auto" }}>
-                                                <button
-                                                    type="button"
-                                                    className="submit-btn"
-                                                    onClick={openMeeting}
-                                                    title="Join Meeting"
-                                                >
-                                                    Join Meeting
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    className="submit-btn"
-                                                    onClick={handleQuizSubmitOpen}
-                                                    title="Submit your quiz PDF"
-                                                >
-                                                    Submit Solution
-                                                </button>
-                                            </div>
+                                    <div className="quiz-buttons-container">
+                                        <button
+                                            type="button"
+                                            className="quiz-btn"
+                                            onClick={openMeeting}
+                                            title="Join Meeting"
+                                        >
+                                            Join Meeting
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="quiz-btn"
+                                            onClick={handleQuizSubmitOpen}
+                                            title="Submit your quiz PDF"
+                                        >
+                                            Submit Solution
+                                        </button>
+                                    </div>
                                 )
                             ) : (
                                 <>

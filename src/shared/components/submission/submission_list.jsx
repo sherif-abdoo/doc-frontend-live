@@ -48,10 +48,8 @@ const SubmissionList = ({
     const { user, isLoading: authLoading } = useAuth();
     const role = user?.role ?? null;
 
-    // NOTE: You previously matched assistant; keeping your original logic
     const isAdmin = String(user?.role || "").toLowerCase() === "assistant";
 
-    // Normalize incoming submissions once (ensure `state` from boolean `submitted` if present)
     const normalize = (arr) =>
         (arr || []).map((s) => {
             const hasStringState = typeof s.state === "string" && s.state.length > 0;
@@ -80,27 +78,22 @@ const SubmissionList = ({
         error: false,
     });
 
-    // delete confirm modal state (Assignments & Quizzes)
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [pendingDelete, setPendingDelete] = useState(null);
     const [deleting, setDeleting] = useState(false);
 
-    // EDIT state (reusing create modals)
     const [editOpen, setEditOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
     const [savingEdit, setSavingEdit] = useState(false);
 
-    // Admin "unmarked submissions" view state
-    const [ adminView, setAdminView] = useState(false);
+    const [adminView, setAdminView] = useState(false);
     const [adminSubs, setAdminSubs] = useState([]);
     const [adminLoading, setAdminLoading] = useState(false);
     const [adminError, setAdminError] = useState("");
 
-    // ----- Mark modal (using your new component) -----
     const [markModalOpen, setMarkModalOpen] = useState(false);
-    const [markRow, setMarkRow] = useState(null); // the row we are marking
+    const [markRow, setMarkRow] = useState(null);
 
-    // View PDF loading (per row)
     const [viewPdfLoadingId, setViewPdfLoadingId] = useState(null);
 
     const SUBJECT_OPTIONS = useMemo(
@@ -132,9 +125,8 @@ const SubmissionList = ({
     }, [localSubs, subjectFilter, stateFilter]);
 
     const canCreate = !!user && (isAssistant(user) || isDoc(user));
-    const canManage = canCreate; // edit/delete for both types
+    const canManage = canCreate;
 
-    // Create (prepend locally)
     const handleCreateSubmission = async (form) => {
         if (!onCreateSubmission) return;
         const result = await onCreateSubmission(form);
@@ -185,7 +177,6 @@ const SubmissionList = ({
         setAlertState({ open: true, message: `${type} created`, error: false });
     };
 
-    // Delete
     const requestDelete = (submission) => {
         setPendingDelete(submission);
         setConfirmOpen(true);
@@ -218,7 +209,6 @@ const SubmissionList = ({
         }
     };
 
-    // Edit
     const requestEdit = (submission) => {
         setEditingItem(submission);
         setEditOpen(true);
@@ -257,7 +247,6 @@ const SubmissionList = ({
         }
     };
 
-    // -------- Admin: load unmarked submissions ----------
     const loadAdminSubs = useCallback(async () => {
         setAdminLoading(true);
         setAdminError("");
@@ -267,11 +256,10 @@ const SubmissionList = ({
                 throw new Error(res?.message || "Failed to load unmarked submissions");
             }
             const list = Array.isArray(res?.data?.submissions) ? res.data.submissions : [];
-            // Normalize for render
             const mapped = list.map((s, idx) => ({
                 rowId: s.id ?? idx,
-                submissionId: s.id ?? null, // the submission row id (for UI removal)
-                type: String(s.type || "").toLowerCase(), // 'assignment'|'quiz'
+                submissionId: s.id ?? null,
+                type: String(s.type || "").toLowerCase(),
                 subject: s.subject || undefined,
                 studentName: s.studentName || "Unknown",
                 studentGroup: s.studentGroup || "",
@@ -280,7 +268,6 @@ const SubmissionList = ({
                     s.assignmentTitle ||
                     s.quizTitle ||
                     (s.type ? `${s.type} #${s.id ?? idx}` : `Submission #${idx + 1}`),
-                // IMPORTANT: this is the target (assignmentId or quizId). We need assignmentId for marking endpoint.
                 targetId: s.assignmentId ?? s.quizId ?? null,
             }));
             setAdminSubs(mapped);
@@ -308,10 +295,7 @@ const SubmissionList = ({
             : d.toLocaleString("en-CA", { hour12: false });
     };
 
-    // ----- Mark modal: open for a given row -----
     const openMarkModal = (row) => {
-        // We'll pass the assignmentId needed by the backend endpoint.
-        // Your endpoint is /admin/markSubmission/{assignmentId}, not submissionId.
         const assignmentId = row?.targetId ?? null;
         if (!assignmentId) {
             setAlertState({
@@ -325,9 +309,8 @@ const SubmissionList = ({
         setMarkModalOpen(true);
     };
 
-    // after: const openMarkModal = (row) => { ... };
     const handleMarkedSuccess = () => {
-        const removedId = markRow?.submissionId;         // which row we opened the modal for
+        const removedId = markRow?.submissionId;
         if (removedId == null) return;
 
         setAdminSubs((prev) => prev.filter((s) => s.submissionId !== removedId));
@@ -341,8 +324,6 @@ const SubmissionList = ({
         });
     };
 
-
-    // ----- View PDF: GET /admin/findSubmissionById/{submissionId} then open answers URL -----
     const handleViewPdf = async (row) => {
         const subId = row?.submissionId;
         if (subId == null) {
@@ -439,7 +420,6 @@ const SubmissionList = ({
                 cancelLabel="No"
             />
 
-            {/* EDIT MODALS (reuse your create popups) */}
             {type === "Quiz" ? (
                 <CreateQuizModal
                     open={editOpen}
@@ -489,7 +469,7 @@ const SubmissionList = ({
                         options={SUBJECT_OPTIONS}
                         value={subjectFilter}
                         onChange={setSubjectFilter}
-                        disabled={adminView} // lock filters while in admin view (different data shape)
+                        disabled={adminView}
                     />
                     <FilterDropdown
                         label="State"
@@ -500,8 +480,6 @@ const SubmissionList = ({
                     />
                 </div>
 
-                {/* Admin-only controls */}
-                {/* Admin-only controls → use same condition as Create (assistant OR doc) */}
                 {!authLoading && canCreate && (
                     <div style={{ display: "flex", gap: 8 }}>
                         {!adminView ? (
@@ -542,11 +520,9 @@ const SubmissionList = ({
                         )}
                     </div>
                 )}
-
             </div>
 
             <div className="submissions-list">
-                {/* Admin view replaces the normal list */}
                 {adminView ? (
                     adminLoading ? (
                         <>
@@ -555,7 +531,14 @@ const SubmissionList = ({
                             ))}
                         </>
                     ) : adminSubs.length === 0 ? (
-                        <p style={{ opacity: 0.7, marginTop: 12 }}>No unmarked submissions.</p>
+                        <div className="empty-topic-grid">
+                            <img
+                                src="/assets/Classroom/notfound.png"
+                                alt="No unmarked submissions"
+                                className="empty-topic-image"
+                            />
+                            <p>No unmarked submissions found</p>
+                        </div>
                     ) : (
                         adminSubs.map((s) => {
                             const opening = viewPdfLoadingId === s.submissionId;
@@ -571,12 +554,12 @@ const SubmissionList = ({
                                         padding: "14px 16px",
                                         borderRadius: 12,
                                         border: "1px solid #e6e6e6",
-                                         background:
+                                        background:
                                             s.type?.toLowerCase() === "assignment"
-                                                ? appColors.chemCard // light blue
+                                                ? appColors.chemCard
                                                 : s.type?.toLowerCase() === "quiz"
-                                                ? appColors.physCard // light red
-                                                : "#fff", // default white
+                                                ? appColors.physCard
+                                                : "#fff",
                                         marginBottom: 10,
                                         gap: 14,
                                     }}
@@ -585,11 +568,10 @@ const SubmissionList = ({
                                         <div style={{ fontWeight: 800, fontSize: 18, lineHeight: 1.2 }}>
                                             {s.title}{" "}
                                             <span style={{ opacity: 0.6, fontWeight: 600, fontSize: 14 }}>
-                        ({s.type})
-                      </span>
+                                                ({s.type})
+                                            </span>
                                         </div>
 
-                                        {/* three separate lines, bigger font */}
                                         <div
                                             style={{
                                                 display: "grid",
@@ -609,7 +591,6 @@ const SubmissionList = ({
                                         <div style={{ fontSize: 15 }}>
                                             <strong>Submitted:</strong> {formatDateTime(s.submittedAt)}
                                         </div>
-                                        {/* Mark + View buttons */}
                                         {!authLoading && isAdmin && (
                                             <>
                                                 <button
@@ -668,9 +649,19 @@ const SubmissionList = ({
                             />
                         )}
 
-                        {filteredSubmissions.length === 0 ? (
+                        {/* ✅ Empty state when no submissions at all */}
+                        {localSubs.length === 0 ? (
+                            <div className="empty-topic-grid">
+                                <img
+                                    src="/assets/Classroom/notfound.png"
+                                    alt={`No ${type === "Quiz" ? "quizzes" : type.toLowerCase() + "s"} found`}
+                                    className="empty-topic-image"
+                                />
+                                <p>Looks like there are no {type === "Quiz" ? "quizzes" : type.toLowerCase() + "s"} yet</p>
+                            </div>
+                        ) : filteredSubmissions.length === 0 ? (
                             <p style={{ opacity: 0.7, marginTop: 12 }}>
-                                No submissions match your filters.
+                                No {type === "Quiz" ? "quizzes" : type.toLowerCase() + "s"} match your filters.
                             </p>
                         ) : (
                             filteredSubmissions.map((submission) => (
@@ -694,7 +685,6 @@ const SubmissionList = ({
                 )}
             </div>
 
-            {/* ✅ Marking Modal (uses your PdfDropzone and PATCH endpoint) */}
             <MarkSubmissionModal
                 open={markModalOpen}
                 onClose={() => setMarkModalOpen(false)}
@@ -702,7 +692,6 @@ const SubmissionList = ({
                 authFetch={authFetch}
                 onMarked={handleMarkedSuccess}
             />
-
         </>
     );
 };
