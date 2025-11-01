@@ -76,7 +76,7 @@ const TopicGrid = () => {
                 const t = res?.data;
                 if (t) {
                     const newTopic = {
-                        id: t.topicId,
+                        id: t.id,
                         title: t.title ?? t.topicName,
                         semester: t.semester,
                         subject: t.subject,
@@ -86,13 +86,13 @@ const TopicGrid = () => {
                         img: `/assets/Classroom/${t.subject}-Icon.png`
                     };
                     setTopics((prev) => [newTopic, ...prev]);
-                    showAlert(res?.data?.message || "Topic created successfully");
+                    showAlert(res?.message || "Topic created successfully");
                 } else {
                     showAlert("Created, but no topic in response");
                 }
                 setModalOpen(false);
             } else {
-                showAlert(res?.data?.message || "Creation topic failed", true);
+                showAlert(res?.message || "Creation topic failed", true);
             }
         } catch (e) {
             console.error("createTopic error:", e);
