@@ -176,15 +176,19 @@ export default function CreateAssignmentModal({
             return;
         }
 
-        // CREATE MODE (unchanged)
+        // CREATE MODE - Extract subject from the selected topic
+        const chosen = topics.find((t) => String(t.topicId) === String(selectedTopicId));
+        const subject = chosen?.subject;
+
         const form = {
             title: title.trim(),
             description: description?.trim() || "",
             mark: markNumber,
             semester,
-            endDateMDY: toMDY(endDate), // parent converts to endDate
+            endDateMDY: toMDY(endDate),
             topicId: Number(selectedTopicId),
             document: pdfUrl,
+            subject,  // ← NOW INCLUDES SUBJECT
         };
         await onSubmit?.(form);
     };
