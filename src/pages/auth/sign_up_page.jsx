@@ -25,7 +25,7 @@ const ADMIN_PASSKEY = process.env.REACT_APP_ADMIN_PASSKEY;
 
 
 const STUDENT_REGISTER = `${API_BASE}/student/studentRegister`;
-const ADMIN_REGISTER = `${API_BASE}admin/adminRegister`;
+const ADMIN_REGISTER = `${API_BASE}/admin/adminRegister`;
 
 const isAdminPasskey = (v) => String(v || "").trim().toUpperCase() === ADMIN_PASSKEY;
 
