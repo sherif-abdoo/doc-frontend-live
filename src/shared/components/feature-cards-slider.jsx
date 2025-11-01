@@ -3,8 +3,6 @@ import "../style/feature-card-slider-style.css"
 import FeatureCard from "./feature-card";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-
-
 const FeatureCardsSlider = ({
     items,
     autoPlay = true,
@@ -13,6 +11,9 @@ const FeatureCardsSlider = ({
 }) => {
     const realCount = items.length;
     const containerRef = useRef(null);
+    const touchStartX = useRef(0);
+    const touchEndX = useRef(0);
+    const isDragging = useRef(false);
 
     // Build 3× strip but keep hooks unconditional
     const strip = useMemo(
@@ -42,10 +43,10 @@ const FeatureCardsSlider = ({
 
     // Auto-play - always runs regardless of mouse position
     useEffect(() => {
-        if (!autoPlay || realCount < 2) return;
+        if (!autoPlay || realCount < 2 || paused) return;
         const id = setInterval(() => setIndex((i) => i + 1), interval);
         return () => clearInterval(id);
-    }, [autoPlay, interval, realCount]);
+    }, [autoPlay, interval, realCount, paused]);
 
     // Pause on hover
     useEffect(() => {
@@ -76,6 +77,37 @@ const FeatureCardsSlider = ({
         setIndex(GROUP + realIdx); // jump to middle copy
     };
 
+    // Touch handlers for swipe gestures
+    const handleTouchStart = (e) => {
+        touchStartX.current = e.touches[0].clientX;
+        isDragging.current = true;
+        setPaused(true);
+    };
+
+    const handleTouchMove = (e) => {
+        if (!isDragging.current) return;
+        touchEndX.current = e.touches[0].clientX;
+    };
+
+    const handleTouchEnd = () => {
+        if (!isDragging.current) return;
+        isDragging.current = false;
+        setPaused(false);
+
+        const swipeDistance = touchStartX.current - touchEndX.current;
+        const minSwipeDistance = 50; // minimum distance for a swipe
+
+        if (Math.abs(swipeDistance) > minSwipeDistance) {
+            if (swipeDistance > 0) {
+                // Swiped left - go to next
+                setIndex((i) => i + 1);
+            } else {
+                // Swiped right - go to previous
+                setIndex((i) => Math.max(i - 1, 0));
+            }
+        }
+    };
+
     // Safe to conditionally render AFTER hooks
     if (!realCount) return null;
 
@@ -95,6 +127,9 @@ const FeatureCardsSlider = ({
                         : "none",
                 }}
                 onTransitionEnd={handleTransitionEnd}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
             >
                 {strip.map((item, i) => (
                     <div className="feature-slide" key={`${item.title}-${i}`}>

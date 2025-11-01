@@ -1,3 +1,5 @@
+/* ===== BASE STYLES ===== */
+
 .stat-card {
   background: var(--chemCard);
   border-radius: 20px;
@@ -5,16 +7,16 @@
   box-shadow: none;
   border: none;
   min-height: 120px;
-  min-width: 260px;
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .stat-header {
   font-size: 29px;
   color: #000;
   margin-bottom: 15px;
-  min-width: 20%;
+  line-height: 1.2;
 }
 
 .stat-content {
@@ -22,6 +24,7 @@
   align-items: center;
   justify-content: space-between;
   flex: 1;
+  gap: 15px;
 }
 
 .grade-display {
@@ -29,6 +32,7 @@
   display: flex;
   align-items: baseline;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .grade-letter {
@@ -51,42 +55,47 @@
 .value-text {
   font-size: 30px;
   color: #000;
+  line-height: 1;
 }
 
-/* ✅ Responsive for portrait phones */
-@media (max-width: 768px) {
+/* ===== DESKTOP (1200px+) ===== */
+@media (min-width: 1200px) {
   .stat-card {
-    border-radius: 15px;
-    padding: 15px;
-    min-height: 100px;
-    min-width: 100%;
+    min-height: 130px;
+  }
+}
+
+/* ===== LARGE TABLETS (1024px - 1199px) ===== */
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .stat-card {
+    padding: 18px;
+    min-height: 115px;
   }
   
   .stat-header {
-    font-size: 20px;
-    margin-bottom: 10px;
+    font-size: 27px;
+    margin-bottom: 14px;
   }
   
   .grade-display {
-    padding: 0px 15px;
-    gap: 6px;
+    padding: 0px 22px;
   }
   
   .grade-letter {
-    font-size: 50px;
+    font-size: 75px;
   }
   
   .grade-score {
-    font-size: 16px;
+    font-size: 19px;
   }
   
   .value-text {
-    font-size: 22px;
+    font-size: 28px;
   }
 }
 
-/* ✅ Portrait tablets */
-@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+/* ===== TABLETS PORTRAIT (768px - 1023px) ===== */
+@media (min-width: 768px) and (max-width: 1023px) and (orientation: portrait) {
   .stat-card {
     border-radius: 18px;
     padding: 18px;
@@ -96,6 +105,10 @@
   .stat-header {
     font-size: 24px;
     margin-bottom: 12px;
+  }
+  
+  .stat-content {
+    gap: 12px;
   }
   
   .grade-display {
@@ -116,8 +129,8 @@
   }
 }
 
-/* ✅ Landscape tablets (iPad, etc.) */
-@media (min-width: 768px) and (max-width: 1200px) and (orientation: landscape) {
+/* ===== TABLETS LANDSCAPE (768px - 1023px) ===== */
+@media (min-width: 768px) and (max-width: 1023px) and (orientation: landscape) {
   .stat-card {
     padding: 18px;
     min-height: 110px;
@@ -144,13 +157,153 @@
   }
 }
 
-/* ✅ Landscape phones */
-@media (max-width: 768px) and (orientation: landscape) {
+/* ===== MOBILE PORTRAIT (481px - 767px) ===== */
+@media (min-width: 481px) and (max-width: 767px) {
+  .stat-card {
+    border-radius: 16px;
+    padding: 16px;
+    min-height: 105px;
+  }
+  
+  .stat-header {
+    font-size: 22px;
+    margin-bottom: 11px;
+  }
+  
+  .stat-content {
+    gap: 10px;
+  }
+  
+  .grade-display {
+    padding: 0px 18px;
+    gap: 6px;
+  }
+  
+  .grade-letter {
+    font-size: 55px;
+  }
+  
+  .grade-score {
+    font-size: 17px;
+  }
+  
+  .value-text {
+    font-size: 24px;
+  }
+}
+
+/* ===== SMALL MOBILE PORTRAIT (max 480px) ===== */
+@media (max-width: 480px) {
+  .stat-card {
+    border-radius: 15px;
+    padding: 15px;
+    min-height: 100px;
+  }
+  
+  .stat-header {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  
+  .stat-content {
+    gap: 8px;
+  }
+  
+  .grade-display {
+    padding: 0px 15px;
+    gap: 6px;
+  }
+  
+  .grade-letter {
+    font-size: 50px;
+  }
+  
+  .grade-score {
+    font-size: 16px;
+  }
+  
+  .value-text {
+    font-size: 22px;
+  }
+}
+
+/* ===== MOBILE LANDSCAPE (481px - 767px) ===== */
+@media (min-width: 481px) and (max-width: 767px) and (orientation: landscape) {
+  .stat-card {
+    border-radius: 14px;
+    padding: 14px;
+    min-height: 95px;
+  }
+  
+  .stat-header {
+    font-size: 19px;
+    margin-bottom: 9px;
+  }
+  
+  .stat-content {
+    gap: 8px;
+  }
+  
+  .grade-display {
+    padding: 0px 14px;
+    gap: 5px;
+  }
+  
+  .grade-letter {
+    font-size: 45px;
+  }
+  
+  .grade-score {
+    font-size: 15px;
+  }
+  
+  .value-text {
+    font-size: 21px;
+  }
+}
+
+/* ===== SMALL MOBILE LANDSCAPE (max 480px height) ===== */
+@media (max-width: 480px) and (orientation: landscape),
+       (max-height: 480px) and (orientation: landscape) {
   .stat-card {
     border-radius: 12px;
     padding: 12px;
-    min-height: 90px;
-    min-width: 100%;
+    min-height: 85px;
+  }
+  
+  .stat-header {
+    font-size: 17px;
+    margin-bottom: 8px;
+  }
+  
+  .stat-content {
+    gap: 6px;
+  }
+  
+  .grade-display {
+    padding: 0px 12px;
+    gap: 4px;
+  }
+  
+  .grade-letter {
+    font-size: 38px;
+  }
+  
+  .grade-score {
+    font-size: 13px;
+  }
+  
+  .value-text {
+    font-size: 19px;
+  }
+}
+
+/* ===== EXTRA SMALL DEVICES (max 320px) ===== */
+@media (max-width: 320px) {
+  .stat-card {
+    border-radius: 12px;
+    padding: 12px;
+    min-height: 95px;
   }
   
   .stat-header {
@@ -160,11 +313,10 @@
   
   .grade-display {
     padding: 0px 12px;
-    gap: 5px;
   }
   
   .grade-letter {
-    font-size: 40px;
+    font-size: 45px;
   }
   
   .grade-score {
@@ -173,67 +325,5 @@
   
   .value-text {
     font-size: 20px;
-  }
-}
-
-/* ✅ Small phones in landscape (like iPhone 12 Pro) */
-@media (max-width: 900px) and (max-height: 500px) and (orientation: landscape) {
-  .stat-card {
-    border-radius: 10px;
-    padding: 10px;
-    min-height: 80px;
-  }
-  
-  .stat-header {
-    font-size: 16px;
-    margin-bottom: 6px;
-  }
-  
-  .grade-display {
-    padding: 0px 10px;
-    gap: 4px;
-  }
-  
-  .grade-letter {
-    font-size: 35px;
-  }
-  
-  .grade-score {
-    font-size: 12px;
-  }
-  
-  .value-text {
-    font-size: 18px;
-  }
-}
-
-/* ✅ Small-height landscape (iPhone 14 Pro Max & similar) */
-@media (max-width: 950px) and (max-height: 500px) and (orientation: landscape) {
-  .stat-card {
-    border-radius: 10px;
-    padding: 10px;
-    min-height: 80px;
-  }
-  
-  .stat-header {
-    font-size: 16px;
-    margin-bottom: 6px;
-  }
-  
-  .grade-display {
-    padding: 0px 10px;
-    gap: 4px;
-  }
-  
-  .grade-letter {
-    font-size: 35px;
-  }
-  
-  .grade-score {
-    font-size: 12px;
-  }
-  
-  .value-text {
-    font-size: 18px;
   }
 }

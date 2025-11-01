@@ -3,8 +3,8 @@ import CourseCard from "./course_card";
 import appColors from "../../../shared/components/app_colors";
 import "../style/about_course_style.css"
 const bioIcon = "assets/landing_page/biology_icon.png";
-const chemIcon = "assets/landing_page/Chemistry-icon.png";
-const physIcon = "assets/landing_page/Physics-icon.png";
+const chemIcon = "assets/landing_page/Chemistry-Icon.png";
+const physIcon = "assets/landing_page/Physics-Icon.png";
 
 const AboutCourse = () => {
     return (

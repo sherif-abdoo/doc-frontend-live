@@ -48,7 +48,6 @@ const SubmissionList = ({
     const role = user?.role ?? null;
 
     // NOTE: You previously matched assistant; keeping your original logic
-    // Change to === "admin" if your backend uses that role string.
     const isAdmin = String(user?.role || "").toLowerCase() === "assistant";
 
     // Normalize incoming submissions once (ensure `state` from boolean `submitted` if present)
@@ -58,7 +57,9 @@ const SubmissionList = ({
             const normalizedState = hasStringState
                 ? s.state
                 : (typeof s.submitted === "boolean"
-                ? (s.submitted ? "submitted" : "unsubmitted")
+                ? s.submitted
+                    ? "submitted"
+                    : "unsubmitted"
                 : s.state) || "unsubmitted";
 
             return { ...s, state: String(normalizedState).toLowerCase() };
@@ -97,6 +98,9 @@ const SubmissionList = ({
     // ----- Mark modal (using your new component) -----
     const [markModalOpen, setMarkModalOpen] = useState(false);
     const [markRow, setMarkRow] = useState(null); // the row we are marking
+
+    // View PDF loading (per row)
+    const [viewPdfLoadingId, setViewPdfLoadingId] = useState(null);
 
     const SUBJECT_OPTIONS = useMemo(
         () =>
@@ -320,6 +324,46 @@ const SubmissionList = ({
         setMarkModalOpen(true);
     };
 
+    // ----- View PDF: GET /admin/findSubmissionById/{submissionId} then open answers URL -----
+    const handleViewPdf = async (row) => {
+        const subId = row?.submissionId;
+        if (subId == null) {
+            setAlertState({ open: true, error: true, message: "Missing submission id" });
+            return;
+        }
+        try {
+            setViewPdfLoadingId(subId);
+            const res = await authFetch(
+                "GET",
+                `/admin/findSubmissionById/${encodeURIComponent(subId)}`
+            );
+            const url =
+                res?.data?.found?.answers ||
+                res?.found?.answers ||
+                res?.data?.answers ||
+                null;
+
+            if (url) {
+                window.open(url, "_blank", "noopener,noreferrer");
+            } else {
+                setAlertState({
+                    open: true,
+                    error: true,
+                    message: "No PDF URL found for this submission.",
+                });
+            }
+        } catch (e) {
+            const msg =
+                e?.payload?.data?.message ||
+                e?.payload?.message ||
+                e?.message ||
+                "Failed to fetch submission";
+            setAlertState({ open: true, error: true, message: msg });
+        } finally {
+            setViewPdfLoadingId(null);
+        }
+    };
+
     if (loading) {
         return (
             <>
@@ -494,6 +538,8 @@ const SubmissionList = ({
                         <p style={{ opacity: 0.7, marginTop: 12 }}>No unmarked submissions.</p>
                     ) : (
                         adminSubs.map((s) => {
+                            const opening = viewPdfLoadingId === s.submissionId;
+                            const canView = s.submissionId != null;
                             return (
                                 <div
                                     key={s.rowId}
@@ -538,26 +584,49 @@ const SubmissionList = ({
                                         <div style={{ fontSize: 15 }}>
                                             <strong>Submitted:</strong> {formatDateTime(s.submittedAt)}
                                         </div>
-                                        {/* Mark button */}
+                                        {/* Mark + View buttons */}
                                         {!authLoading && isAdmin && (
-                                            <button
-                                                type="button"
-                                                onClick={() => openMarkModal(s)}
-                                                style={{
-                                                    padding: "8px 12px",
-                                                    borderRadius: 10,
-                                                    border: "1px solid #dcdcdc",
-                                                    background: "#111827",
-                                                    color: "#fff",
-                                                    fontWeight: 600,
-                                                    cursor: "pointer",
-                                                    width: 140,
-                                                    justifySelf: "end",
-                                                }}
-                                                title="Mark this submission"
-                                            >
-                                                Mark
-                                            </button>
+                                            <>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => openMarkModal(s)}
+                                                    style={{
+                                                        padding: "8px 12px",
+                                                        borderRadius: 10,
+                                                        border: "1px solid #dcdcdc",
+                                                        background: "#111827",
+                                                        color: "#fff",
+                                                        fontWeight: 600,
+                                                        cursor: "pointer",
+                                                        width: 140,
+                                                        justifySelf: "end",
+                                                    }}
+                                                    title="Mark this submission"
+                                                >
+                                                    Mark
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    onClick={opening ? undefined : () => handleViewPdf(s)}
+                                                    disabled={!canView || opening}
+                                                    style={{
+                                                        padding: "8px 12px",
+                                                        borderRadius: 10,
+                                                        border: "1px solid #dcdcdc",
+                                                        background: "#111827",
+                                                        color: "#fff",
+                                                        fontWeight: 600,
+                                                        cursor: opening ? "default" : "pointer",
+                                                        width: 140,
+                                                        justifySelf: "end",
+                                                        opacity: !canView || opening ? 0.7 : 1,
+                                                    }}
+                                                    title={canView ? "View submission" : "No submission id"}
+                                                >
+                                                    {opening ? "Opening…" : "View Pdf"}
+                                                </button>
+                                            </>
                                         )}
                                     </div>
                                 </div>
@@ -604,7 +673,7 @@ const SubmissionList = ({
             <MarkSubmissionModal
                 open={markModalOpen}
                 onClose={() => setMarkModalOpen(false)}
-                submissionId={markRow?.submissionId}  // ✅ now passing submissionId
+                submissionId={markRow?.submissionId}  // ✅ passing submissionId
                 authFetch={authFetch}
                 onMarked={(pdfUrl, score) => {
                     console.log("Marked submission:", { pdfUrl, score });

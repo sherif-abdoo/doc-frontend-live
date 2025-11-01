@@ -119,9 +119,6 @@ const Sidebar = () => {
                 to="/report"
                 onClick={isMobile ? closeSidebar : undefined}
             />
-          </div>
-
-          <div className="bottom-icon">
             {showPending && (
                 <SidebarButton
                     icon={"/assets/Sidebar/pending.png"}
@@ -140,6 +137,10 @@ const Sidebar = () => {
                 to="/feed"
                 onClick={isMobile ? closeSidebar : undefined}
             />
+          </div>
+
+          <div className="bottom-icon">
+            
           </div>
         </div>
       </>

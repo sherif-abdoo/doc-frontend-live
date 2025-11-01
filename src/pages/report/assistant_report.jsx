@@ -28,7 +28,12 @@ const AssistantReport = ({ topicId }) => {
         })();
     }, [topicId]);
 
-    const pretty = (v) => (v === 0 ? 0 : v ? String(v) : "N/A");
+    const pretty = (v) => {
+        if (v === 0) return 0;
+        if (v === "missing" || v === null || v === undefined || v === "") return "N/A";
+        return String(v);
+    };
+
     const cap = (s) => (typeof s === "string" && s.length ? s[0].toUpperCase() + s.slice(1) : pretty(s));
 
     const assignmentCount = useMemo(() => {
@@ -44,7 +49,7 @@ const AssistantReport = ({ topicId }) => {
     const headerCells = useMemo(() => {
         const quizTitle = assistantReport?.quizTitle || "Quiz";
         const base = ["Student name", quizTitle, "Percent", "Grade"];
-        const hwCols = Array.from({ length: assignmentCount }, (_, i) => `Hw ${i + 1}`);
+        const hwCols = Array.from({ length: assignmentCount }, (_, i) => `HW ${i + 1}`);
         return [...base, ...hwCols];
     }, [assistantReport, assignmentCount]);
 
@@ -62,7 +67,10 @@ const AssistantReport = ({ topicId }) => {
             const percentage = pretty(stu?.percentage);
             const grade = pretty(stu?.grade);
             const asns = Array.isArray(stu?.assignments) ? stu.assignments : [];
-            const asnCells = Array.from({ length: assignmentCount }, (_, i) => cap(asns[i]?.status ?? "N/A"));
+            const asnCells = Array.from(
+                { length: assignmentCount },
+                (_, i) => cap(pretty(asns[i]?.status ?? "missing"))
+            );
             const cells = [studentName, quizScore, percentage, grade, ...asnCells];
             const copyText = cells.join(" ");
             return { cells, copyText };

@@ -169,7 +169,7 @@ const LiveClassCard = ({ liveClass }) => {
                     fontFamily="Montserrat Regular"
                     fontWeight="auto"
                     onClick={joinLoading ? undefined : handleJoinClass}
-                    borderColor="#248866"
+                    borderColor="#133643"
                     style={joinLoading ? { opacity: 0.7, pointerEvents: "none" } : undefined}
                 />
 

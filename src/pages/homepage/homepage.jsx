@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Layout from "../../shared/components/layout";
 import "./homepage.css";
 
@@ -11,6 +11,10 @@ import LeaderboardCard from "./components/leaderboard_card";
 import CalendarCard from "./components/calendar_card";
 
 const HomePage = () => {
+  useEffect(() => {
+      document.title = "Home - Dr. Omar Khalid";
+    }, []);
+  
   return (
     <Layout>
       <div className="homepage-container">

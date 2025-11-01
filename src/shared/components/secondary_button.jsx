@@ -3,7 +3,7 @@ import "../style/secondary_button_style.css";
 
 const SecondaryButton = ({
                              label,
-                             borderColor = "#248866",
+                             borderColor,
                              textColor,
                              fill = false, // ✅ new prop to optionally fill button background
                              fontFamily = "Montserrat Thin",

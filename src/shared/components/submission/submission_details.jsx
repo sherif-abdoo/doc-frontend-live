@@ -185,9 +185,9 @@ const SubmissionDetails = ({ type }) => {
                                 <div style={{ marginBottom: 12, opacity: 0.9 }}>
                                     <small>
                                         <strong>Marked by:</strong>{" "}
-                                        <span>{answerData.assistant ?? "—"}</span>{" "}
+                                        <span>{answerData.assistant ?? "–"}</span>{" "}
                                         • <strong>Score:</strong>{" "}
-                                        <span>{answerData.score ?? "—"}</span>{" "}
+                                        <span>{answerData.score ?? "–"}</span>{" "}
                                         {answerData.markedAt ? (
                                             <>
                                                 • <strong>Marked at:</strong>{" "}
@@ -220,25 +220,19 @@ const SubmissionDetails = ({ type }) => {
                             {t !== "material" && (
                                 <div style={{ marginBottom: 12, opacity: 0.85 }}>
                                     <small>
-                                        Subject: <strong>{subject || "—"}</strong> • Semester:{" "}
-                                        <strong>{assignData.semester || "—"}</strong> • Mark:{" "}
-                                        <strong>{assignData.mark ?? "—"}</strong>
+                                        Subject: <strong>{subject || "–"}</strong> • Semester:{" "}
+                                        <strong>{assignData.semester || "–"}</strong> • Mark:{" "}
+                                        <strong>{assignData.mark ?? "–"}</strong>
                                     </small>
                                 </div>
                             )}
 
-                            <PDFViewer pdfUrl={pdfUrl} />
-
-                            {t !== "material" &&
-                                (isSubmitted ? (
+                            {t === "quiz" ? (
+                                // QUIZ: Show buttons instead of PDF
+                                isSubmitted ? (
                                     <SubmittedMessage type={type} />
                                 ) : (
-                                    <>
-                                        {t === "assignment" ? (
-                                            <SubmitButton type={type} onClick={handleAssignmentSubmitOpen} />
-                                        ) : (
-                                            // QUIZ: two stacked buttons
-                                            <div style={{ display: "grid", gap: 10, maxWidth: 260 }}>
+                                    <div style={{ display: "grid", gap: 10, maxWidth: 260, margin: "0 auto" }}>
                                                 <button
                                                     type="button"
                                                     className="submit-btn"
@@ -256,9 +250,21 @@ const SubmissionDetails = ({ type }) => {
                                                     Submit Solution
                                                 </button>
                                             </div>
-                                        )}
-                                    </>
-                                ))}
+                                )
+                            ) : (
+                                <>
+                                    <PDFViewer pdfUrl={pdfUrl} />
+
+                                    {t !== "material" &&
+                                        (isSubmitted ? (
+                                            <SubmittedMessage type={type} />
+                                        ) : (
+                                            t === "assignment" && (
+                                                <SubmitButton type={type} onClick={handleAssignmentSubmitOpen} />
+                                            )
+                                        ))}
+                                </>
+                            )}
                         </>
                     )}
                 </main>
