@@ -14,6 +14,7 @@ import CreateAssignmentModal from "./create_submission_pop_up";
 import CreateQuizModal from "./create_quiz_popup";
 import "../../../pages/classroom/style/create_topic.css";
 import MarkSubmissionModal from "./markSubmissionModal";
+import appColors from "../app_colors";
 
 const redirection = {
     Assignment: "/homework",
@@ -570,7 +571,12 @@ const SubmissionList = ({
                                         padding: "14px 16px",
                                         borderRadius: 12,
                                         border: "1px solid #e6e6e6",
-                                        background: "#fff",
+                                         background:
+                                            s.type?.toLowerCase() === "assignment"
+                                                ? appColors.chemCard // light blue
+                                                : s.type?.toLowerCase() === "quiz"
+                                                ? appColors.physCard // light red
+                                                : "#fff", // default white
                                         marginBottom: 10,
                                         gap: 14,
                                     }}
