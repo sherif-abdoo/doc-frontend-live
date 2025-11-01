@@ -220,8 +220,8 @@
         gap: 10px;
     }
     .card-icon img {
-        width: clamp(45px, 4vw, 55px);
-        height: clamp(45px, 4vw, 55px);
+        width: clamp(65px, 4vw, 75px);
+        height: clamp(65px, 4vw, 75px);
     }
     .card-title {
         font-size: clamp(20px, 3.5vw, 28px);
