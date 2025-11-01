@@ -278,8 +278,8 @@ export default function SignUp() {
                         onChange={(e) => setSemester(e.target.value)}
                     >
                       <option value="">Select semester</option>
-                      <option value="November">November</option>
-                      <option value="June">June</option>
+                      <option value="Nov">November</option>
+                      <option value="Jun">June</option>
                     </select>
                   </div>
 
