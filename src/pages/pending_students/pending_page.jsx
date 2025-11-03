@@ -110,21 +110,25 @@ const PendingPage = () => {
         setConfirmOpen(true);
     };
 
+    
     const confirmReject = async () => {
         if (!candidateReject?.email) return;
         setRejecting(true);
         try {
-            const res = await authFetch(
-                "PATCH",
-                `/admin/rejectStudent/${encodeURIComponent(candidateReject.email)}`
-            );
+            const endpoint = isTeacher
+                ? `/dok/rejectAssistant/${encodeURIComponent(candidateReject.email)}`
+                : `/admin/rejectStudent/${encodeURIComponent(candidateReject.email)}`;
+
+            const method = isTeacher ? "DELETE" : "PATCH";
+
+            const res = await authFetch(method, endpoint);
             const msg = res?.message || res?.data?.message || "Rejected successfully";
             setStudents((prev) => prev.filter((s) => s.email !== candidateReject.email));
             setAlert({ open: true, message: msg, error: false });
         } catch (e) {
             setAlert({
                 open: true,
-                message: e?.message || "Failed to reject student",
+                message: e?.message || `Failed to reject ${isTeacher ? "assistant" : "student"}`,
                 error: true,
             });
         } finally {
@@ -133,7 +137,7 @@ const PendingPage = () => {
             setCandidateReject(null);
         }
     };
-
+    
     return (
         <Layout>
             <AlertBanner
