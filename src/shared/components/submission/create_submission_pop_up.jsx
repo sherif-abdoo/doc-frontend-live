@@ -283,8 +283,8 @@ export default function CreateAssignmentModal({
                         <label className="ctm-check">
                             <input
                                 type="checkbox"
-                                checked={semester === "June"}
-                                onChange={() => !nonEditableDisabled && toggleSemester("June")}
+                                checked={semester === "Jun"}
+                                onChange={() => !nonEditableDisabled && toggleSemester("Jun")}
                                 disabled={nonEditableDisabled}
                             />
                             June
@@ -292,8 +292,8 @@ export default function CreateAssignmentModal({
                         <label className="ctm-check">
                             <input
                                 type="checkbox"
-                                checked={semester === "November"}
-                                onChange={() => !nonEditableDisabled && toggleSemester("November")}
+                                checked={semester === "Nov"}
+                                onChange={() => !nonEditableDisabled && toggleSemester("Nov")}
                                 disabled={nonEditableDisabled}
                             />
                             November

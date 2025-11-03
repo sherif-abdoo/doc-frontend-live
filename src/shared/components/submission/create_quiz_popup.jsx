@@ -270,8 +270,8 @@ export default function CreateQuizModal({
                     <label className="ctm-check">
                         <input
                             type="checkbox"
-                            checked={semester === "June"}
-                            onChange={() => toggleSemester("June")}
+                            checked={semester === "Jun"}
+                            onChange={() => toggleSemester("Jun")}
                             disabled={disableWhenEdit(submitting)}
                         />
                         June
@@ -279,8 +279,8 @@ export default function CreateQuizModal({
                     <label className="ctm-check">
                         <input
                             type="checkbox"
-                            checked={semester === "November"}
-                            onChange={() => toggleSemester("November")}
+                            checked={semester === "Nov"}
+                            onChange={() => toggleSemester("Nov")}
                             disabled={disableWhenEdit(submitting)}
                         />
                         November
