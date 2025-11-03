@@ -15,6 +15,7 @@ import CreateQuizModal from "./create_quiz_popup";
 import "../../../pages/classroom/style/create_topic.css";
 import MarkSubmissionModal from "./markSubmissionModal";
 import appColors from "../app_colors";
+import "../../style/submission/submission_list_style.css";
 
 const redirection = {
     Assignment: "/homework",
@@ -531,7 +532,7 @@ const SubmissionList = ({
                             ))}
                         </>
                     ) : adminSubs.length === 0 ? (
-                        <div className="empty-topic-grid">
+                        <div className="empty-submission">
                             <img
                                 src="/assets/Classroom/notfound.png"
                                 alt="No unmarked submissions"
@@ -651,11 +652,15 @@ const SubmissionList = ({
 
                         {/* ✅ Empty state when no submissions at all */}
                         {localSubs.length === 0 ? (
-                            <div className="empty-topic-grid">
+                            <div className="empty-submission" 
+                                style={{
+                                     textAlign: "center" 
+                                }}
+                            >
                                 <img
                                     src="/assets/Classroom/notfound.png"
                                     alt={`No ${type === "Quiz" ? "quizzes" : type.toLowerCase() + "s"} found`}
-                                    className="empty-topic-image"
+                                    className="empty-submission"
                                 />
                                 <p>Looks like there are no {type === "Quiz" ? "quizzes" : type.toLowerCase() + "s"} yet</p>
                             </div>

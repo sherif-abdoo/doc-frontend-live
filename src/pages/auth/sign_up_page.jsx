@@ -264,7 +264,11 @@ export default function SignUp() {
                       <option value="Sbis">Sbis</option>
                       <option value="Esc">Esc</option>
                       <option value="Fbs">Fbs</option>
-                      <option value="Private">Private</option>
+                      <option value="A">A</option>
+                      <option value="B">B</option>
+                      <option value="C">C</option>
+                      <option value="D">D</option>
+                      <option value="E">E</option>
                     </select>
                   </div>
 

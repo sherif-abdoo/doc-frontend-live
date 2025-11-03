@@ -1,0 +1,15 @@
+.empty-submission-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #666;
+}
+
+.empty-submission img {
+  width: 200px;
+  height: auto;
+  margin-bottom: 20px;
+}
