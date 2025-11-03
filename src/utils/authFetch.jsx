@@ -2,22 +2,20 @@
 
 const TOKEN_KEY = "token";
 
-// ✅ Use only the .env variable
-const BASE_URL = process.env.REACT_APP_API_BASE;
+// ✅ Allow same-origin by default
+const BASE_URL = (process.env.REACT_APP_API_BASE || "").trim();
 
-if (!BASE_URL) {
+if (!process.env.REACT_APP_API_BASE) {
     // eslint-disable-next-line no-console
-    console.warn(
-        "[authFetch] Missing REACT_APP_API_BASE in .env — API requests may fail."
-    );
+    console.warn("[authFetch] REACT_APP_API_BASE is empty → using same-origin.");
 }
 
 // Join base + endpoint without double slashes; pass through absolute URLs
 const joinUrl = (base, endpoint) => {
     if (/^https?:\/\//i.test(endpoint)) return endpoint;
-    const b = String(base || "").replace(/\/+$/, "");
+    const b = String(base || "").replace(/\/+$/, "");   // "" when same-origin
     const e = String(endpoint || "").replace(/^\/+/, "");
-    return `${b}/${e}`;
+    return b ? `${b}/${e}` : `/${e}`;                   // ensure leading slash
 };
 
 // Public helpers so the rest of the app never touches localStorage directly
@@ -62,12 +60,7 @@ const appendQuery = (url, data) => {
 export async function authFetch(method, endpoint, data) {
     const m = String(method || "GET").toUpperCase();
 
-    if (!BASE_URL && !/^https?:\/\//i.test(endpoint)) {
-        const err = new Error("API base URL not configured.");
-        err.status = 0;
-        throw err;
-    }
-
+    // ❌ removed the throw — empty base is valid (same-origin)
     let url = joinUrl(BASE_URL, endpoint);
 
     const headers = new Headers({ Accept: "application/json" });
