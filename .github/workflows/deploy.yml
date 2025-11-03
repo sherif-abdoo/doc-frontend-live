@@ -1,38 +1,55 @@
-- name: Deploy over SSH (build on server)
-  uses: appleboy/ssh-action@v1.0.3
-  with:
-    host: ${{ secrets.VPS_HOST }}
-    username: ${{ secrets.VPS_USER }}
-    key: ${{ secrets.VPS_SSH_KEY }}
-    script: |
-      set -e
-      
-      # load nvm
-      export NVM_DIR="$HOME/.nvm"
-      [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-      [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
-      if command -v nvm >/dev/null 2>&1; then
-        nvm use 20 || nvm install 20
-      fi
-      
-      cd ${{ secrets.FRONTEND_PATH }}
-      
-      git fetch --all
-      git reset --hard origin/main
-      
-      # write .env.production (NOTE: lines below are indented)
-      cat > .env.production << 'EOF'
-      REACT_APP_API_BASE=
-      REACT_APP_ADMIN_PASSKEY=DOCADMIN
-      REACT_APP_PRESIGN_URL=https://r2-presign.dok-uploads.workers.dev
-      EOF
-      
-      if [ -f package-lock.json ]; then
-        npm ci
-      else
-        npm install
-      fi
-      
-      npm run build
-      sudo rsync -a --delete build/ ${{ secrets.NGINX_WEB_ROOT }}/
-      sudo nginx -t && sudo systemctl reload nginx
+name: Deploy Frontend
+
+on:
+  push:
+    branches: [ "main" ]   # change if your default branch is different
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy over SSH (build on server)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -e
+
+            # load nvm so node/npm are available in non-interactive shells
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+            [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+            if command -v nvm >/dev/null 2>&1; then
+              nvm use 20 || nvm install 20
+            fi
+
+            cd ${{ secrets.FRONTEND_PATH }}
+
+            git fetch --all
+            git reset --hard origin/main   # change to origin/master if needed
+
+            # create/update CRA prod env on server
+            cat > .env.production << 'EOF'
+            REACT_APP_API_BASE=
+            REACT_APP_ADMIN_PASSKEY=DOCADMIN
+            REACT_APP_PRESIGN_URL=https://r2-presign.dok-uploads.workers.dev
+            EOF
+
+            if [ -f package-lock.json ]; then
+              npm ci
+            else
+              npm install
+            fi
+
+            npm run build
+
+            # publish to nginx root
+            sudo rsync -a --delete build/ ${{ secrets.NGINX_WEB_ROOT }}/
+
+            # reload nginx
+            sudo nginx -t && sudo systemctl reload nginx
