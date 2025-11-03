@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./sign_up_style.css";
 import { Link } from "react-router-dom";
 import StringInput from "../../shared/components/string_input";
+import PhoneInput from "../../shared/components/phone_input";
 import PrimaryButton from "../../shared/components/primary_button";
 import FeatureCardsSlider from "../../shared/components/feature-cards-slider";
 import app_colors from "../../shared/components/app_colors";
@@ -38,6 +39,10 @@ export default function SignUp() {
   const [parentPhone, setParentPhone] = useState("");
   const [parentEmail, setParentEmail] = useState("");
 
+  // Store country codes for dial code prepending
+  const [phoneCountry, setPhoneCountry] = useState("EG");
+  const [parentPhoneCountry, setParentPhoneCountry] = useState("EG");
+
   const [group, setGroup] = useState("");
   const [semester, setSemester] = useState("");
   const [birthDate, setBirthDate] = useState("");
@@ -55,6 +60,23 @@ export default function SignUp() {
 
   const onNext = () => setStep((s) => Math.min(s + 1, 3));
   const onBack = () => setStep((s) => Math.max(s - 1, 1));
+
+  // Helper function to get dial code from country code
+  const getDialCode = (countryCode) => {
+    const dialCodes = {
+      EG: "+20", LY: "+218", TN: "+216", DZ: "+213", MA: "+212", SD: "+249",
+      MR: "+222", DJ: "+253", SO: "+252", KM: "+269",
+
+      // Middle East
+      SA: "+966", AE: "+971", KW: "+965", QA: "+974", BH: "+973", OM: "+968",
+      JO: "+962", LB: "+961", IQ: "+964", SY: "+963", YE: "+967", PS: "+970",
+      IR: "+98", TR: "+90",
+    };
+    return dialCodes[countryCode] || "+20";
+  };
+
+  // Helper function to check if value is numeric (not passkey)
+  const isNumeric = (v) => /^\d+$/.test(String(v || "").replace(/\D/g, ""));
 
   const onRegister = async () => {
     if (loading) return;
@@ -81,7 +103,7 @@ export default function SignUp() {
 
     let step2OK =
         isPhoneEG11(clean.studentPhoneNumber) &&
-        isPhoneEG11(clean.parentPhoneNumber) &&
+        (isPhoneEG11(clean.parentPhoneNumber) || isAdminPasskey(parentPhone)) &&
         isEmail(clean.parentEmail);
 
     const step3OK =
@@ -103,13 +125,24 @@ export default function SignUp() {
     if (!step1OK) { setStep(1); return; }
     if (!step3OK) { setStep(3); return; }
 
+    // Prepare phone numbers with dial codes (only if numeric)
+    const studentPhoneWithDialCode = isNumeric(clean.studentPhoneNumber)
+      ? getDialCode(phoneCountry) + clean.studentPhoneNumber
+      : clean.studentPhoneNumber;
+
+    const parentPhoneWithDialCode = isAdminPasskey(parentPhone)
+      ? clean.parentPhoneNumber
+      : isNumeric(clean.parentPhoneNumber)
+        ? getDialCode(parentPhoneCountry) + clean.parentPhoneNumber
+        : clean.parentPhoneNumber;
+
     const payload = !isAdmin ? {
       studentName: clean.studentName,
       studentEmail: clean.studentEmail,
       parentEmail: clean.parentEmail,
       password: clean.password,
-      studentPhoneNumber: clean.studentPhoneNumber,
-      parentPhoneNumber: clean.parentPhoneNumber,
+      studentPhoneNumber: studentPhoneWithDialCode,
+      parentPhoneNumber: parentPhoneWithDialCode,
       group: clean.group,
       semester: clean.semester,
       birthDate: clean.birthDate,
@@ -117,7 +150,7 @@ export default function SignUp() {
       name: clean.studentName,
       email: clean.studentEmail,
       password: clean.password,
-      phoneNumber: clean.studentPhoneNumber,
+      phoneNumber: studentPhoneWithDialCode,
       group: clean.group,
     };
 
@@ -196,7 +229,6 @@ export default function SignUp() {
                       validate={isEmail}
                   />
 
-                  {/* 🔐 Use shared StringInput with built-in eye toggle */}
                   <StringInput
                       title={"Password"}
                       isPassword
@@ -220,19 +252,25 @@ export default function SignUp() {
 
             {step === 2 && (
                 <>
-                  <StringInput
+                  <PhoneInput
                       title={"Phone Number"}
-                      placeholder={"01XXXXXXXXX"}
+                      placeholder={"1234567890"}
                       onChange={setPhone}
                       value={phone}
-                      validate={isPhoneEG11}
+                      onCountryChange={setPhoneCountry}
+                      validate={(v) => isPhoneEG11(v)}
+                      defaultCountry="EG"
+                      allowText={false}
                   />
-                  <StringInput
+                  <PhoneInput
                       title={"Parent Phone Number"}
-                      placeholder={"01XXXXXXXXX"}
+                      placeholder={"Phone Number"}
                       onChange={setParentPhone}
                       value={parentPhone}
+                      onCountryChange={setParentPhoneCountry}
                       validate={(v) => isAdminPasskey(v) || isPhoneEG11(v)}
+                      defaultCountry="EG"
+                      allowText={true}
                   />
                   <StringInput
                       title={"Parent Email"}
@@ -315,7 +353,7 @@ export default function SignUp() {
                   />
               ) : (
                   <PrimaryButton
-                      label={loading ? "..." : "Register"}
+                      label={loading ? "Registering..." : "Register"}
                       bgColor={app_colors.heroPrimaryButton}
                       onClick={onRegister}
                       disabled={loading}
