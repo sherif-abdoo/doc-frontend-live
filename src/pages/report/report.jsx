@@ -10,13 +10,19 @@ import MonthSelector from "./components/month_selector";
 import StudentReport from "./student_report";
 import AssistantReport from "./assistant_report";
 
+// ✅ use the same role helpers pattern as in PendingPage
+import { isAssistant as hasAssistantRole, isDoc as hasDocRole } from "../../utils/roles";
+
 const Report = () => {
   const { user, isLoading } = useAuth();
   const { topicId: routeTopicId } = useParams(); // optional preselect /report/:topicId
 
+  // keep original computed role + isAssistant (used in greeting below)
   const role = (user?.role || "").toLowerCase();
   const isAssistant = role === "assistant";
-  const isDoc = role === "doc";
+
+  // ✅ teacher/assistant detection like the reference
+  const isAssistantOrDoc = !isLoading && (hasAssistantRole(user) || hasDocRole(user));
 
   // topics for selector
   const [topicsLoading, setTopicsLoading] = useState(true);
@@ -94,23 +100,22 @@ const Report = () => {
               </h1>
 
               <span className="report-subtitle">
-                Report for the topic 
+              Report for the topic{" "}
                 <MonthSelector
-                  selectedMonth={selectedTopicName}
-                  isDropdownOpen={isDropdownOpen}
-                  months={months.length ? months : [selectedTopicName]}
-                  onToggle={() => setIsDropdownOpen((o) => !o)}
-                  onSelect={handleSelectTopic}
-                  loading={topicsLoading}
+                    selectedMonth={selectedTopicName}
+                    isDropdownOpen={isDropdownOpen}
+                    months={months.length ? months : [selectedTopicName]}
+                    onToggle={() => setIsDropdownOpen((o) => !o)}
+                    onSelect={handleSelectTopic}
+                    loading={topicsLoading}
                 />
-              {/* {selectedTopicName && selectedTopicName !== "—"
+                {/* {selectedTopicName && selectedTopicName !== "—"
                   ? `${isAssistant ? "Class report" : "Weekly report"} • ${selectedTopicName}`
                   : isAssistant
                       ? "Class report"
                       : "Weekly report"} */}
             </span>
 
-              
               {topicsError ? (
                   <div style={{ color: "crimson", marginTop: 8, fontSize: 12 }}>
                     {topicsError}
@@ -120,14 +125,17 @@ const Report = () => {
 
             {/* content: pass selected topicId to the role-specific page */}
             {selectedTopicId ? (
-                isAssistant || isDoc ? (
+                // ✅ only this logic changed: assistant OR doc -> AssistantReport
+                isAssistantOrDoc ? (
                     <AssistantReport topicId={selectedTopicId} />
                 ) : (
                     <StudentReport topicId={selectedTopicId} />
                 )
             ) : (
                 <div className="weekly-log">
-                  <h2 className="log-title">{isAssistant ? "Class Report:" : "Weekly Report:"}</h2>
+                  <h2 className="log-title">
+                    {isAssistant ? "Class Report:" : "Weekly Report:"}
+                  </h2>
                   <div className="log-table student-flat-table">
                     <div className="log-row">
                       <div className="log-cell">No topic selected</div>
