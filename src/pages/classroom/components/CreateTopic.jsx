@@ -81,8 +81,8 @@ export default function CreateTopicModal({
                     <label className="ctm-check">
                         <input
                             type="checkbox"
-                            checked={semester === "June"}
-                            onChange={() => toggleSemester("June")}
+                            checked={semester === "Jun"}
+                            onChange={() => toggleSemester("Jun")}
                             disabled={submitting}
                         />
                         June
@@ -90,8 +90,8 @@ export default function CreateTopicModal({
                     <label className="ctm-check">
                         <input
                             type="checkbox"
-                            checked={semester === "November"}
-                            onChange={() => toggleSemester("November")}
+                            checked={semester === "Nov"}
+                            onChange={() => toggleSemester("Nov")}
                             disabled={submitting}
                         />
                         November
