@@ -1,0 +1,64 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches: [ "main" ]   # change if your default branch is different
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node (for tooling only)
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ secrets.NODE_VERSION || '20' }}
+
+      - name: Deploy over SSH (build on server)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -e
+
+            # --- load nvm so npm/node exist in non-interactive shell ---
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+            [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+            if command -v nvm >/dev/null 2>&1; then
+              nvm use 20 || nvm install 20
+            fi
+
+            cd ${{ secrets.FRONTEND_PATH }}
+
+            # pull latest code
+            git fetch --all
+            git reset --hard origin/main   # change to origin/master if needed
+
+            # ensure CRA env for production (creates/overwrites .env.production)
+            cat > .env.production <<'EOF'
+  REACT_APP_API_BASE=
+  REACT_APP_ADMIN_PASSKEY=DOCADMIN
+  REACT_APP_PRESIGN_URL=https://r2-presign.dok-uploads.workers.dev
+  EOF
+  
+  # install deps
+  if [ -f package-lock.json ]; then
+  npm ci
+  else
+  npm install
+  fi
+  
+  # build
+  npm run build
+  
+  # publish to nginx web root
+  sudo rsync -a --delete build/ ${{ secrets.NGINX_WEB_ROOT }}/
+  
+  # reload nginx
+  sudo nginx -t && sudo systemctl reload nginx
