@@ -17,7 +17,7 @@ const API_BASE = process.env.REACT_APP_API_BASE;
 
 export default function Login() {
     useEffect(() => {
-        document.title = "Login - Dr. Omar Khalid";
+        document.title = "action test";
     }, []);
 
     const navigate = useNavigate();
