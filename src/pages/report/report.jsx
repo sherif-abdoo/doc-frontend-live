@@ -16,6 +16,7 @@ const Report = () => {
 
   const role = (user?.role || "").toLowerCase();
   const isAssistant = role === "assistant";
+  const isDoc = role === "doc";
 
   // topics for selector
   const [topicsLoading, setTopicsLoading] = useState(true);
@@ -119,7 +120,7 @@ const Report = () => {
 
             {/* content: pass selected topicId to the role-specific page */}
             {selectedTopicId ? (
-                isAssistant ? (
+                isAssistant || isDoc ? (
                     <AssistantReport topicId={selectedTopicId} />
                 ) : (
                     <StudentReport topicId={selectedTopicId} />
