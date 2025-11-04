@@ -65,26 +65,54 @@ const PDFViewer = ({ pdfUrl }) => {
     const file = useMemo(() => pdfUrl, [pdfUrl]);
 
     // Android hint: some devices prefer download over inline when opening a new tab
-    const isAndroid = typeof navigator !== "undefined" && /Android/i.test(navigator.userAgent);
+    const isAndroid =
+        typeof navigator !== "undefined" && /Android/i.test(navigator.userAgent);
+
+    // Force a real tab navigation on Android (prevents silent "download" behavior)
+    const openInNewTab = (e) => {
+        if (isAndroid) {
+            e.preventDefault();
+            try {
+                window.open(pdfUrl, "_blank", "noopener");
+            } catch (err) {
+                console.warn("window.open failed, falling back to href nav", err);
+                // last resort: navigate current tab (keeps user flow)
+                window.location.href = pdfUrl;
+            }
+        }
+    };
 
     return (
         <div className="pdf-viewer pdf-viewer--canvas">
             <div className="pdf-toolbar">
-                <button onClick={goPrev} disabled={!canPrev} aria-label="Previous page">‹</button>
-                <span className="pdf-page-indicator">{pageNumber}/{numPages || "—"}</span>
-                <button onClick={goNext} disabled={!canNext} aria-label="Next page">›</button>
+                <button onClick={goPrev} disabled={!canPrev} aria-label="Previous page">
+                    ‹
+                </button>
+                <span className="pdf-page-indicator">
+          {pageNumber}/{numPages || "—"}
+        </span>
+                <button onClick={goNext} disabled={!canNext} aria-label="Next page">
+                    ›
+                </button>
 
                 <div className="pdf-spacer" />
-                <button onClick={zoomOut} aria-label="Zoom out">–</button>
-                <button onClick={fitWidth} aria-label="Fit to width">Fit</button>
-                <button onClick={zoomIn} aria-label="Zoom in">+</button>
+                <button onClick={zoomOut} aria-label="Zoom out">
+                    –
+                </button>
+                <button onClick={fitWidth} aria-label="Fit to width">
+                    Fit
+                </button>
+                <button onClick={zoomIn} aria-label="Zoom in">
+                    +
+                </button>
 
+                {/* IMPORTANT: no `download` attr. Keep target=_blank + rel. */}
                 <a
                     className="pdf-download"
                     href={pdfUrl}
                     target="_blank"
                     rel="noopener"
-                    {...(isAndroid ? { download: "" } : {})}
+                    onClick={openInNewTab}
                 >
                     Open in new tab
                 </a>
@@ -115,8 +143,14 @@ const PDFViewer = ({ pdfUrl }) => {
                             type="application/pdf"
                             className="pdf-frame"
                         >
-                            <embed src={`${pdfUrl}#view=FitH`} type="application/pdf" className="pdf-frame" />
-                            <a href={pdfUrl} target="_blank" rel="noreferrer">Open PDF</a>
+                            <embed
+                                src={`${pdfUrl}#view=FitH`}
+                                type="application/pdf"
+                                className="pdf-frame"
+                            />
+                            <a href={pdfUrl} target="_blank" rel="noreferrer">
+                                Open PDF
+                            </a>
                         </object>
                     </div>
                 )}
