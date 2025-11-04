@@ -5,7 +5,7 @@ import "react-pdf/dist/Page/TextLayer.css";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "../../style/submission/pdf_viewer_style.css";
 
-// 1) Use same-origin module worker (copied to /public via postinstall)
+// 1) Same-origin module worker (copied to /public via postinstall)
 try {
     const workerUrl = `${process.env.PUBLIC_URL || ""}/pdf.worker.min.mjs`;
     const worker = new Worker(workerUrl, { type: "module" });
@@ -34,7 +34,7 @@ const PDFViewer = ({ pdfUrl }) => {
         if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
         fallbackTimerRef.current = setTimeout(() => {
             setFallback(true);
-        }, 6000); // 6s grace; tweak if you want
+        }, 6000); // grace period before showing fallback
         return () => clearTimeout(fallbackTimerRef.current);
     }, [pdfUrl]);
 
@@ -61,8 +61,11 @@ const PDFViewer = ({ pdfUrl }) => {
     const zoomIn = () => setScale((s) => Math.min(2.5, s + 0.1));
     const fitWidth = () => setScale(1.1);
 
-    // 3) Pass URL directly now that the R2 worker sends proper headers
+    // 3) Pass URL directly (R2 read worker now sends proper headers)
     const file = useMemo(() => pdfUrl, [pdfUrl]);
+
+    // Android hint: some devices prefer download over inline when opening a new tab
+    const isAndroid = typeof navigator !== "undefined" && /Android/i.test(navigator.userAgent);
 
     return (
         <div className="pdf-viewer pdf-viewer--canvas">
@@ -76,7 +79,13 @@ const PDFViewer = ({ pdfUrl }) => {
                 <button onClick={fitWidth} aria-label="Fit to width">Fit</button>
                 <button onClick={zoomIn} aria-label="Zoom in">+</button>
 
-                <a className="pdf-download" href={pdfUrl} target="_blank" rel="noreferrer">
+                <a
+                    className="pdf-download"
+                    href={pdfUrl}
+                    target="_blank"
+                    rel="noopener"
+                    {...(isAndroid ? { download: "" } : {})}
+                >
                     Open in new tab
                 </a>
             </div>
