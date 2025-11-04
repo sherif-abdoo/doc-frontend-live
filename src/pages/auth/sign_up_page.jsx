@@ -294,14 +294,11 @@ export default function SignUp() {
                         onChange={(e) => setGroup(e.target.value)}
                     >
                       <option value="">Select your group</option>
-                      <option value="Cmbs">Cmbs</option>
                       <option value="Psbs">Psbs</option>
                       <option value="Nls">Nls</option>
                       <option value="Ice">Ice</option>
-                      <option value="Mes">Mes</option>
                       <option value="Sbis">Sbis</option>
-                      <option value="Esc">Esc</option>
-                      <option value="Fbs">Fbs</option>
+                      <option value="Sbis">Cmbs ,Mes ,Esc ,Fbs</option>
                       <option value="A">A</option>
                       <option value="B">B</option>
                       <option value="C">C</option>
