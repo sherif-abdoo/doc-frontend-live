@@ -1,25 +1,41 @@
 /* ../../style/submission/pdf_viewer_style.css */
 
-.pdf-viewer {
-  border-radius: 12px;
-  margin: 1rem auto;
-  width: 80%;
-  text-align: center;
+/* ===== CSS Vars for easy tuning ===== */
+:root {
+  --pdf-max-width: 1200px;
+  --pdf-radius: 12px;
+  --pdf-pad: 0.5rem;
+
+  /* Heights by breakpoint */
+  --pdf-h-mobile: 70vh;      /* ≤ 768px */
+  --pdf-h-tablet: 75vh;      /* 768–1024 portrait */
+  --pdf-h-md: 78vh;          /* 768–1200 landscape */
+  --pdf-h-desktop: 80vh;     /* > 1200px */
 }
 
-/* Canvas renderer layout */
+/* Container */
+.pdf-viewer {
+  width: min(100%, var(--pdf-max-width));
+  margin: 1rem auto;
+  border-radius: var(--pdf-radius);
+  text-align: center;
+  padding: 0; /* keep content edge-to-edge inside */
+}
+
+/* ===== Canvas (react-pdf) layout ===== */
 .pdf-viewer--canvas {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
+/* Toolbar */
 .pdf-toolbar {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem;
-  border-radius: 10px;
+  padding: var(--pdf-pad);
+  border-radius: calc(var(--pdf-radius) - 2px);
   background: #f6f7f9;
 }
 
@@ -48,40 +64,126 @@
   font-weight: 500;
 }
 
+/* Scrollable rendering surface */
 .pdf-canvas-wrap {
   width: 100%;
-  max-height: 80vh;        /* scrollable area on mobile */
+  max-height: var(--pdf-h-desktop);
   overflow: auto;
-  background: white;
-  border-radius: 12px;
+  -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
+  background: #fff;
+  border-radius: var(--pdf-radius);
   display: grid;
   place-items: center;
-  padding: 0.5rem;
+  padding: var(--pdf-pad);
 }
 
-/* Responsive sizes similar to your old iframe heights */
+/* Ensure embedded fallback fills correctly */
+.pdf-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  border-radius: inherit;
+}
+
+/* ===== iFrame viewer (others) ===== */
+/* Style iframe even without a class */
+.pdf-viewer > iframe,
+.pdf-iframe {
+  width: 100%;
+  height: var(--pdf-h-desktop);
+  border: none;
+  display: block;
+  border-radius: var(--pdf-radius);
+  background: #fff;
+}
+
+/* Wrapper (if you use it anywhere) */
+.pdf-viewer-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+/* Loading text */
+.pdf-loading {
+  padding: 12px;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* ===== Responsive breakpoints ===== */
+
+/* ≤ 768px (mobile) */
 @media (max-width: 768px) {
-  .pdf-viewer { width: 100%; margin: 0.8rem auto; border-radius: 10px; }
-  .pdf-canvas-wrap { max-height: 70vh; }
+  :root {
+    --pdf-radius: 10px;
+  }
+
+  .pdf-viewer {
+    width: 100%;
+    margin: 0.8rem auto;
+  }
+
+  .pdf-canvas-wrap {
+    max-height: var(--pdf-h-mobile);
+  }
+
+  .pdf-viewer > iframe,
+  .pdf-iframe {
+    height: var(--pdf-h-mobile);
+    border-radius: var(--pdf-radius);
+  }
 }
 
+/* 768–1024px (portrait tablets) */
 @media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
-  .pdf-viewer { width: 90%; margin: 0.9rem auto; }
-  .pdf-canvas-wrap { max-height: 75vh; }
+  .pdf-viewer {
+    width: 90%;
+    margin: 0.9rem auto;
+  }
+  .pdf-canvas-wrap {
+    max-height: var(--pdf-h-tablet);
+  }
+  .pdf-viewer > iframe,
+  .pdf-iframe {
+    height: var(--pdf-h-tablet);
+  }
 }
 
+/* 768–1200px (landscape tablets / small laptops) */
 @media (min-width: 768px) and (max-width: 1200px) and (orientation: landscape) {
-  .pdf-viewer { width: 85%; }
-  .pdf-canvas-wrap { max-height: 78vh; }
+  .pdf-viewer {
+    width: 85%;
+  }
+  .pdf-canvas-wrap {
+    max-height: var(--pdf-h-md);
+  }
+  .pdf-viewer > iframe,
+  .pdf-iframe {
+    height: var(--pdf-h-md);
+  }
 }
 
+/* ≤ 768px (landscape phones) */
 @media (max-width: 768px) and (orientation: landscape) {
-  .pdf-viewer { width: 100%; margin: 0.6rem auto; border-radius: 8px; }
-  .pdf-canvas-wrap { max-height: 65vh; }
+  .pdf-viewer {
+    width: 100%;
+    margin: 0.6rem auto;
+    border-radius: 8px;
+  }
+  .pdf-canvas-wrap {
+    max-height: 65vh; /* slightly shorter for landscape phones */
+  }
+  .pdf-viewer > iframe,
+  .pdf-iframe {
+    height: 65vh;
+    border-radius: 8px;
+  }
 }
 
-/* src/shared/style/submission/pdf_viewer_style.css */
-.pdf-iframe { width: 100%; height: 75vh; border: none; }
-.pdf-viewer-wrapper { width: 100%; height: 100%; }
-.pdf-loading { padding: 12px; font-size: 14px; opacity: 0.8; }
-
+/* ===== Accessibility niceties ===== */
+@media (prefers-reduced-motion: reduce) {
+  .pdf-canvas-wrap {
+    scroll-behavior: auto;
+  }
+}
