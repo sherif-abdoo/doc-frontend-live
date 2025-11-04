@@ -57,3 +57,28 @@
 .si-input-row.valid .si-check {
     opacity: 1;
 }
+
+/* 🔥 kill react-phone-number-input’s default border & padding */
+.no-border input,
+.no-border .PhoneInputInput {
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  font-family: "Montserrat Regular", sans-serif;
+  font-size: 16px;
+  color: var(--inputSubText);
+  padding: 8px 0;
+}
+
+.no-border .PhoneInputCountry {
+  border: none !important;
+  background: transparent !important;
+}
+
+.no-border .PhoneInput {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: none !important;
+  background: transparent !important;
+}

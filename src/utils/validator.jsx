@@ -63,7 +63,11 @@ export const isEmail = (s) => {
 
 
 /** Egypt: exactly 11 digits and starts with 01 */
-export const isPhoneEG11 = (s) => /^01\d{9}$/.test(String(s ?? "").replace(/\D/g, ""));
+export const isPhoneEG11 = (s) => {
+  const str = String(s ?? "").trim();
+  // Only check if string contains digits (is numeric)
+  return /^\d+$/.test(str) && str.length > 0;
+};
 
 export const isDateYMD = (s) => /^\d{4}-\d{1,2}-\d{1,2}$/.test(sanitizeText(s));
 
