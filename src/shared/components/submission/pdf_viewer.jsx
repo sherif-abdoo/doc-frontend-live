@@ -23,7 +23,7 @@ const PDFViewer = (props) => {
         }
     }, []);
 
-    return isSafari ? <SafariPDFViewer {...props} /> : <OtherPDFViewer {...props} />;
+    return isSafari ? <OtherPDFViewer {...props} /> : <OtherPDFViewer {...props} />;
 };
 
 export default PDFViewer;
