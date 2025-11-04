@@ -1,22 +1,20 @@
 // src/shared/components/submission/PDFViewer.jsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/TextLayer.css";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "../../style/submission/pdf_viewer_style.css";
 
-/**
- * Same-origin module worker (copied to /public via postinstall).
- * We use workerPort (v5 way) to avoid dynamic-import issues.
- */
+// 1) Use same-origin module worker (copied to /public via postinstall)
 try {
     const workerUrl = `${process.env.PUBLIC_URL || ""}/pdf.worker.min.mjs`;
     const worker = new Worker(workerUrl, { type: "module" });
-
-    // Debug logs (enable if needed):
-    // worker.addEventListener("error", (e) => console.error("[pdfjs worker] error:", e));
-    // worker.addEventListener("messageerror", (e) => console.error("[pdfjs worker] messageerror:", e.data));
-
+    worker.addEventListener("error", (e) =>
+        console.error("[pdfjs worker] error:", e.message || e)
+    );
+    worker.addEventListener("messageerror", (e) =>
+        console.error("[pdfjs worker] messageerror:", e.data)
+    );
     pdfjs.GlobalWorkerOptions.workerPort = worker;
 } catch (e) {
     console.error("[pdfjs] Worker setup failed; rendering may be slower.", e);
@@ -26,45 +24,32 @@ const PDFViewer = ({ pdfUrl }) => {
     const [numPages, setNumPages] = useState(null);
     const [pageNumber, setPageNumber] = useState(1);
     const [scale, setScale] = useState(1.1);
-    const [fileSource, setFileSource] = useState(pdfUrl);
     const [error, setError] = useState("");
+    const [fallback, setFallback] = useState(false); // native <object> fallback
+    const fallbackTimerRef = useRef(null);
 
-    /**
-     * Try blob first (better offline + avoids some CORS).
-     * If blob fails, fall back to direct URL.
-     */
+    // 2) Give PDF.js a little time; if it doesn't load, show native <object> fallback
     useEffect(() => {
-        let revokeUrl;
-        let cancelled = false;
-
-        (async () => {
-            try {
-                const res = await fetch(pdfUrl, { method: "GET" });
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-                const blob = await res.blob();
-                if (!blob || blob.size === 0) throw new Error("Empty blob");
-
-                const url = URL.createObjectURL(blob);
-                if (!cancelled) {
-                    setFileSource(url);
-                    revokeUrl = url;
-                }
-            } catch {
-                if (!cancelled) setFileSource(pdfUrl);
-            }
-        })();
-
-        return () => {
-            cancelled = true;
-            if (revokeUrl) URL.revokeObjectURL(revokeUrl);
-        };
+        setFallback(false);
+        if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
+        fallbackTimerRef.current = setTimeout(() => {
+            setFallback(true);
+        }, 6000); // 6s grace; tweak if you want
+        return () => clearTimeout(fallbackTimerRef.current);
     }, [pdfUrl]);
 
     const onDocLoad = ({ numPages }) => {
         setNumPages(numPages);
         setPageNumber(1);
         setError("");
+        setFallback(false); // PDF.js loaded successfully
+        if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
+    };
+
+    const onError = (e) => {
+        console.error("[pdf] error:", e);
+        setError(e?.message || "Failed to load PDF");
+        setFallback(true);
     };
 
     const canPrev = pageNumber > 1;
@@ -72,12 +57,12 @@ const PDFViewer = ({ pdfUrl }) => {
 
     const goPrev = () => canPrev && setPageNumber((p) => p - 1);
     const goNext = () => canNext && setPageNumber((p) => p + 1);
-
     const zoomOut = () => setScale((s) => Math.max(0.6, s - 0.1));
     const zoomIn = () => setScale((s) => Math.min(2.5, s + 0.1));
     const fitWidth = () => setScale(1.1);
 
-    const file = useMemo(() => fileSource, [fileSource]);
+    // 3) Pass URL directly now that the R2 worker sends proper headers
+    const file = useMemo(() => pdfUrl, [pdfUrl]);
 
     return (
         <div className="pdf-viewer pdf-viewer--canvas">
@@ -97,27 +82,35 @@ const PDFViewer = ({ pdfUrl }) => {
             </div>
 
             <div className="pdf-canvas-wrap">
-                <Document
-                    file={file}
-                    loading={<div className="pdf-loading">Loading PDF…</div>}
-                    onLoadSuccess={onDocLoad}
-                    onLoadError={(e) => {
-                        console.error("[pdf] onLoadError:", e);
-                        setError(e?.message || "Failed to load PDF");
-                    }}
-                    onSourceError={(e) => {
-                        console.error("[pdf] onSourceError:", e);
-                        setError(e?.message || "PDF source error");
-                    }}
-                    error={<div className="pdf-error">Couldn’t render PDF.</div>}
-                >
-                    <Page
-                        pageNumber={pageNumber}
-                        scale={scale}
-                        renderAnnotationLayer
-                        renderTextLayer
-                    />
-                </Document>
+                {!fallback ? (
+                    <Document
+                        file={file}
+                        loading={<div className="pdf-loading">Loading PDF…</div>}
+                        onLoadSuccess={onDocLoad}
+                        onLoadError={onError}
+                        onSourceError={onError}
+                        error={<div className="pdf-error">Couldn’t render PDF.</div>}
+                    >
+                        <Page
+                            pageNumber={pageNumber}
+                            scale={scale}
+                            renderAnnotationLayer
+                            renderTextLayer
+                        />
+                    </Document>
+                ) : (
+                    <div className="pdf-fallback">
+                        {/* Native PDF rendering as a safety net */}
+                        <object
+                            data={`${pdfUrl}#view=FitH`}
+                            type="application/pdf"
+                            className="pdf-frame"
+                        >
+                            <embed src={`${pdfUrl}#view=FitH`} type="application/pdf" className="pdf-frame" />
+                            <a href={pdfUrl} target="_blank" rel="noreferrer">Open PDF</a>
+                        </object>
+                    </div>
+                )}
 
                 {error && <div className="pdf-error">{error}</div>}
             </div>
