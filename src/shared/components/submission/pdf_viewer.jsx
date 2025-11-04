@@ -1,4 +1,4 @@
-// src/shared/components/submission/pdf_viewer.jsx
+// src/shared/components/submission/PDFViewer.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/TextLayer.css";
@@ -6,34 +6,21 @@ import "react-pdf/dist/Page/AnnotationLayer.css";
 import "../../style/submission/pdf_viewer_style.css";
 
 /**
- * Worker setup: try module worker, fall back to classic file for older mobile WebKit.
+ * Same-origin module worker (copied to /public via postinstall).
+ * We use workerPort (v5 way) to avoid dynamic-import issues.
  */
-(function setupPdfWorker() {
-    const base = process.env.PUBLIC_URL || "";
-    const moduleUrl = `${base}/pdf.worker.min.mjs`;
-    const classicUrl = `${base}/pdf.worker.min.js`;
+try {
+    const workerUrl = `${process.env.PUBLIC_URL || ""}/pdf.worker.min.mjs`;
+    const worker = new Worker(workerUrl, { type: "module" });
 
-    try {
-        let supportsModule = false;
-        try {
-            // quick feature detect for module worker
-            const test = new Worker(
-                URL.createObjectURL(new Blob([""], { type: "application/javascript" })),
-                { type: "module" }
-            );
-            test.terminate();
-            supportsModule = true;
-        } catch { /* noop */ }
+    // Debug logs (enable if needed):
+    // worker.addEventListener("error", (e) => console.error("[pdfjs worker] error:", e));
+    // worker.addEventListener("messageerror", (e) => console.error("[pdfjs worker] messageerror:", e.data));
 
-        if (supportsModule) {
-            pdfjs.GlobalWorkerOptions.workerPort = new Worker(moduleUrl, { type: "module" });
-        } else {
-            pdfjs.GlobalWorkerOptions.workerSrc = classicUrl;
-        }
-    } catch {
-        pdfjs.GlobalWorkerOptions.workerSrc = classicUrl;
-    }
-})();
+    pdfjs.GlobalWorkerOptions.workerPort = worker;
+} catch (e) {
+    console.error("[pdfjs] Worker setup failed; rendering may be slower.", e);
+}
 
 const PDFViewer = ({ pdfUrl }) => {
     const [numPages, setNumPages] = useState(null);
@@ -42,28 +29,34 @@ const PDFViewer = ({ pdfUrl }) => {
     const [fileSource, setFileSource] = useState(pdfUrl);
     const [error, setError] = useState("");
 
-    // Keep your blob-fallback logic (doesn't break existing PDFs)
+    /**
+     * Try blob first (better offline + avoids some CORS).
+     * If blob fails, fall back to direct URL.
+     */
     useEffect(() => {
         let revokeUrl;
+        let cancelled = false;
 
         (async () => {
             try {
-                const res = await fetch(pdfUrl, { credentials: "omit" });
-                const isPdf = res.headers.get("content-type")?.includes("pdf");
-                if (!res.ok || !isPdf) {
-                    setFileSource(pdfUrl);
-                    return;
-                }
+                const res = await fetch(pdfUrl, { method: "GET" });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
                 const blob = await res.blob();
+                if (!blob || blob.size === 0) throw new Error("Empty blob");
+
                 const url = URL.createObjectURL(blob);
-                setFileSource(url);
-                revokeUrl = url;
+                if (!cancelled) {
+                    setFileSource(url);
+                    revokeUrl = url;
+                }
             } catch {
-                setFileSource(pdfUrl);
+                if (!cancelled) setFileSource(pdfUrl);
             }
         })();
 
         return () => {
+            cancelled = true;
             if (revokeUrl) URL.revokeObjectURL(revokeUrl);
         };
     }, [pdfUrl]);
@@ -84,24 +77,7 @@ const PDFViewer = ({ pdfUrl }) => {
     const zoomIn = () => setScale((s) => Math.min(2.5, s + 0.1));
     const fitWidth = () => setScale(1.1);
 
-    const file = useMemo(
-        () => ({ url: fileSource, withCredentials: false }),
-        [fileSource]
-    );
-
-    // Mobile-safe opener: create the tab synchronously in the click stack
-    const openNewTab = (e) => {
-        e.preventDefault();
-        // open a placeholder immediately to satisfy popup blockers
-        const w = window.open("about:blank", "_blank", "noopener,noreferrer");
-        if (w) {
-            // point it to the real PDF (served inline by the read worker)
-            w.location.href = pdfUrl;
-        } else {
-            // as a last resort (some in-app browsers), replace current tab
-            window.location.href = pdfUrl;
-        }
-    };
+    const file = useMemo(() => fileSource, [fileSource]);
 
     return (
         <div className="pdf-viewer pdf-viewer--canvas">
@@ -115,8 +91,7 @@ const PDFViewer = ({ pdfUrl }) => {
                 <button onClick={fitWidth} aria-label="Fit to width">Fit</button>
                 <button onClick={zoomIn} aria-label="Zoom in">+</button>
 
-                {/* Mobile-safe link (uses handler to avoid blockers) */}
-                <a className="pdf-download" href={pdfUrl} target="_blank" rel="noopener noreferrer" onClick={openNewTab}>
+                <a className="pdf-download" href={pdfUrl} target="_blank" rel="noreferrer">
                     Open in new tab
                 </a>
             </div>
@@ -126,8 +101,14 @@ const PDFViewer = ({ pdfUrl }) => {
                     file={file}
                     loading={<div className="pdf-loading">Loading PDF…</div>}
                     onLoadSuccess={onDocLoad}
-                    onLoadError={(e) => setError(e?.message || "Failed to load PDF")}
-                    onSourceError={(e) => setError(e?.message || "PDF source error")}
+                    onLoadError={(e) => {
+                        console.error("[pdf] onLoadError:", e);
+                        setError(e?.message || "Failed to load PDF");
+                    }}
+                    onSourceError={(e) => {
+                        console.error("[pdf] onSourceError:", e);
+                        setError(e?.message || "PDF source error");
+                    }}
                     error={<div className="pdf-error">Couldn’t render PDF.</div>}
                 >
                     <Page
@@ -137,6 +118,7 @@ const PDFViewer = ({ pdfUrl }) => {
                         renderTextLayer
                     />
                 </Document>
+
                 {error && <div className="pdf-error">{error}</div>}
             </div>
         </div>
