@@ -298,7 +298,7 @@ export default function SignUp() {
                       <option value="Nls">Nls</option>
                       <option value="Ice">Ice</option>
                       <option value="Sbis">Sbis</option>
-                      <option value="Sbis">Cmbs ,Mes ,Esc ,Fbs</option>
+                      <option value="Cmbs ,Mes ,Esc ,Fbs">Cmbs ,Mes ,Esc ,Fbs</option>
                       <option value="A">A</option>
                       <option value="B">B</option>
                       <option value="C">C</option>
