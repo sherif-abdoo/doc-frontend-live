@@ -102,7 +102,7 @@ const PDFViewer = ({ pdfUrl }) => {
             <div className="pdf-canvas-wrap">
                 <Document
                     file={file}
-                    loading={<div className="pdf-loading">Loading PDF…</div>}
+                    loading={<div className="pdf-loading">Open PDF in new tab</div>}
                     onLoadSuccess={onDocLoad}
                     onLoadError={(e) => {
                         console.error("[pdf] onLoadError:", e);
