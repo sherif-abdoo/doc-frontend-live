@@ -1,3 +1,5 @@
+/* ../../style/submission/pdf_viewer_style.css */
+
 .pdf-viewer {
   border-radius: 12px;
   margin: 1rem auto;
@@ -5,88 +7,75 @@
   text-align: center;
 }
 
-.pdf-viewer iframe {
-  width: 100%;
-  height: 505px;
-  border-radius: 12px;
+/* Canvas renderer layout */
+.pdf-viewer--canvas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pdf-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 10px;
+  background: #f6f7f9;
+}
+
+.pdf-toolbar button {
   border: none;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #e8ebf0;
 }
 
-/* ✅ Responsive for portrait phones */
+.pdf-toolbar button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pdf-spacer {
+  flex: 1;
+}
+
+.pdf-download {
+  text-decoration: none;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  background: #e8ebf0;
+  font-weight: 500;
+}
+
+.pdf-canvas-wrap {
+  width: 100%;
+  max-height: 80vh;        /* scrollable area on mobile */
+  overflow: auto;
+  background: white;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  padding: 0.5rem;
+}
+
+/* Responsive sizes similar to your old iframe heights */
 @media (max-width: 768px) {
-  .pdf-viewer {
-    width: 100%;
-    margin: 0.8rem auto;
-    border-radius: 10px;
-  }
-  
-  .pdf-viewer iframe {
-    height: 350px;
-    border-radius: 10px;
-  }
+  .pdf-viewer { width: 100%; margin: 0.8rem auto; border-radius: 10px; }
+  .pdf-canvas-wrap { max-height: 70vh; }
 }
 
-/* ✅ Portrait tablets */
 @media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
-  .pdf-viewer {
-    width: 90%;
-    margin: 0.9rem auto;
-  }
-  
-  .pdf-viewer iframe {
-    height: 450px;
-  }
+  .pdf-viewer { width: 90%; margin: 0.9rem auto; }
+  .pdf-canvas-wrap { max-height: 75vh; }
 }
 
-/* ✅ Landscape tablets (iPad, etc.) */
 @media (min-width: 768px) and (max-width: 1200px) and (orientation: landscape) {
-  .pdf-viewer {
-    width: 85%;
-  }
-  
-  .pdf-viewer iframe {
-    height: 480px;
-  }
+  .pdf-viewer { width: 85%; }
+  .pdf-canvas-wrap { max-height: 78vh; }
 }
 
-/* ✅ Landscape phones */
 @media (max-width: 768px) and (orientation: landscape) {
-  .pdf-viewer {
-    width: 100%;
-    margin: 0.6rem auto;
-    border-radius: 8px;
-  }
-  
-  .pdf-viewer iframe {
-    height: 280px;
-    border-radius: 8px;
-  }
-}
-
-/* ✅ Small phones in landscape (like iPhone 12 Pro) */
-@media (max-width: 900px) and (max-height: 500px) and (orientation: landscape) {
-  .pdf-viewer {
-    width: 100%;
-    margin: 0.5rem auto;
-    border-radius: 6px;
-  }
-  
-  .pdf-viewer iframe {
-    height: 250px;
-    border-radius: 6px;
-  }
-}
-
-/* ✅ Small-height landscape (iPhone 14 Pro Max & similar) */
-@media (max-width: 950px) and (max-height: 500px) and (orientation: landscape) {
-  .pdf-viewer {
-    width: 100%;
-    margin: 0.5rem auto;
-    border-radius: 6px;
-  }
-  
-  .pdf-viewer iframe {
-    height: 250px;
-    border-radius: 6px;
-  }
+  .pdf-viewer { width: 100%; margin: 0.6rem auto; border-radius: 8px; }
+  .pdf-canvas-wrap { max-height: 65vh; }
 }

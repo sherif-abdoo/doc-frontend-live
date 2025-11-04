@@ -13,20 +13,26 @@
     "@testing-library/user-event": "^13.5.0",
     "dompurify": "^3.2.7",
     "lucide-react": "^0.543.0",
-    "pdfjs-dist": "^5.4.149",
+    "pdfjs-dist": "5.4.394",
     "react": "18.3.1",
     "react-circular-progressbar": "^2.2.0",
     "react-dom": "18.3.1",
-    "react-pdf": "^10.1.0",
+    "react-pdf": "10.2.0",
     "react-router-dom": "^7.8.2",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
+  },
+  "overrides": {
+    "react-pdf": {
+      "pdfjs-dist": "5.4.394"
+    }
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "postinstall": "node -e \"const fs=require('fs');const path=require('path');const src=require.resolve('pdfjs-dist/build/pdf.worker.min.mjs');const dst=path.join('public','pdf.worker.min.mjs');fs.copyFileSync(src,dst);console.log('[pdfjs] copied',src,'->',dst);\""
   },
   "eslintConfig": {
     "extends": [
