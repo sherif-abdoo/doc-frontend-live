@@ -23,6 +23,7 @@ export default function CreateMaterialModal({
   const [topicsError, setTopicsError] = useState("");
 
   const [pdfUrl, setPdfUrl] = useState(""); // ✅ holds uploaded file URL
+  const [linkUrl, setLinkUrl] = useState(""); // ✅ holds the URL input
 
   const dialogRef = useRef(null);
   const titleRef = useRef(null);
@@ -45,11 +46,13 @@ export default function CreateMaterialModal({
         setSelectedTopicId(
             initialData.topicId != null ? String(initialData.topicId) : ""
         );
+        setPdfUrl(initialData.document ?? "");
       } else {
         setTitle("");
         setDescription("");
         setSelectedTopicId("");
         setPdfUrl("");
+        setLinkUrl("");
       }
       setTopicsError("");
       return () => clearTimeout(id);
@@ -89,7 +92,7 @@ export default function CreateMaterialModal({
   const canSave =
       !!title.trim() &&
       !!selectedTopicId &&
-      (isEdit || !!pdfUrl?.startsWith("http")) &&
+      ((isEdit && pdfUrl?.startsWith("http")) || linkUrl) && // ✅ Check either pdfUrl or linkUrl
       !submitting;
 
   const handleBackdrop = (e) => {
@@ -116,7 +119,7 @@ export default function CreateMaterialModal({
         description: (description ?? "").trim(),
         topicId: Number(selectedTopicId),
         topicName,
-        document: pdfUrl, // only set if create mode
+        document: pdfUrl || linkUrl, // use whichever URL is available
         materialId: initialData?.materialId,
       });
 
@@ -194,22 +197,45 @@ export default function CreateMaterialModal({
             />
           </label>
 
-          {/* ✅ Show PDF uploader ONLY when creating */}
+          {/* ✅ Show PDF uploader or Link input field only for Create mode */}
           {!isEdit && (
               <div className="ctm-label" style={{ marginTop: 12 }}>
-                Document (PDF)
-                <PdfDropzone
-                    disabled={submitting}
-                    onUploadComplete={(url) => {
-                      console.log("📤 Uploaded material PDF:", url);
-                      setPdfUrl(url);
-                    }}
-                />
-                {pdfUrl ? (
-                    <small style={{ color: "green" }}>✅ File uploaded successfully</small>
-                ) : (
-                    <small style={{ opacity: 0.7 }}>Upload a PDF to enable Create</small>
-                )}
+                <div>
+                  {/* PDF Upload */}
+                  <label>Document (PDF)</label>
+                  <PdfDropzone
+                      disabled={submitting || !!linkUrl} // Disable PDF drop if link URL exists
+                      onUploadComplete={(url) => {
+                        console.log("📤 Uploaded material PDF:", url);
+                        setPdfUrl(url);
+                        setLinkUrl(""); // Ensure PDF URL clears the link input
+                      }}
+                  />
+                  {pdfUrl ? (
+                      <small style={{ color: "green" }}>✅ File uploaded successfully</small>
+                  ) : (
+                      <small style={{ opacity: 0.7 }}>Upload a PDF to enable Create</small>
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="linkUrl">Or Upload via Link:</label>
+                  <input
+                      type="url"
+                      className="ctm-input"
+                      id="linkUrl"
+                      placeholder="Paste the link here"
+                      value={linkUrl}
+                      onChange={(e) => {
+                        setLinkUrl(e.target.value);
+                        setPdfUrl(""); // Ensure the link clears the PDF URL
+                      }}
+                      disabled={submitting || !!pdfUrl} // Disable link input if PDF is uploaded
+                  />
+                  {linkUrl && (
+                      <small style={{ color: "green" }}>✅ Link uploaded successfully</small>
+                  )}
+                </div>
               </div>
           )}
 

@@ -58,6 +58,7 @@ const MaterialsGrid = () => {
         topicId: m.topicId,
         topicName: m.Topic?.topicName, // if backend returns
         img: `/assets/Classroom/${m.Topic?.subject ?? "Default"}-Icon.png`,
+        type: m.type
       }));
       setTopics(normalized);
     } catch (e) {
@@ -211,6 +212,16 @@ const MaterialsGrid = () => {
     }
   };
 
+  const handleMaterialClick = (topic) => {
+    if (topic.type === "url") {
+      // If type is URL, open the link in a new tab
+      window.open(topic.document, "_blank");
+    } else {
+      // If type is PDF (or any other type), navigate to the material's detail page
+      navigate(`/materials/${topic.materialId}`);
+    }
+  };
+
   const canManage = !!user && (isAssistant(user) || isDoc(user));
   const SKELETON_COUNT = 6;
 
@@ -294,7 +305,7 @@ const MaterialsGrid = () => {
                     canManage={canManage}
                     onEdit={requestEdit}
                     onDelete={requestDelete}
-                    onClick={() => navigate(`/materials/${topic.materialId}`)}
+                    onClick={() => handleMaterialClick(topic)} // Use the new click handler
                 />
             ))
         )}
