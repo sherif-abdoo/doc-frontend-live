@@ -1,7 +1,7 @@
 // assistant_report.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import "./report.css";
-import { authFetch } from "../../utils/authFetch";
+import { authFetch, getAccessToken } from "../../utils/authFetch";
 import StudentTableRow from "./components/student_table_row";
 import WeeklyLogRowSkeleton from "./components/weekly_log_row_skeleton";
 
@@ -10,6 +10,26 @@ const AssistantReport = ({ topicId }) => {
     const [assistantReport, setAssistantReport] = useState(null);
     const [error, setError] = useState("");
     const [copiedAll, setCopiedAll] = useState(false);
+    const [userGroup, setUserGroup] = useState(null);
+
+    // Decode JWT token to get user group
+    useEffect(() => {
+        try {
+            const token = getAccessToken();
+            if (token) {
+                // Decode JWT token (format: header.payload.signature)
+                const payload = token.split('.')[1];
+                if (payload) {
+                    const decoded = JSON.parse(atob(payload));
+                    const group = decoded?.group;
+                    setUserGroup(group);
+                }
+            }
+        } catch (e) {
+            console.error("Failed to decode token:", e);
+            setUserGroup(null);
+        }
+    }, []);
 
     useEffect(() => {
         if (!topicId) return;
@@ -36,6 +56,11 @@ const AssistantReport = ({ topicId }) => {
 
     const cap = (s) => (typeof s === "string" && s.length ? s[0].toUpperCase() + s.slice(1) : pretty(s));
 
+    // Check if group is a single letter
+    const showAttendance = useMemo(() => {
+        return typeof userGroup === "string" && userGroup.length === 1;
+    }, [userGroup]);
+
     const assignmentCount = useMemo(() => {
         const declared = Number(assistantReport?.numberOfAssignments ?? 0);
         const fromStudents =
@@ -48,16 +73,31 @@ const AssistantReport = ({ topicId }) => {
 
     const headerCells = useMemo(() => {
         const quizTitle = assistantReport?.quizTitle || "Quiz";
+        const totalSessions = assistantReport?.totalSession;
+        const attendanceHeader = totalSessions ? `Attendance (/${totalSessions})` : "Attendance";
+        
         const base = ["Student name", quizTitle, "Percent", "Grade"];
+        
+        // Add attendance column if group is single letter
+        if (showAttendance) {
+            base.push(attendanceHeader);
+        }
+        
         const hwCols = Array.from({ length: assignmentCount }, (_, i) => `HW ${i + 1}`);
         return [...base, ...hwCols];
-    }, [assistantReport, assignmentCount]);
+    }, [assistantReport, assignmentCount, showAttendance]);
 
     const gridTemplateColumns = useMemo(() => {
         const fixed = ["3fr", "2fr", "2fr", "2fr"];
+        
+        // Add attendance column width if showing
+        if (showAttendance) {
+            fixed.push("2fr");
+        }
+        
         const hw = Array.from({ length: assignmentCount }, () => "2fr");
         return [...fixed, ...hw].join(" ");
-    }, [assignmentCount]);
+    }, [assignmentCount, showAttendance]);
 
     const rows = useMemo(() => {
         if (!assistantReport?.students) return [];
@@ -66,19 +106,30 @@ const AssistantReport = ({ topicId }) => {
             const quizScore = pretty(stu?.quizScore);
             const percentage = pretty(stu?.percentage);
             const grade = pretty(stu?.grade);
+            const attended = pretty(stu?.attended);
+            
             const asns = Array.isArray(stu?.assignments) ? stu.assignments : [];
             const asnCells = Array.from(
                 { length: assignmentCount },
                 (_, i) => cap(pretty(asns[i]?.status ?? "missing"))
             );
-            const cells = [studentName, quizScore, percentage, grade, ...asnCells];
-            const copyText = cells.join(", "); // <== comma separated
+            
+            // Build cells array with conditional attendance
+            const cells = [studentName, quizScore, percentage, grade];
+            
+            if (showAttendance) {
+                cells.push(attended);
+            }
+            
+            cells.push(...asnCells);
+            
+            const copyText = cells.join(", ");
             return { cells, copyText };
         });
-    }, [assistantReport, assignmentCount]);
+    }, [assistantReport, assignmentCount, showAttendance]);
 
     const handleCopyAll = async () => {
-        const headerCopyText = headerCells.join(", "); // <== comma separated
+        const headerCopyText = headerCells.join(", ");
         const text = [headerCopyText, ...rows.map((r) => r.copyText)].join("\n");
 
         try {
