@@ -72,13 +72,15 @@ const AssistantReport = ({ topicId }) => {
                 (_, i) => cap(pretty(asns[i]?.status ?? "missing"))
             );
             const cells = [studentName, quizScore, percentage, grade, ...asnCells];
-            const copyText = cells.join(" ");
+            const copyText = cells.join(", "); // <== comma separated
             return { cells, copyText };
         });
     }, [assistantReport, assignmentCount]);
 
     const handleCopyAll = async () => {
-        const text = rows.map((r) => r.copyText).join("\n");
+        const headerCopyText = headerCells.join(", "); // <== comma separated
+        const text = [headerCopyText, ...rows.map((r) => r.copyText)].join("\n");
+
         try {
             if (navigator.clipboard?.writeText) {
                 await navigator.clipboard.writeText(text);
