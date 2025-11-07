@@ -4,42 +4,12 @@ import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/TextLayer.css";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "../../style/submission/pdf_viewer_style.css";
+import {toRawUrl, toViewUrl} from "../../../utils/pdfUrls";
 
-// ===== CONFIG =====
-const R2_READER_BASE =
-    import.meta?.env?.VITE_R2_READER_BASE ||
-    process.env?.VITE_R2_READER_BASE ||
-    "";
-
-// Map any incoming URL to the Worker `/get?key=...`
-function toWorkerUrl(inputUrl) {
-    if (!R2_READER_BASE) return inputUrl;
-
-    try {
-        const u = new URL(inputUrl);
-        if (u.origin === new URL(R2_READER_BASE).origin) return inputUrl;
-
-        const key = u.pathname.replace(/^\/+/, "");
-        const workerUrl = new URL("/get", R2_READER_BASE);
-        workerUrl.searchParams.set("key", key);
-        return workerUrl.toString();
-    } catch {
-        const workerUrl = new URL("/get", R2_READER_BASE);
-        workerUrl.searchParams.set("key", String(inputUrl).replace(/^\/+/, ""));
-        return workerUrl.toString();
-    }
-}
-
-// ===== PDF.js worker (same-origin module worker) =====
+// PDF.js worker (same-origin module worker)
 try {
     const workerUrl = `${import.meta?.env?.BASE_URL || process.env.PUBLIC_URL || ""}/pdf.worker.min.mjs`;
     const worker = new Worker(workerUrl, { type: "module" });
-    worker.addEventListener("error", (e) =>
-        console.error("[pdfjs worker] error:", e.message || e)
-    );
-    worker.addEventListener("messageerror", (e) =>
-        console.error("[pdfjs worker] messageerror:", e.data)
-    );
     pdfjs.GlobalWorkerOptions.workerPort = worker;
 } catch (e) {
     console.error("[pdfjs] Worker setup failed; rendering may be slower.", e);
@@ -53,14 +23,16 @@ const PDFViewer = ({ pdfUrl }) => {
     const [fallback, setFallback] = useState(false);
     const fallbackTimerRef = useRef(null);
 
-    const viewerUrl = useMemo(() => toWorkerUrl(pdfUrl), [pdfUrl]);
+    // IMPORTANT: React-PDF must load RAW bytes
+    const rawUrl = useMemo(() => toRawUrl(pdfUrl), [pdfUrl]);
+    const viewerUrl = useMemo(() => toViewUrl(pdfUrl), [pdfUrl]);
 
     useEffect(() => {
         setFallback(false);
         if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
         fallbackTimerRef.current = setTimeout(() => setFallback(true), 6000);
         return () => clearTimeout(fallbackTimerRef.current);
-    }, [viewerUrl]);
+    }, [rawUrl]);
 
     const onDocLoad = ({ numPages }) => {
         setNumPages(numPages);
@@ -79,46 +51,19 @@ const PDFViewer = ({ pdfUrl }) => {
     const canPrev = pageNumber > 1;
     const canNext = numPages ? pageNumber < numPages : false;
 
-    const goPrev = () => canPrev && setPageNumber((p) => p - 1);
-    const goNext = () => canNext && setPageNumber((p) => p + 1);
-    const zoomOut = () => setScale((s) => Math.max(0.6, s - 0.1));
-    const zoomIn = () => setScale((s) => Math.min(2.5, s + 0.1));
-    const fitWidth = () => setScale(1.1);
-
-    const isAndroid =
-        typeof navigator !== "undefined" && /Android/i.test(navigator.userAgent);
-
-    const openInNewTab = (e) => {
-        if (isAndroid) {
-            e.preventDefault();
-            try {
-                window.open(viewerUrl, "_blank", "noopener,noreferrer");
-            } catch (err) {
-                console.warn("window.open failed, falling back", err);
-                window.location.href = viewerUrl;
-            }
-        }
-    };
-
     return (
         <div className="pdf-viewer pdf-viewer--canvas">
             <div className="pdf-toolbar">
-                <button onClick={goPrev} disabled={!canPrev} aria-label="Previous page">‹</button>
+                <button onClick={() => canPrev && setPageNumber(p => p - 1)} disabled={!canPrev}>‹</button>
                 <span className="pdf-page-indicator">{pageNumber}/{numPages || "—"}</span>
-                <button onClick={goNext} disabled={!canNext} aria-label="Next page">›</button>
+                <button onClick={() => canNext && setPageNumber(p => p + 1)} disabled={!canNext}>›</button>
 
                 <div className="pdf-spacer" />
-                <button onClick={zoomOut} aria-label="Zoom out">–</button>
-                <button onClick={fitWidth} aria-label="Fit to width">Fit</button>
-                <button onClick={zoomIn} aria-label="Zoom in">+</button>
+                <button onClick={() => setScale(s => Math.max(0.6, s - 0.1))}>–</button>
+                <button onClick={() => setScale(1.1)}>Fit</button>
+                <button onClick={() => setScale(s => Math.min(2.5, s + 0.1))}>+</button>
 
-                <a
-                    className="pdf-download"
-                    href={viewerUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={openInNewTab}
-                >
+                <a className="pdf-download" href={viewerUrl} target="_blank" rel="noopener noreferrer">
                     Open in new tab
                 </a>
             </div>
@@ -126,37 +71,21 @@ const PDFViewer = ({ pdfUrl }) => {
             <div className="pdf-canvas-wrap">
                 {!fallback ? (
                     <Document
-                        file={viewerUrl}
+                        file={rawUrl} /* RAW BYTES (never /get) */
                         loading={<div className="pdf-loading">Loading PDF…</div>}
                         onLoadSuccess={onDocLoad}
                         onLoadError={onError}
                         onSourceError={onError}
                         error={<div className="pdf-error">Couldn’t render PDF.</div>}
                     >
-                        <Page
-                            pageNumber={pageNumber}
-                            scale={scale}
-                            renderAnnotationLayer
-                            renderTextLayer
-                        />
+                        <Page pageNumber={pageNumber} scale={scale} renderAnnotationLayer renderTextLayer />
                     </Document>
                 ) : (
                     <div className="pdf-fallback">
-                        <object
-                            data={`${viewerUrl}#view=FitH`}
-                            type="application/pdf"
-                            className="pdf-frame"
-                        >
-                            <embed
-                                src={`${viewerUrl}#view=FitH`}
-                                type="application/pdf"
-                                className="pdf-frame"
-                            />
-                            <a href={viewerUrl} target="_blank" rel="noreferrer">Open PDF</a>
-                        </object>
+                        <iframe className="pdf-frame" src={viewerUrl} title="PDF Viewer" />
+                        <a href={viewerUrl} target="_blank" rel="noreferrer">Open PDF</a>
                     </div>
                 )}
-
                 {error && <div className="pdf-error">{error}</div>}
             </div>
         </div>

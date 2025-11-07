@@ -102,6 +102,7 @@ const MaterialsGrid = () => {
             topicId: m.topicId,
             topicName: topicName ?? "Default",
             img: `/assets/Classroom/${m.subject || "Default"}-Icon.png`,
+            type : m.type
           };
 
           setTopics((prev) => [newMaterialCard, ...prev]);

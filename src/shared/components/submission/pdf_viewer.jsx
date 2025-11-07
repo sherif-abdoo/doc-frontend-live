@@ -5,7 +5,6 @@ import OtherPDFViewer from "./PDFViewer.others.jsx";
 
 function isSafariUA(ua) {
     if (!ua) return false;
-    // true for Safari (macOS/iOS), false for Chrome/Chromium/Edge/Opera/Firefox (incl. iOS variants)
     const hasSafari = /safari/i.test(ua);
     const isOther = /(chrome|chromium|crios|edg|edgios|opr|opios|fxios|firefox|brave)/i.test(ua);
     return hasSafari && !isOther;
@@ -13,16 +12,9 @@ function isSafariUA(ua) {
 
 const PDFViewer = (props) => {
     const [isSafari, setIsSafari] = useState(false);
-
     useEffect(() => {
-        try {
-            const ua = navigator.userAgent; // runtime only to avoid SSR mismatch
-            setIsSafari(isSafariUA(ua));
-        } catch {
-            setIsSafari(false);
-        }
+        try { setIsSafari(isSafariUA(navigator.userAgent)); } catch { setIsSafari(false); }
     }, []);
-
     return isSafari ? <SafariPDFViewer {...props} /> : <OtherPDFViewer {...props} />;
 };
 
