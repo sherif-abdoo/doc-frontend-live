@@ -42,12 +42,6 @@ const TopicCard = ({ topic, onClick, canManage = false, onEdit, onDelete }) => {
                             title="Edit"
                             onClick={handleEditClick}
                         />
-                        <IconButton
-                            icon={<TrashIcon />}
-                            bg="#dc2626"
-                            title="Delete"
-                            onClick={handleDeleteClick}
-                        />
                     </div>
                 )}
             </div>
