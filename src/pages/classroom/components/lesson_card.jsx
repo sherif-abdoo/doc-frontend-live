@@ -6,20 +6,20 @@ import ShortenText from "../../../shared/components/shorten_text";
 const LessonCard = ({ lesson, type }) => {
   const navigate = useNavigate();
 
-  const isVideo = type === "video";
-  const iconSrc = isVideo
-      ? "/assets/Classroom/Playbutton.png"
-      : "/assets/Classroom/PDF.png";
-  const altText = isVideo ? "Play Video" : "Open PDF";
+  // use the REAL type coming from topicData
+  const isPdf = lesson?.type === "pdf";
+  const iconSrc = isPdf
+    ? "/assets/Classroom/PDF.png"
+    : "/assets/Classroom/Playbutton.png";
+  const altText = isPdf ? "Open PDF" : "Play Video";
 
-  // pick the correct id
   const lessonId =
-      lesson?.id ??
-      lesson?._id ??
-      lesson?.assignmentId ??
-      lesson?.quizId ??
-      lesson?.materialId ??
-      lesson?.lessonId;
+    lesson?.id ??
+    lesson?._id ??
+    lesson?.assignmentId ??
+    lesson?.quizId ??
+    lesson?.materialId ??
+    lesson?.lessonId;
 
   const openDetails = useCallback(() => {
     if (!lessonId) return;
@@ -34,13 +34,12 @@ const LessonCard = ({ lesson, type }) => {
     } else if (lowerType === "materials") {
       path = `/materials/${encodeURIComponent(lessonId)}`;
     } else {
-      path = `/homework/${encodeURIComponent(lessonId)}`; // fallback
+      path = `/homework/${encodeURIComponent(lessonId)}`;
     }
 
-    // pass singular type: "assignment", "quiz", or "material"
     const singularType = lowerType.endsWith("s")
-        ? lowerType.slice(0, -1)
-        : lowerType;
+      ? lowerType.slice(0, -1)
+      : lowerType;
 
     navigate(path, { state: { type: singularType } });
   }, [navigate, lessonId, type]);
@@ -53,23 +52,23 @@ const LessonCard = ({ lesson, type }) => {
   };
 
   return (
-      <div
-          className="lesson-card-link"
-          role="button"
-          tabIndex={0}
-          onClick={openDetails}
-          onKeyDown={onKey}
-          style={{ outline: "none", textDecoration: "none" }}
-      >
-        <div className="lesson-card">
-          <h3>{ShortenText(lesson?.title, 20) || "Untitled lesson"}</h3>
-          <div className="lesson-footer">
-            <button type="button" className="play-btn" aria-label={altText}>
-              <img src={iconSrc} alt={altText} />
-            </button>
-          </div>
+    <div
+      className="lesson-card-link"
+      role="button"
+      tabIndex={0}
+      onClick={openDetails}
+      onKeyDown={onKey}
+      style={{ outline: "none", textDecoration: "none" }}
+    >
+      <div className="lesson-card">
+        <h3>{ShortenText(lesson?.title, 20) || "Untitled lesson"}</h3>
+        <div className="lesson-footer">
+          <button type="button" className="play-btn" aria-label={altText}>
+            <img src={iconSrc} alt={altText} />
+          </button>
         </div>
       </div>
+    </div>
   );
 };
 
