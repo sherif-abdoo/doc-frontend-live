@@ -50,6 +50,7 @@ const PDFViewer = ({ pdfUrl }) => {
 
     const canPrev = pageNumber > 1;
     const canNext = numPages ? pageNumber < numPages : false;
+    console.log(pageNumber, numPages, numPages);
 
     return (
         <div className="pdf-viewer pdf-viewer--canvas">
