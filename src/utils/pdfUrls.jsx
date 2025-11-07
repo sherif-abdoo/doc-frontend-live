@@ -1,6 +1,9 @@
 // src/shared/utils/pdfUrls.js
-const R2_READER_BASE =  process.env.REACT_APP_R2_READER_BASE;
 
+const R2_READER_BASE =
+    (import.meta?.env?.REACT_APP_R2_READER_BASE) ||
+    (typeof process !== "undefined" ? process.env?.VITE_R2_READER_BASE : "") ||
+    "";
 // Extract the R2 key from:
 // - A full r2-read URL (…/get|raw|view?key=...)
 // - A plain path like /uploads/.../file.pdf
