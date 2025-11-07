@@ -1,6 +1,6 @@
 // src/shared/utils/pdfUrls.js
 const R2_READER_BASE =
-    (import.meta?.env?.VITE_R2_READER_BASE) ||
+    (import.meta?.env?.REACT_APP_R2_READER_BASE) ||
     (typeof process !== "undefined" ? process.env?.VITE_R2_READER_BASE : "") ||
     "";
 
