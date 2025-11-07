@@ -38,6 +38,7 @@ jobs:
             REACT_APP_API_BASE=
             REACT_APP_ADMIN_PASSKEY=DOCADMIN
             REACT_APP_PRESIGN_URL=https://r2-presign.dok-uploads.workers.dev
+            REACT_APP_R2_READER_BASE=https://r2-read.dok-uploads.workers.dev
             EOF
 
             if [ -f package-lock.json ]; then
