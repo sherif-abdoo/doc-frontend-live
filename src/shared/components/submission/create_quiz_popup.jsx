@@ -13,7 +13,7 @@ const toMDY = (yyyy_mm_dd) => {
 
 // various -> "YYYY-MM-DD" (for <input type="date">)
 const toISODate = (value) => {
-    if (!value) return "";
+    if (!value && value !== 0) return "";
     if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}/.test(value)) {
         return value.slice(0, 10);
     }
@@ -28,25 +28,28 @@ const toISODate = (value) => {
     return Number.isNaN(dt.getTime()) ? "" : dt.toISOString().slice(0, 10);
 };
 
-const PLACEHOLDER_PDF = "https://mag.wcoomd.org/uploads/2018/05/blank.pdf";
+const PLACEHOLDER_PDF = "https://www.africau.edu/images/default/sample.pdf";
 
 export default function CreateQuizModal({
     open,
     onClose,
-    onSubmit,
+    onSubmit,            // create: ({ title, mark, semester, dateMDY, durationInMin, topicId, quizPdf, subject })
+                         // edit:   ({ title })
     submitting = false,
     error = "",
-    mode = "create",
-    initialData,
-    lockNonEditable = true,
+    // edit props
+    mode = "create",     // "create" | "edit"
+    initialData,         // object with fields to prefill in edit mode
+    lockNonEditable = true, // when edit, lock everything except title
 }) {
     const isEdit = mode === "edit";
 
+    // always keep mark as a string in state to avoid `.trim()` errors
     const [title, setTitle] = useState("");
     const [mark, setMark] = useState("");
-    const [semester, setSemester] = useState("");
-    const [date, setDate] = useState("");
-    const [durationInMin, setDurationInMin] = useState("");
+    const [semester, setSemester] = useState(""); // Jun | Nov
+    const [date, setDate] = useState("");         // "YYYY-MM-DD"
+    const [durationInMin, setDurationInMin] = useState(""); // number string
 
     const [topics, setTopics] = useState([]);
     const [topicsLoading, setTopicsLoading] = useState(false);
@@ -58,6 +61,7 @@ export default function CreateQuizModal({
     const dialogRef = useRef(null);
     const titleRef = useRef(null);
 
+    // show/close dialog
     useEffect(() => {
         const dlg = dialogRef.current;
         if (!dlg) return;
@@ -65,28 +69,41 @@ export default function CreateQuizModal({
         if (!open && dlg.open) dlg.close();
     }, [open]);
 
+    // focus + prefill on open, reset on close
     useEffect(() => {
         if (open) {
             const id = setTimeout(() => titleRef.current?.focus(), 0);
             if (isEdit && initialData) {
                 setTitle(initialData.title ?? "");
-                setMark(initialData.mark ?? "");
+                // force mark into a string (safe if number or string)
+                setMark(initialData.mark != null ? String(initialData.mark) : "");
                 setSemester(initialData.semester ?? "");
-                setDate(toISODate(initialData.endDate || initialData.startDate || initialData.createdAt) || "");
-                setDurationInMin(initialData.durationInMin != null ? String(initialData.durationInMin) : "");
-                setSelectedTopicId(initialData.topicId != null ? String(initialData.topicId) : "");
+                setDate(
+                    toISODate(
+                        initialData.endDate ?? initialData.startDate ?? initialData.createdAt
+                    ) || ""
+                );
+                setDurationInMin(
+                    initialData.durationInMin != null ? String(initialData.durationInMin) : ""
+                );
+                setSelectedTopicId(
+                    initialData.topicId != null ? String(initialData.topicId) : ""
+                );
             }
             return () => clearTimeout(id);
         } else {
+            // reset when closed
             setTitle("");
             setMark("");
             setSemester("");
             setDate("");
             setDurationInMin("");
             setTopicsError("");
+            // keep selectedTopicId as-is for next open
         }
     }, [open, isEdit, initialData]);
 
+    // fetch topics when modal opens
     useEffect(() => {
         const fetchTopics = async () => {
             if (!open) return;
@@ -100,6 +117,7 @@ export default function CreateQuizModal({
                 }
                 const list = Array.isArray(res?.data?.topics) ? res.data.topics : [];
                 setTopics(list);
+                // If not editing, or editing without preset topic, preselect first
                 if (!selectedTopicId && list.length) {
                     setSelectedTopicId(String(list[0].topicId));
                 }
@@ -114,13 +132,17 @@ export default function CreateQuizModal({
         fetchTopics();
     }, [open, selectedTopicId]);
 
+    // normalized mark string for checks
+    const markStr = mark == null ? "" : String(mark);
+
+    // numeric versions
     const markNumber = useMemo(() => {
-        const n = Number(mark);
+        const n = Number(markStr);
         return Number.isFinite(n) ? n : NaN;
-    }, [mark]);
+    }, [markStr]);
 
     const durationNumber = useMemo(() => {
-        const n = Number(durationInMin);
+        const n = Number(durationInMin == null ? "" : String(durationInMin));
         return Number.isFinite(n) ? n : NaN;
     }, [durationInMin]);
 
@@ -129,7 +151,7 @@ export default function CreateQuizModal({
         !!semester &&
         !!selectedTopicId &&
         !!date &&
-        mark.trim() !== "" &&
+        String(markStr).trim() !== "" &&   // require non-empty mark
         Number.isFinite(markNumber) &&
         markNumber >= 0 &&
         Number.isFinite(durationNumber) &&
@@ -154,16 +176,26 @@ export default function CreateQuizModal({
         if (clickedOutside && !submitting) onClose?.();
     };
 
+    const prevent = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+    const onDragEnter = (e) => { prevent(e); setIsDragOver(true); };
+    const onDragLeave = (e) => { prevent(e); setIsDragOver(false); };
+    const onDrop = (e) => { prevent(e); setIsDragOver(false); /* no-op for now */ };
+
     const handleSave = async () => {
         if (!canSave) return;
 
         if (isEdit) {
+            // Only send the editable field (title)
             await onSubmit?.({
                 title: title.trim(),
             });
             return;
         }
 
+        // CREATE
         const chosen = topics.find((t) => String(t.topicId) === String(selectedTopicId));
         const subject = chosen?.subject;
 
@@ -171,24 +203,25 @@ export default function CreateQuizModal({
             title: title.trim(),
             mark: markNumber,
             semester,
-            dateMDY: toMDY(date),
+            dateMDY: toMDY(date),           // backend wants M/D/YYYY
             durationInMin: durationNumber,
             topicId: Number(selectedTopicId),
             quizPdf: PLACEHOLDER_PDF,
-            subject,
+            subject,                        // used for local render color
         };
 
         await onSubmit?.(form);
     };
 
-    const disableWhenEdit = (state = false) =>
-        isEdit && lockNonEditable ? true : state;
+    const disableWhenEdit = (defaultDisabled = false) =>
+        isEdit && lockNonEditable ? true : defaultDisabled;
 
     return (
         <dialog ref={dialogRef} className="ctm-dialog" onClick={handleBackdrop}>
             <form className="ctm-card" method="dialog" onSubmit={(e) => e.preventDefault()}>
                 <h3 className="ctm-title">{isEdit ? "Edit Quiz" : "Create New Quiz"}</h3>
 
+                {/* Topic */}
                 <label className="ctm-label">
                     Topic
                     <select
@@ -210,6 +243,7 @@ export default function CreateQuizModal({
 
                 {topicsError ? <p className="ctm-error" style={{ marginTop: 6 }}>{topicsError}</p> : null}
 
+                {/* Title */}
                 <label className="ctm-label">
                     Title
                     <input
@@ -224,13 +258,14 @@ export default function CreateQuizModal({
                     />
                 </label>
 
+                {/* Mark */}
                 <label className="ctm-label">
                     Mark
                     <input
                         type="number"
                         className="ctm-input"
                         placeholder="50"
-                        value={mark}
+                        value={markStr}
                         onChange={(e) => setMark(e.target.value)}
                         disabled={disableWhenEdit(submitting)}
                         min={0}
@@ -238,6 +273,7 @@ export default function CreateQuizModal({
                     />
                 </label>
 
+                {/* Semester */}
                 <div className="ctm-checkrow" style={{ marginTop: 12 }}>
                     <span style={{ fontSize: 14, marginRight: 6 }}>Semester:</span>
                     <label className="ctm-check">
@@ -260,6 +296,7 @@ export default function CreateQuizModal({
                     </label>
                 </div>
 
+                {/* Date */}
                 <label className="ctm-label" style={{ marginTop: 12 }}>
                     Date
                     <input
@@ -271,6 +308,7 @@ export default function CreateQuizModal({
                     />
                 </label>
 
+                {/* Duration */}
                 <label className="ctm-label">
                     Duration (minutes)
                     <input
@@ -298,6 +336,15 @@ export default function CreateQuizModal({
                         className="ctm-btn ctm-btn-primary"
                         disabled={!canSave}
                         onClick={handleSave}
+                        title={
+                            !canSave
+                                ? isEdit
+                                    ? "Enter a title"
+                                    : "Fill all required fields"
+                                : isEdit
+                                    ? "Save changes"
+                                    : "Create quiz"
+                        }
                     >
                         {submitting ? (isEdit ? "Saving…" : "Creating…") : isEdit ? "Save" : "Create"}
                     </button>
