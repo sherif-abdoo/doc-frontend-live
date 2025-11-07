@@ -163,8 +163,8 @@ const TopicDetailPage = () => {
                 <h2 className="section-title">Assignments : </h2>
                 <VideoLessons lessons={topicData.assignments} type="Assignments" />
 
-                <h2 className="section-title">Quizzes : </h2>
-                <VideoLessons lessons={topicData.quizzes} type= "Quizzes" />
+                {/* <h2 className="section-title">Quizzes : </h2>
+                <VideoLessons lessons={topicData.quizzes} type= "Quizzes" /> */}
             </main>
         </div>
         </Layout>
