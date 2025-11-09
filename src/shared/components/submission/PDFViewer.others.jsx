@@ -33,7 +33,6 @@ const PDFViewer = ({ pdfUrl, filename }) => {
                 style={{ width: "100%", height: "80vh", border: 0 }}
             />
             <div style={{ marginTop: 8, display: "flex", gap: 12 }}>
-                <a href={viewerUrl} target="_blank" rel="noopener noreferrer">Open in new tab</a>
                 <a
                     href={downloadUrl}
                     onClick={(e) => {
