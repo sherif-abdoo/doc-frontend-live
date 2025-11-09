@@ -1,10 +1,9 @@
-// src/shared/components/submission/PDFViewer.safari.jsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/TextLayer.css";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "../../style/submission/pdf_viewer_style.css";
-import {toRawUrl, toViewUrl} from "../../../utils/pdfUrls";
+import { toRawUrl, toViewUrl, toDownloadUrl } from "../../../utils/pdfUrls";
 
 // PDF.js worker (same-origin module worker)
 try {
@@ -15,7 +14,7 @@ try {
     console.error("[pdfjs] Worker setup failed; rendering may be slower.", e);
 }
 
-const PDFViewer = ({ pdfUrl }) => {
+const PDFViewer = ({ pdfUrl, filename }) => {
     const [numPages, setNumPages] = useState(null);
     const [pageNumber, setPageNumber] = useState(1);
     const [scale, setScale] = useState(1.1);
@@ -23,9 +22,9 @@ const PDFViewer = ({ pdfUrl }) => {
     const [fallback, setFallback] = useState(false);
     const fallbackTimerRef = useRef(null);
 
-    // IMPORTANT: React-PDF must load RAW bytes
     const rawUrl = useMemo(() => toRawUrl(pdfUrl), [pdfUrl]);
     const viewerUrl = useMemo(() => toViewUrl(pdfUrl), [pdfUrl]);
+    const downloadUrl = useMemo(() => toDownloadUrl(pdfUrl, filename), [pdfUrl, filename]);
 
     useEffect(() => {
         setFallback(false);
@@ -66,12 +65,15 @@ const PDFViewer = ({ pdfUrl }) => {
                 <a className="pdf-download" href={viewerUrl} target="_blank" rel="noopener noreferrer">
                     Open in new tab
                 </a>
+                <a className="pdf-download" href={downloadUrl}>
+                    Download
+                </a>
             </div>
 
             <div className="pdf-canvas-wrap">
                 {!fallback ? (
                     <Document
-                        file={rawUrl} /* RAW BYTES (never /get) */
+                        file={rawUrl}
                         loading={<div className="pdf-loading">Loading PDF…</div>}
                         onLoadSuccess={onDocLoad}
                         onLoadError={onError}
@@ -83,7 +85,9 @@ const PDFViewer = ({ pdfUrl }) => {
                 ) : (
                     <div className="pdf-fallback">
                         <iframe className="pdf-frame" src={viewerUrl} title="PDF Viewer" />
-                        <a href={viewerUrl} target="_blank" rel="noreferrer">Open PDF</a>
+                        <div style={{ marginTop: 8 }}>
+                            <a href={viewerUrl} target="_blank" rel="noreferrer">Open PDF</a>
+                        </div>
                     </div>
                 )}
                 {error && <div className="pdf-error">{error}</div>}

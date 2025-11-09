@@ -1,38 +1,83 @@
-// src/shared/utils/pdfUrls.js
+// src/utils/pdfUrls.js
+// Robust helpers that keep the original origin + path prefix (works with /r2/*, /files/*, etc.)
 
-const R2_READER_BASE =
-    (import.meta?.env?.REACT_APP_R2_READER_BASE) ||
-    (typeof process !== "undefined" ? process.env?.VITE_R2_READER_BASE : "") ||
-    "";
-// Extract the R2 key from:
-// - A full r2-read URL (…/get|raw|view?key=...)
-// - A plain path like /uploads/.../file.pdf
-// - Any absolute URL (we'll use its pathname as the key)
-function extractKey(inputUrl) {
-    if (!inputUrl) return "";
+function sanitizeFilename(name) {
+    if (!name) return "file.pdf";
+    return name.replace(/[/\\?%*:|"<>]/g, "_").slice(0, 200);
+}
+
+function asURL(url) {
+    return new URL(url, typeof window !== "undefined" ? window.location.href : "http://localhost");
+}
+
+function withQueryString(u, params) {
+    Object.entries(params || {}).forEach(([k, v]) => {
+        if (v === undefined || v === null || v === "") return;
+        u.searchParams.set(k, String(v));
+    });
+    return u;
+}
+
+function swapLastPathSegment(u, newSegment) {
+    const parts = u.pathname.split("/");
+    if (parts.length === 0) return u;
+    parts[parts.length - 1] = newSegment.startsWith("/") ? newSegment.slice(1) : newSegment;
+    u.pathname = parts.join("/");
+    return u;
+}
+
+export function toViewUrl(url) {
     try {
-        const u = new URL(inputUrl, typeof window !== "undefined" ? window.location.origin : "https://local.test");
-        if (R2_READER_BASE && u.origin === new URL(R2_READER_BASE).origin) {
-            return decodeURIComponent(u.searchParams.get("key") || u.pathname.replace(/^\/+/, ""));
+        const u = asURL(url);
+        const last = u.pathname.split("/").pop() || "";
+        const key = u.searchParams.get("key");
+        if (!key) return url;
+
+        if (last === "view") return u.toString();
+        if (last === "get" || last === "download") {
+            return swapLastPathSegment(u, "view").toString();
         }
-        return decodeURIComponent(u.pathname.replace(/^\/+/, ""));
+        return swapLastPathSegment(u, "view").toString();
     } catch {
-        return String(inputUrl).replace(/^\/+/, "");
+        return url;
     }
 }
 
-export function toRawUrl(inputUrl) {
-    if (!R2_READER_BASE) return inputUrl;
-    const key = extractKey(inputUrl);
-    const u = new URL("/raw", R2_READER_BASE);
-    u.searchParams.set("key", encodeURIComponent(key));
-    return u.toString();
+export function toRawUrl(url) {
+    try {
+        const u = asURL(url);
+        const last = u.pathname.split("/").pop() || "";
+        const key = u.searchParams.get("key");
+        if (!key) return url;
+
+        if (last === "get") return u.toString();
+        if (last === "view" || last === "download") {
+            return swapLastPathSegment(u, "get").toString();
+        }
+        return swapLastPathSegment(u, "get").toString();
+    } catch {
+        return url;
+    }
 }
 
-export function toViewUrl(inputUrl) {
-    if (!R2_READER_BASE) return inputUrl;
-    const key = extractKey(inputUrl);
-    const u = new URL("/view", R2_READER_BASE);
-    u.searchParams.set("key", encodeURIComponent(key));
-    return u.toString();
+export function toDownloadUrl(url, filename) {
+    // Always prefer GET + dl=1 (works everywhere with your updated worker)
+    const safe = sanitizeFilename(filename || "file.pdf");
+    try {
+        const u = asURL(url);
+        const key = u.searchParams.get("key");
+        if (key) {
+            // whatever the tail is, make it /get and add dl + filename
+            return withQueryString(swapLastPathSegment(u, "get"), { dl: 1, filename: safe }).toString();
+        }
+        // fallback
+        return withQueryString(u, { dl: 1, filename: safe }).toString();
+    } catch {
+        try {
+            const u2 = asURL(url);
+            return withQueryString(u2, { dl: 1, filename: safe }).toString();
+        } catch {
+            return url;
+        }
+    }
 }
