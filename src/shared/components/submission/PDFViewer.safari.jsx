@@ -38,6 +38,7 @@ const PDFViewer = ({ pdfUrl, filename }) => {
         setPageNumber(1);
         setError("");
         setFallback(false);
+
         if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
     };
 

@@ -40,6 +40,7 @@ const PDFViewer = ({ pdfUrl, filename }) => {
         setError("");
         setFallback(false);
         if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
+
     };
 
     const onError = (e) => {

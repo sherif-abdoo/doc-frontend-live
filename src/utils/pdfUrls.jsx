@@ -3,6 +3,7 @@
 
 function sanitizeFilename(name) {
     if (!name) return "file.pdf";
+
     return name.replace(/[/\\?%*:|"<>]/g, "_").slice(0, 200);
 }
 
