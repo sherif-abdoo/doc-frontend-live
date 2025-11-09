@@ -7,7 +7,8 @@ import { authFetch } from "../../../utils/authFetch";
 import AlertBanner from "../../../shared/components/alert_banner";
 import TopicLoadingCard from "./topic_loading_card";
 import { useAuth } from "../../../hooks/useAuth";
-import { isAssistant, isDoc  } from "../../../utils/roles";
+import { isAssistant, isDoc } from "../../../utils/roles";
+import AreYouSureModal from "../../../shared/components/are_you_sure";
 
 const TopicGrid = () => {
     const navigate = useNavigate();
@@ -16,8 +17,14 @@ const TopicGrid = () => {
     const [topics, setTopics] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    // create
     const [modalOpen, setModalOpen] = useState(false);
     const [submitting, setSubmitting] = useState(false);
+
+    // edit
+    const [editOpen, setEditOpen] = useState(false);
+    const [editingItem, setEditingItem] = useState(null);
+    const [savingEdit, setSavingEdit] = useState(false);
 
     const [alertState, setAlertState] = useState({
         open: false,
@@ -102,7 +109,65 @@ const TopicGrid = () => {
         }
     };
 
-    const canCreateTopic = !!user && (isAssistant(user) || isDoc(user));
+    // EDIT open
+    const requestEdit = (topic) => {
+        setEditingItem(topic);
+        setEditOpen(true);
+    };
+
+    const closeEditModal = () => {
+        if (!savingEdit) {
+            setEditOpen(false);
+            setEditingItem(null);
+        }
+    };
+
+    // EDIT submit (PATCH /topic/updateTopic/{id})
+    const submitEdit = async ({ title, semester, subject }) => {
+        if (!editingItem) return;
+        setSavingEdit(true);
+        try {
+            const body = {
+                topicName: title.trim(),
+                semester,
+                subject,
+            };
+
+            const res = await authFetch(
+                "PATCH",
+                `/topic/updateTopic/${editingItem.id}`,
+                body
+            );
+
+            if (res?.status === "success") {
+                // local update
+                setTopics((prev) =>
+                    prev.map((t) =>
+                        t.id === editingItem.id
+                            ? {
+                                ...t,
+                                title: body.topicName,
+                                semester: body.semester,
+                                subject: body.subject,
+                                img: `/assets/Classroom/${body.subject}-Icon.png`,
+                            }
+                            : t
+                    )
+                );
+                showAlert(res?.message || "Topic updated successfully");
+                setEditOpen(false);
+                setEditingItem(null);
+            } else {
+                showAlert(res?.message || "Failed to update topic", true);
+            }
+        } catch (e) {
+            showAlert(e?.message || "Failed to update topic", true);
+        } finally {
+            setSavingEdit(false);
+        }
+    };
+
+    const canManage = !!user && (isAssistant(user) || isDoc(user));
 
     const SKELETON_COUNT = 6;
 
@@ -115,12 +180,31 @@ const TopicGrid = () => {
                 onClose={() => setAlertState((p) => ({ ...p, open: false }))}
             />
 
-            {/* Don't render the Create card while auth is still hydrating to avoid flicker */}
-            {canCreateTopic && !authLoading && (
+            {/* EDIT modal (reuse create modal ui) */}
+            <CreateTopicModal
+                open={editOpen}
+                onClose={closeEditModal}
+                onSubmit={submitEdit}
+                submitting={savingEdit}
+                mode="edit"
+                initialData={
+                    editingItem
+                        ? {
+                            title: editingItem.title,
+                            semester: editingItem.semester,
+                            subject: editingItem.subject,
+                        }
+                        : undefined
+                }
+            />
+
+            {/* Create button */}
+            {canManage && !authLoading && (
                 <TopicCard
                     key="create"
                     topic={{ title: "Create new topic", img: `/assets/Classroom/add_button.png` }}
                     onClick={openCreateModal}
+                    canManage={false}
                 />
             )}
 
@@ -141,12 +225,15 @@ const TopicGrid = () => {
                 topics.map((topic) => (
                     <TopicCard
                         key={topic.id}
-                        topic={{ title: topic.title, img: topic.img }}
+                        topic={topic}
+                        canManage={canManage}
+                        onEdit={requestEdit}
                         onClick={() => handleTopicClick(topic.id)}
                     />
                 ))
             )}
 
+            {/* Create modal */}
             <CreateTopicModal
                 open={modalOpen}
                 onClose={closeCreateModal}

@@ -13,7 +13,7 @@ const toMDY = (yyyy_mm_dd) => {
 
 // various -> "YYYY-MM-DD" (for <input type="date">)
 const toISODate = (value) => {
-    if (!value) return "";
+    if (!value && value !== 0) return "";
     if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}/.test(value)) {
         return value.slice(0, 10);
     }
@@ -31,22 +31,23 @@ const toISODate = (value) => {
 const PLACEHOLDER_PDF = "https://www.africau.edu/images/default/sample.pdf";
 
 export default function CreateQuizModal({
-                                            open,
-                                            onClose,
-                                            onSubmit,            // create: ({ title, mark, semester, dateMDY, durationInMin, topicId, quizPdf, subject })
-                                                                 // edit:   ({ title })
-                                            submitting = false,
-                                            error = "",
-                                            // edit props
-                                            mode = "create",     // "create" | "edit"
-                                            initialData,         // object with fields to prefill in edit mode
-                                            lockNonEditable = true, // when edit, lock everything except title
-                                        }) {
+    open,
+    onClose,
+    onSubmit,            // create: ({ title, mark, semester, dateMDY, durationInMin, topicId, quizPdf, subject })
+                         // edit:   ({ title })
+    submitting = false,
+    error = "",
+    // edit props
+    mode = "create",     // "create" | "edit"
+    initialData,         // object with fields to prefill in edit mode
+    lockNonEditable = true, // when edit, lock everything except title
+}) {
     const isEdit = mode === "edit";
 
+    // always keep mark as a string in state to avoid `.trim()` errors
     const [title, setTitle] = useState("");
     const [mark, setMark] = useState("");
-    const [semester, setSemester] = useState(""); // June | November
+    const [semester, setSemester] = useState(""); // Jun | Nov
     const [date, setDate] = useState("");         // "YYYY-MM-DD"
     const [durationInMin, setDurationInMin] = useState(""); // number string
 
@@ -60,7 +61,7 @@ export default function CreateQuizModal({
     const dialogRef = useRef(null);
     const titleRef = useRef(null);
 
-    // open/close <dialog>
+    // show/close dialog
     useEffect(() => {
         const dlg = dialogRef.current;
         if (!dlg) return;
@@ -68,16 +69,20 @@ export default function CreateQuizModal({
         if (!open && dlg.open) dlg.close();
     }, [open]);
 
-    // focus + reset on close; prefill on open in edit mode
+    // focus + prefill on open, reset on close
     useEffect(() => {
         if (open) {
             const id = setTimeout(() => titleRef.current?.focus(), 0);
-            // prefill if edit
             if (isEdit && initialData) {
                 setTitle(initialData.title ?? "");
-                setMark(initialData.mark ?? "");
+                // force mark into a string (safe if number or string)
+                setMark(initialData.mark != null ? String(initialData.mark) : "");
                 setSemester(initialData.semester ?? "");
-                setDate(toISODate(initialData.endDate || initialData.startDate || initialData.createdAt) || "");
+                setDate(
+                    toISODate(
+                        initialData.endDate ?? initialData.startDate ?? initialData.createdAt
+                    ) || ""
+                );
                 setDurationInMin(
                     initialData.durationInMin != null ? String(initialData.durationInMin) : ""
                 );
@@ -127,13 +132,17 @@ export default function CreateQuizModal({
         fetchTopics();
     }, [open, selectedTopicId]);
 
+    // normalized mark string for checks
+    const markStr = mark == null ? "" : String(mark);
+
+    // numeric versions
     const markNumber = useMemo(() => {
-        const n = Number(mark);
+        const n = Number(markStr);
         return Number.isFinite(n) ? n : NaN;
-    }, [mark]);
+    }, [markStr]);
 
     const durationNumber = useMemo(() => {
-        const n = Number(durationInMin);
+        const n = Number(durationInMin == null ? "" : String(durationInMin));
         return Number.isFinite(n) ? n : NaN;
     }, [durationInMin]);
 
@@ -142,15 +151,14 @@ export default function CreateQuizModal({
         !!semester &&
         !!selectedTopicId &&
         !!date &&
+        String(markStr).trim() !== "" &&   // require non-empty mark
         Number.isFinite(markNumber) &&
         markNumber >= 0 &&
         Number.isFinite(durationNumber) &&
         durationNumber > 0 &&
         !submitting;
 
-    // In edit mode only title is required & editable
     const canSaveEdit = !!title.trim() && !submitting;
-
     const canSave = isEdit ? canSaveEdit : canSaveCreate;
 
     const toggleSemester = (value) =>
@@ -174,7 +182,7 @@ export default function CreateQuizModal({
     };
     const onDragEnter = (e) => { prevent(e); setIsDragOver(true); };
     const onDragLeave = (e) => { prevent(e); setIsDragOver(false); };
-    const onDrop = (e) => { prevent(e); setIsDragOver(false); /* no-op */ };
+    const onDrop = (e) => { prevent(e); setIsDragOver(false); /* no-op for now */ };
 
     const handleSave = async () => {
         if (!canSave) return;
@@ -235,7 +243,7 @@ export default function CreateQuizModal({
 
                 {topicsError ? <p className="ctm-error" style={{ marginTop: 6 }}>{topicsError}</p> : null}
 
-                {/* Title (only editable field in edit mode) */}
+                {/* Title */}
                 <label className="ctm-label">
                     Title
                     <input
@@ -245,7 +253,7 @@ export default function CreateQuizModal({
                         placeholder="e.g., Biology Quiz 1"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        disabled={submitting /* remains editable in edit mode */}
+                        disabled={submitting}
                         minLength={2}
                     />
                 </label>
@@ -257,10 +265,11 @@ export default function CreateQuizModal({
                         type="number"
                         className="ctm-input"
                         placeholder="50"
-                        value={mark}
+                        value={markStr}
                         onChange={(e) => setMark(e.target.value)}
                         disabled={disableWhenEdit(submitting)}
                         min={0}
+                        required
                     />
                 </label>
 

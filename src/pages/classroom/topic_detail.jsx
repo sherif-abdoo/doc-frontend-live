@@ -28,21 +28,64 @@ const TopicDetailPage = () => {
         const fetchTopic = async () => {
             setLoading(true);
             setError("");
-            try {
-                const url = `/topic/get_topic_by_id/${encodeURIComponent(
-                    topicId
-                )}`;
 
-                const res = await authFetch("GET",url);
+            try {
+                const url = `/topic/get_topic_by_id/${encodeURIComponent(topicId)}`;
+                const res = await authFetch("GET", url);
 
                 console.log(res);
-                if (! res.status === "success") {
+                if (res.status !== "success") {
                     throw new Error(`Request failed with status ${res.status}`);
                 }
 
+                // ✅ Fetch materials before setting topicData
+                const materialsWithType = await Promise.all(
+                    (res.data.materials || []).map(async (material) => {
+                        try {
+                            const materialRes = await authFetch(
+                                "GET",
+                                `/material/get_material_by_id/${material.id}`
+                            );
+
+                            if (materialRes.status === "success" && materialRes.data?.found) {
+                                const materialData = materialRes.data.found;
+                                const fileUrl = materialData.document || materialData.link || "";
+                                const isPdf = fileUrl.toLowerCase().endsWith(".pdf");
+
+                                return {
+                                    ...material,
+                                    type: isPdf ? "pdf" : "video",
+                                    document: materialData.document,
+                                    link: materialData.link,
+                                };
+                            }
+                            return material;
+                        } catch (e) {
+                            console.error(`Failed to fetch material ${material.id}:`, e);
+                            return material;
+                        }
+                    })
+                );
+
+                const assignmentsWithType = (res.data.assignments || []).map((assignment) => ({
+                    ...assignment,
+                    type: "pdf"
+                }));
+
+                const quizzesWithType = (res.data.quizzes || []).map((quiz) => ({
+                    ...quiz,
+                    type: "pdf"
+                }));
 
                 if (!isActive) return;
-                setTopicData(res.data);
+
+                setTopicData({
+                    ...res.data,
+                    materials: materialsWithType,
+                    assignments: assignmentsWithType,
+                    quizzes: quizzesWithType,
+                });
+
             } catch (e) {
                 if (!isActive) return;
                 setError(e.message || "Failed to load topic");
@@ -52,6 +95,7 @@ const TopicDetailPage = () => {
         };
 
         fetchTopic();
+
         return () => {
             isActive = false;
             controller.abort();
@@ -68,6 +112,7 @@ const TopicDetailPage = () => {
     const sidebarColor =
         subjectBgMap[topicData?.subject] ?? appColors.chemCard;
 
+        console.log("Topic Data:", topicData);
     if (loading) {
         return (
             <div className="classroom-container">
@@ -118,8 +163,8 @@ const TopicDetailPage = () => {
                 <h2 className="section-title">Assignments : </h2>
                 <VideoLessons lessons={topicData.assignments} type="Assignments" />
 
-                <h2 className="section-title">Quizzes : </h2>
-                <VideoLessons lessons={topicData.quizzes} type= "Quizzes" />
+                {/* <h2 className="section-title">Quizzes : </h2>
+                <VideoLessons lessons={topicData.quizzes} type= "Quizzes" /> */}
             </main>
         </div>
         </Layout>
