@@ -230,7 +230,24 @@ const SubmissionDetails = ({ type }) => {
                             {t === "quiz" ? (
                                 // QUIZ: Show centered larger buttons
                                 isSubmitted ? (
-                                    <SubmittedMessage type={type} />
+                                    <div className="quiz-buttons-container">
+                                        <button
+                                            type="button"
+                                            className="quiz-btn"
+                                            onClick={openMeeting}
+                                            title="Join Meeting"
+                                        >
+                                            Join Meeting
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="quiz-btn"
+                                            onClick={handleQuizSubmitOpen}
+                                            title="Submit your quiz PDF"
+                                        >
+                                            Resubmit Solution
+                                        </button>
+                                    </div>
                                 ) : (
                                     <div className="quiz-buttons-container">
                                         <button
@@ -260,6 +277,7 @@ const SubmissionDetails = ({ type }) => {
                                             <SubmittedMessage type={type} />
                                         ) : (
                                             t === "assignment" && (
+                                                //TODO :: change
                                                 <SubmitButton type={type} onClick={handleAssignmentSubmitOpen} />
                                             )
                                         ))}
@@ -279,6 +297,7 @@ const SubmissionDetails = ({ type }) => {
                     type={t}                          // "assignment" | "quiz"
                     onSubmitted={handleSubmitted}
                     authFetch={authFetch}
+                    resub={false}
                 />
             )}
         </Layout>

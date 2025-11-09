@@ -59,7 +59,7 @@ const PDFViewer = ({ pdfUrl, filename }) => {
             try {
                 const viewerOrigin = new URL(viewerUrl).origin;
                 if (e.origin === viewerOrigin && e.data && e.data.type === "r2-download") {
-                    show("Downloading… check notifications");
+                    show("Downloading… check downloads");
                 }
             } catch {
                 /* ignore */
@@ -92,7 +92,7 @@ const PDFViewer = ({ pdfUrl, filename }) => {
                     href={downloadUrl}
                     onClick={(e) => {
                         e.preventDefault();
-                        show("Downloading… check notifications");
+                        show("Downloading… check downloads");
                         // same-tab navigation is the most reliable for iOS/Safari/Chrome mobile
                         window.location.assign(downloadUrl);
                     }}

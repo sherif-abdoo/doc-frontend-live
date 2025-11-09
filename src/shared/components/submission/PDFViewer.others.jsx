@@ -14,7 +14,7 @@ const PDFViewer = ({ pdfUrl, filename }) => {
             try {
                 const viewerOrigin = new URL(viewerUrl).origin;
                 if (e.origin === viewerOrigin && e.data && e.data.type === "r2-download") {
-                    show("Downloading… check notifications");
+                    show("Downloading… check downloads");
                 }
             } catch {}
         };
