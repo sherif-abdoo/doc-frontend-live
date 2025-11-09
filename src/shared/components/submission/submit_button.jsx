@@ -13,7 +13,7 @@ const SubmitButton = ({ type, onClick, disabled = false }) => {
         ) : (
             <>
               <Upload className="icon" />
-              Submit {type}
+              {type}
             </>
         )}
       </button>

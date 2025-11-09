@@ -230,7 +230,24 @@ const SubmissionDetails = ({ type }) => {
                             {t === "quiz" ? (
                                 // QUIZ: Show centered larger buttons
                                 isSubmitted ? (
-                                    <SubmittedMessage type={type} />
+                                    <div className="quiz-buttons-container">
+                                        <button
+                                            type="button"
+                                            className="quiz-btn"
+                                            onClick={openMeeting}
+                                            title="Join Meeting"
+                                        >
+                                            Join Meeting
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="quiz-btn"
+                                            onClick={handleQuizSubmitOpen}
+                                            title="Submit your quiz PDF"
+                                        >
+                                            Re-Submit Solution
+                                        </button>
+                                    </div>
                                 ) : (
                                     <div className="quiz-buttons-container">
                                         <button
@@ -257,10 +274,10 @@ const SubmissionDetails = ({ type }) => {
 
                                     {t !== "material" &&
                                         (isSubmitted ? (
-                                            <SubmittedMessage type={type} />
+                                            <SubmitButton type={`Re-Submit ${type}`} onClick={handleAssignmentSubmitOpen} />
                                         ) : (
                                             t === "assignment" && (
-                                                <SubmitButton type={type} onClick={handleAssignmentSubmitOpen} />
+                                                <SubmitButton type={`Submit ${type}`} onClick={handleAssignmentSubmitOpen} />
                                             )
                                         ))}
                                 </>
