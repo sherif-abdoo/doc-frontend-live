@@ -331,27 +331,43 @@ const SubmissionList = ({
             setAlertState({ open: true, error: true, message: "Missing submission id" });
             return;
         }
+
         try {
             setViewPdfLoadingId(subId);
+
             const res = await authFetch(
                 "GET",
                 `/admin/findSubmissionById/${encodeURIComponent(subId)}`
             );
+
             const url =
                 res?.data?.found?.answers ||
                 res?.found?.answers ||
                 res?.data?.answers ||
                 null;
 
-            if (url) {
-                window.open(url, "_blank", "noopener,noreferrer");
-            } else {
+            if (!url) {
                 setAlertState({
                     open: true,
                     error: true,
                     message: "No PDF URL found for this submission.",
                 });
+                return;
             }
+
+            // 🔽 Automatically start download (no new tab)
+            // Prefer your Worker’s /download endpoint if it exists
+            const downloadUrl = url.includes("/get")
+                ? url.replace("/get", "/download")
+                : url.includes("/view")
+                    ? url.replace("/view", "/download")
+                    : url;
+
+            // Trigger browser download (safe, no popup blockers)
+            window.location.assign(downloadUrl);
+
+            // Optionally show a toast
+            // show("Downloading… check notifications"); // if you have useDownloadToast
         } catch (e) {
             const msg =
                 e?.payload?.data?.message ||
@@ -363,6 +379,7 @@ const SubmissionList = ({
             setViewPdfLoadingId(null);
         }
     };
+
 
     if (loading) {
         return (
