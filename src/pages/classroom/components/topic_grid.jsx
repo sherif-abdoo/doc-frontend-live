@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import TopicCard from "./topic_card";
 import "../style/topic_grid_style.css";
@@ -26,6 +26,11 @@ const TopicGrid = () => {
     const [editingItem, setEditingItem] = useState(null);
     const [savingEdit, setSavingEdit] = useState(false);
 
+    // delete (mimics submission_list flow)
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [pendingDelete, setPendingDelete] = useState(null);
+    const [deleting, setDeleting] = useState(false);
+
     const [alertState, setAlertState] = useState({
         open: false,
         message: "",
@@ -46,7 +51,8 @@ const TopicGrid = () => {
 
             const list = res?.data?.topics ?? [];
             const normalized = list.map((t) => ({
-                id: t.topicId,
+                id: t.topicId ?? t.id ?? t.materialId,
+                materialId: t.materialId ?? t.id,
                 title: t.title ?? t.topicName,
                 semester: t.semester,
                 subject: t.subject,
@@ -83,14 +89,15 @@ const TopicGrid = () => {
                 const t = res?.data;
                 if (t) {
                     const newTopic = {
-                        id: t.id,
+                        id: t.id ?? t.topicId ?? t.materialId,
+                        materialId: t.materialId ?? t.id,
                         title: t.title ?? t.topicName,
                         semester: t.semester,
                         subject: t.subject,
                         isActive: t.isActive,
                         adminId: t.adminId,
                         order: t.order,
-                        img: `/assets/Classroom/${t.subject}-Icon.png`
+                        img: `/assets/Classroom/${t.subject}-Icon.png`,
                     };
                     setTopics((prev) => [newTopic, ...prev]);
                     showAlert(res?.message || "Topic created successfully");
@@ -140,7 +147,6 @@ const TopicGrid = () => {
             );
 
             if (res?.status === "success") {
-                // local update
                 setTopics((prev) =>
                     prev.map((t) =>
                         t.id === editingItem.id
@@ -167,9 +173,54 @@ const TopicGrid = () => {
         }
     };
 
+    // DELETE request + confirm (DELETE /material/deleteMaterial/{materialId})
+    const requestDelete = (topic) => {
+        setPendingDelete(topic);
+        setConfirmOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!pendingDelete) return;
+        setDeleting(true);
+
+        const topicId =
+            pendingDelete.id ?? pendingDelete.id ?? pendingDelete.topicId;
+
+        try {
+            await authFetch(
+                "DELETE",
+                `/topic/deleteTopic/${encodeURIComponent(topicId)}`
+            );
+
+            setTopics((prev) =>
+                prev.filter(
+                    (t) =>
+                        (t.materialId ?? t.id ?? t.topicId) !== (topicId ?? "__none__")
+                )
+            );
+            showAlert("Topic deleted");
+        } catch (e) {
+            showAlert(e?.message || "Failed to delete topic", true);
+        } finally {
+            setDeleting(false);
+            setConfirmOpen(false);
+            setPendingDelete(null);
+        }
+    };
+
     const canManage = !!user && (isAssistant(user) || isDoc(user));
 
     const SKELETON_COUNT = 6;
+
+    // 🔒 Stable initialData to avoid “reset while typing”
+    const initialDataMemo = useMemo(() => {
+        if (!editingItem) return undefined;
+        return {
+            title: editingItem.title,
+            semester: editingItem.semester,
+            subject: editingItem.subject,
+        };
+    }, [editingItem?.id, editOpen]);
 
     return (
         <div className="topic-grid">
@@ -180,22 +231,31 @@ const TopicGrid = () => {
                 onClose={() => setAlertState((p) => ({ ...p, open: false }))}
             />
 
-            {/* EDIT modal (reuse create modal ui) */}
+            {/* Are you sure (delete) */}
+            <AreYouSureModal
+                open={confirmOpen}
+                message={`Delete "${pendingDelete?.title ?? "this material"}"?`}
+                onConfirm={confirmDelete}
+                onClose={() => {
+                    if (!deleting) {
+                        setConfirmOpen(false);
+                        setPendingDelete(null);
+                    }
+                }}
+                submitting={deleting}
+                confirmLabel={deleting ? "Deleting…" : "Sure"}
+                cancelLabel="No"
+            />
+
+            {/* EDIT modal */}
             <CreateTopicModal
+                key={editOpen ? editingItem?.id : "edit-modal"}
                 open={editOpen}
                 onClose={closeEditModal}
                 onSubmit={submitEdit}
                 submitting={savingEdit}
                 mode="edit"
-                initialData={
-                    editingItem
-                        ? {
-                            title: editingItem.title,
-                            semester: editingItem.semester,
-                            subject: editingItem.subject,
-                        }
-                        : undefined
-                }
+                initialData={initialDataMemo}
             />
 
             {/* Create button */}
@@ -228,6 +288,7 @@ const TopicGrid = () => {
                         topic={topic}
                         canManage={canManage}
                         onEdit={requestEdit}
+                        onDelete={requestDelete}
                         onClick={() => handleTopicClick(topic.id)}
                     />
                 ))
@@ -239,6 +300,7 @@ const TopicGrid = () => {
                 onClose={closeCreateModal}
                 onSubmit={submitCreate}
                 submitting={submitting}
+                mode="create"
             />
         </div>
     );

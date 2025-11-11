@@ -16,6 +16,7 @@ import "../../../pages/classroom/style/create_topic.css";
 import MarkSubmissionModal from "./markSubmissionModal";
 import appColors from "../app_colors";
 import "../../style/submission/submission_list_style.css";
+import useDownloadToast from "./useDownloadToast";
 
 const redirection = {
     Assignment: "/homework",
@@ -325,6 +326,9 @@ const SubmissionList = ({
         });
     };
 
+
+    const { show } = useDownloadToast(); // inside your component
+
     const handleViewPdf = async (row) => {
         const subId = row?.submissionId;
         if (subId == null) {
@@ -355,19 +359,18 @@ const SubmissionList = ({
                 return;
             }
 
-            // 🔽 Automatically start download (no new tab)
-            // Prefer your Worker’s /download endpoint if it exists
+            // 🔽 Convert to download endpoint if needed
             const downloadUrl = url.includes("/get")
                 ? url.replace("/get", "/download")
                 : url.includes("/view")
                     ? url.replace("/view", "/download")
                     : url;
 
-            // Trigger browser download (safe, no popup blockers)
-            window.location.assign(downloadUrl);
+            // 🔔 Show the download toast
+            show("Downloading… check notifications");
 
-            // Optionally show a toast
-            // show("Downloading… check notifications"); // if you have useDownloadToast
+            // Trigger browser download
+            window.location.assign(downloadUrl);
         } catch (e) {
             const msg =
                 e?.payload?.data?.message ||
@@ -379,6 +382,7 @@ const SubmissionList = ({
             setViewPdfLoadingId(null);
         }
     };
+
 
 
     if (loading) {

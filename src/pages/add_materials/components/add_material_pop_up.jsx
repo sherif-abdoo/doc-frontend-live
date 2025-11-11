@@ -22,13 +22,13 @@ export default function CreateMaterialModal({
   const [topicsLoading, setTopicsLoading] = useState(false);
   const [topicsError, setTopicsError] = useState("");
 
-  const [pdfUrl, setPdfUrl] = useState("");   // holds uploaded file URL
-  const [linkUrl, setLinkUrl] = useState(""); // holds the URL input
+  const [pdfUrl, setPdfUrl] = useState("");   // uploaded file URL
+  const [linkUrl, setLinkUrl] = useState(""); // manual URL
 
   const dialogRef = useRef(null);
   const titleRef = useRef(null);
 
-  // ✅ helper: validate http(s) URL
+  // validate http(s) URL
   const isValidHttpUrl = (u) => {
     if (!u) return false;
     try {
@@ -39,7 +39,7 @@ export default function CreateMaterialModal({
     }
   };
 
-  // open/close
+  // open/close dialog
   useEffect(() => {
     const dlg = dialogRef.current;
     if (!dlg) return;
@@ -47,31 +47,33 @@ export default function CreateMaterialModal({
     if (!open && dlg.open) dlg.close();
   }, [open]);
 
-  // reset/prefill
+  // seed/reset on open
   useEffect(() => {
-    if (open) {
-      const id = setTimeout(() => titleRef.current?.focus(), 0);
-      if (isEdit && initialData) {
-        setTitle(initialData.title ?? "");
-        setDescription(initialData.description ?? "");
-        setSelectedTopicId(
-            initialData.topicId != null ? String(initialData.topicId) : ""
-        );
-        setPdfUrl(initialData.document ?? "");
-        setLinkUrl("");
-      } else {
-        setTitle("");
-        setDescription("");
-        setSelectedTopicId("");
-        setPdfUrl("");
-        setLinkUrl("");
-      }
-      setTopicsError("");
-      return () => clearTimeout(id);
+    if (!open) return;
+    const id = setTimeout(() => titleRef.current?.focus(), 0);
+
+    if (isEdit && initialData) {
+      setTitle(initialData.title ?? "");
+      setDescription(initialData.description ?? "");
+      setSelectedTopicId(
+          initialData.topicId != null ? String(initialData.topicId) : ""
+      );
+      // keep existing doc if any (not required to reselect in edit)
+      setPdfUrl(initialData.document ?? "");
+      setLinkUrl("");
+    } else {
+      setTitle("");
+      setDescription("");
+      setSelectedTopicId("");
+      setPdfUrl("");
+      setLinkUrl("");
     }
+    setTopicsError("");
+
+    return () => clearTimeout(id);
   }, [open, isEdit, initialData]);
 
-  // fetch topics when opened
+  // fetch topics on open
   useEffect(() => {
     const fetchTopics = async () => {
       if (!open) return;
@@ -84,6 +86,8 @@ export default function CreateMaterialModal({
         }
         const list = Array.isArray(res?.data?.topics) ? res.data.topics : [];
         setTopics(list);
+
+        // keep selection or pick one
         if (!selectedTopicId) {
           if (isEdit && initialData?.topicId != null) {
             setSelectedTopicId(String(initialData.topicId));
@@ -101,17 +105,17 @@ export default function CreateMaterialModal({
     fetchTopics();
   }, [open, selectedTopicId, isEdit, initialData]);
 
-  // ✅ new booleans: exactly one of pdfUrl or linkUrl must be valid
+  // create-mode validation (exactly one of pdf or link)
   const hasPdf = isValidHttpUrl(pdfUrl);
   const hasLink = isValidHttpUrl(linkUrl);
   const hasExactlyOne = (hasPdf ? 1 : 0) + (hasLink ? 1 : 0) === 1;
 
-  // ✅ FIX: allow create if EITHER a valid pdfUrl OR a valid linkUrl (not both)
-  const canSave =
-      !!title.trim() &&
-      !!selectedTopicId &&
-      hasExactlyOne &&
-      !submitting;
+  // ✅ KEY FIX:
+  // - Edit: Save is ALWAYS enabled unless submitting (no link/pdf requirement)
+  // - Create: keep your existing validation
+  const canSave = isEdit
+      ? !submitting
+      : !!title.trim() && !!selectedTopicId && hasExactlyOne && !submitting;
 
   const handleBackdrop = (e) => {
     const dlg = dialogRef.current;
@@ -137,8 +141,7 @@ export default function CreateMaterialModal({
         description: (description ?? "").trim(),
         topicId: Number(selectedTopicId),
         topicName,
-        // ✅ keep it mutually exclusive at save time
-        document: hasPdf ? pdfUrl : linkUrl,
+        document: isEdit ? initialData?.document : hasPdf ? pdfUrl : linkUrl,
         materialId: initialData?.materialId,
       });
 
@@ -158,7 +161,6 @@ export default function CreateMaterialModal({
 
   return (
       <dialog ref={dialogRef} className="ctm-dialog" onClick={handleBackdrop}>
-        {/* stop click bubbling from closing the dialog */}
         <form
             className="ctm-card"
             onClick={(e) => e.stopPropagation()}
@@ -216,24 +218,20 @@ export default function CreateMaterialModal({
             />
           </label>
 
-          {/* Show PDF uploader or Link input field only for Create mode */}
+          {/* Create-only: PDF or Link (mutually exclusive) */}
           {!isEdit && (
               <div className="ctm-label" style={{ marginTop: 12 }}>
                 <div>
-                  {/* PDF Upload */}
                   <label>Document (PDF)</label>
                   <PdfDropzone
-                      disabled={submitting || !!linkUrl} // Disable PDF drop if link URL exists
+                      disabled={submitting || !!linkUrl}
                       onUploadComplete={(url) => {
-                        // console.log("📤 Uploaded material PDF:", url);
                         setPdfUrl(url);
-                        setLinkUrl(""); // Ensure PDF URL clears the link input
+                        setLinkUrl("");
                       }}
                   />
                   {hasPdf ? (
-                      <small style={{ color: "green" }}>
-                        ✅ File uploaded successfully
-                      </small>
+                      <small style={{ color: "green" }}>✅ File uploaded successfully</small>
                   ) : (
                       <small style={{ opacity: 0.7 }}>
                         Upload a PDF or paste a link to enable Create
@@ -251,16 +249,15 @@ export default function CreateMaterialModal({
                       value={linkUrl}
                       onChange={(e) => {
                         setLinkUrl(e.target.value);
-                        setPdfUrl(""); // Ensure the link clears the PDF URL
+                        setPdfUrl("");
                       }}
-                      disabled={submitting || !!pdfUrl} // Disable link input if PDF is uploaded
+                      disabled={submitting || !!pdfUrl}
                   />
                   {hasLink && (
                       <small style={{ color: "green" }}>✅ Link added successfully</small>
                   )}
                 </div>
 
-                {/* Optional: warn if both somehow get set */}
                 {!hasExactlyOne && (hasPdf || hasLink) && (
                     <small className="ctm-error">
                       Please provide <b>either</b> a PDF <b>or</b> a link, not both.
@@ -284,13 +281,7 @@ export default function CreateMaterialModal({
                 disabled={!canSave}
                 onClick={handleSave}
             >
-              {submitting
-                  ? isEdit
-                      ? "Saving…"
-                      : "Creating…"
-                  : isEdit
-                      ? "Save"
-                      : "Create"}
+              {submitting ? (isEdit ? "Saving…" : "Creating…") : isEdit ? "Save" : "Create"}
             </button>
           </div>
         </form>

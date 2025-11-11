@@ -71,8 +71,8 @@ const SubmissionCard = ({ submission, type, role, canManage = false, onEdit, onD
             <h2 style={{ margin: 0 }}>{submission.title}</h2>
             {canManage && (
                 <div style={{ display: "inline-flex", gap: 6, marginLeft: 6 }}>
-                  <IconButton icon={<EditIcon />} bg="#2563eb" title="Edit" onClick={handleEditClick} />
-                  <IconButton icon={<TrashIcon />} bg="#dc2626" title="Delete" onClick={handleDeleteClick} />
+                    <IconButton icon={<EditIcon />} bg="#2563eb" title="Edit" onClick={handleEditClick} />
+                    <IconButton icon={<TrashIcon />} bg="#dc2626" title="Delete" onClick={handleDeleteClick} />
                 </div>
             )}
           </div>
