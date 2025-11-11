@@ -24,7 +24,7 @@ const PDFViewer = ({ pdfUrl, filename }) => {
 
     return (
         <div className="pdf-viewer">
-            <h1 className="pdf-viewer__title">PDF</h1>
+            {/* <h1 className="pdf-viewer__title">PDF</h1> */}
             <iframe
                 src={viewerUrl}
                 title="PDF Viewer"
