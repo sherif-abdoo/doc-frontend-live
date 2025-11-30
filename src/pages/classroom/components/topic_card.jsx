@@ -1,4 +1,3 @@
-// src/pages/classroom/components/topic_card.jsx
 import "../style/topic_card_style.css";
 import ShortenText from "../../../shared/components/shorten_text";
 import IconButton from "../../../shared/components/icon_button";
@@ -41,6 +40,12 @@ const TopicCard = ({ topic, onClick, canManage = false, onEdit, onDelete }) => {
                             bg="#2563eb"
                             title="Edit"
                             onClick={handleEditClick}
+                        />
+                        <IconButton
+                            icon={<TrashIcon />}
+                            bg="#dc2626"
+                            title="Delete"
+                            onClick={handleDeleteClick}
                         />
                     </div>
                 )}

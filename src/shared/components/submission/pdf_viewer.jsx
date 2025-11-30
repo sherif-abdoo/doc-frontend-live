@@ -7,6 +7,7 @@ function isSafariUA(ua) {
     if (!ua) return false;
     const hasSafari = /safari/i.test(ua);
     const isOther = /(chrome|chromium|crios|edg|edgios|opr|opios|fxios|firefox|brave)/i.test(ua);
+
     return hasSafari && !isOther;
 }
 
