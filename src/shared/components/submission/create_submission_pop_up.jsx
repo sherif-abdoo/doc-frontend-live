@@ -146,7 +146,7 @@ export default function CreateAssignmentModal({
         !!endDate &&
         Number.isFinite(markNumber) &&
         markNumber >= 0 &&
-        !!pdfUrl &&
+        //!!pdfUrl &&
         !submitting;
 
 
@@ -187,7 +187,7 @@ export default function CreateAssignmentModal({
             semester,
             endDateMDY: toMDY(endDate),
             topicId: Number(selectedTopicId),
-            document: pdfUrl,
+            ...(pdfUrl && { document: pdfUrl }),
             subject,  // ← NOW INCLUDES SUBJECT
         };
         await onSubmit?.(form);
