@@ -187,7 +187,7 @@ export default function CreateAssignmentModal({
             semester,
             endDateMDY: toMDY(endDate),
             topicId: Number(selectedTopicId),
-            document: pdfUrl || null,
+            document:(pdfUrl || null),
             subject,  // ← NOW INCLUDES SUBJECT
         };
         await onSubmit?.(form);
