@@ -15,6 +15,7 @@ const TrashIcon = ({ size = 20 }) => (
         <path d="M9 4h6l1 2H8l1-2Z" fill="currentColor"/>
     </svg>
 );
+//ss
 
 const TopicCard = ({ topic, onClick, canManage = false, onEdit, onDelete }) => {
     const handleEditClick = (e) => {

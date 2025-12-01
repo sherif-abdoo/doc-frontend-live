@@ -100,7 +100,7 @@ export default function CreateAssignmentModal({
         }
     }, [open, isEdit, initialData]);
 
-    // fetch topics when modal opens (unchanged)
+    // fetch topics when modal opens
     useEffect(() => {
         const fetchTopics = async () => {
             if (!open) return;
@@ -146,8 +146,8 @@ export default function CreateAssignmentModal({
         !!endDate &&
         Number.isFinite(markNumber) &&
         markNumber >= 0 &&
-        //!!pdfUrl &&
         !submitting;
+
 
 
     // in edit, only need title

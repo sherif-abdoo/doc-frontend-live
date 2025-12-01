@@ -18,6 +18,8 @@ const TrashIcon = ({ size = 20 }) => (
     </svg>
 );
 
+//ss
+
 const SubmissionCard = ({ submission, type, role, canManage = false, onEdit, onDelete }) => {
   const sectionColors = {
     Biology: appColors.bioCard,

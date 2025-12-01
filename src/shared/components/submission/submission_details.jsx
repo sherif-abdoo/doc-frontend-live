@@ -56,6 +56,7 @@ const SubmissionDetails = ({ type }) => {
             setLoading(true);
             setAlert((a) => ({ ...a, open: false }));
 
+
             try {
                 if (isAnswer) {
                     // 🔵 Answer view → fetch marked submission by submissionId
@@ -192,16 +193,32 @@ const SubmissionDetails = ({ type }) => {
                                             <>
                                                 • <strong>Marked at:</strong>{" "}
                                                 <span>
-                          {new Date(answerData.markedAt).toLocaleString("en-GB", {
-                              hour12: false,
-                          })}
-                        </span>
+                                                    {new Date(answerData.markedAt).toLocaleString("en-GB", {
+                                                        hour12: false,
+                                                    })}
+                                                </span>
                                             </>
                                         ) : null}
                                     </small>
                                 </div>
 
-                                <PDFViewer pdfUrl={pdfUrl} />
+                                {pdfUrl ? (
+                                    <PDFViewer pdfUrl={pdfUrl} />
+                                ) : (
+                                    <div
+                                        className="no-pdf-message"
+                                        style={{
+                                            padding: "20px",
+                                            border: "1px solid #ddd",
+                                            borderRadius: "8px",
+                                            textAlign: "center",
+                                            margin: "20px 0",
+                                            opacity: 0.7,
+                                        }}
+                                    >
+                                        <p>No marked PDF was provided for this submission.</p>
+                                    </div>
+                                )}
                             </>
                         )
                     ) : !assignData ? (
@@ -270,14 +287,36 @@ const SubmissionDetails = ({ type }) => {
                                 )
                             ) : (
                                 <>
-                                    <PDFViewer pdfUrl={pdfUrl} />
+                                    {pdfUrl ? (
+                                        <PDFViewer pdfUrl={pdfUrl} />
+                                    ) : (
+                                        <div
+                                            className="no-pdf-message"
+                                            style={{
+                                                padding: "20px",
+                                                border: "1px solid #ddd",
+                                                borderRadius: "8px",
+                                                textAlign: "center",
+                                                margin: "20px 0",
+                                                opacity: 0.7,
+                                            }}
+                                        >
+                                            <p>No PDF was provided for this item.</p>
+                                        </div>
+                                    )}
 
                                     {t !== "material" &&
                                         (isSubmitted ? (
-                                            <SubmitButton type={`Re-Submit ${type}`} onClick={handleAssignmentSubmitOpen} />
+                                            <SubmitButton
+                                                type={`Re-Submit ${type}`}
+                                                onClick={handleAssignmentSubmitOpen}
+                                            />
                                         ) : (
                                             t === "assignment" && (
-                                                <SubmitButton type={`Submit ${type}`} onClick={handleAssignmentSubmitOpen} />
+                                                <SubmitButton
+                                                    type={`Submit ${type}`}
+                                                    onClick={handleAssignmentSubmitOpen}
+                                                />
                                             )
                                         ))}
                                 </>
