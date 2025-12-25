@@ -2,12 +2,11 @@ name: Deploy Frontend
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,33 +17,27 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          script_stop: true
-          request_pty: true
-          command_timeout: 15m
           script: |
             bash -lc '
               set -euo pipefail
               set -x
 
               export NVM_DIR="$HOME/.nvm"
-              [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-              [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
-
-              command -v nvm >/dev/null 2>&1 || { echo "ERROR: nvm not found"; exit 3; }
-
-              # Ensure Node 20 exists and is active in this shell
-              nvm install 20
-              nvm use 20
-
+              . "$NVM_DIR/nvm.sh" --no-use
+              nvm use 20 >/dev/null 2>&1 || nvm install 20
               node -v
               npm -v
-              nvm current
 
               cd "${{ secrets.FRONTEND_PATH }}"
 
               git fetch --all
               git reset --hard origin/main
 
+              # --- Debug: show env files and any ${VAR} expansions (loops risk) ---
+              ls -la .env* || true
+              grep -nR "\${" .env* || true
+
+              # --- Create/overwrite production env file ---
               cat > .env.production << "EOF"
               REACT_APP_API_BASE=
               REACT_APP_ADMIN_PASSKEY=DOCADMIN
@@ -58,12 +51,18 @@ jobs:
                 npm install
               fi
 
-              npm run build
+              # --- Build with a clean environment to avoid dotenv-expand recursion from exported vars ---
+              env -i \
+                HOME="$HOME" \
+                PATH="$PATH" \
+                NVM_DIR="$NVM_DIR" \
+                NODE_ENV=production \
+                bash -lc ". \"$NVM_DIR/nvm.sh\" --no-use && nvm use 20 >/dev/null && npm run build"
 
-              test -d build || { echo "ERROR: build/ not found in $(pwd)"; exit 3; }
-              test -d "${{ secrets.NGINX_WEB_ROOT }}" || { echo "ERROR: NGINX_WEB_ROOT not found: ${{ secrets.NGINX_WEB_ROOT }}"; exit 3; }
+              test -d build || (echo "ERROR: build/ not found in $(pwd)" && exit 3)
+              test -d "${{ secrets.NGINX_WEB_ROOT }}" || (echo "ERROR: NGINX_WEB_ROOT not found: ${{ secrets.NGINX_WEB_ROOT }}" && exit 3)
 
-              sudo -n true || { echo "ERROR: sudo requires password (non-interactive). Fix sudoers."; exit 3; }
+              sudo -n true || (echo "ERROR: sudo requires password (non-interactive). Fix sudoers." && exit 3)
 
               sudo rsync -a --delete build/ "${{ secrets.NGINX_WEB_ROOT }}/"
               sudo nginx -t
