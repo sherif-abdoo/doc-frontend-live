@@ -2,7 +2,7 @@ name: Deploy Frontend
 
 on:
   push:
-    branches: [ "main" ]   # change if your default branch is different
+    branches: [ "main" ]
 
 jobs:
   deploy:
@@ -18,39 +18,53 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            set -e
+            bash -lc '
+              set -euo pipefail
+              set -x
 
-            # load nvm so node/npm are available in non-interactive shells
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-            [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
-            if command -v nvm >/dev/null 2>&1; then
-              nvm use 20 || nvm install 20
-            fi
+              export NVM_DIR="$HOME/.nvm"
+              . "$NVM_DIR/nvm.sh" --no-use
+              nvm use 20 >/dev/null 2>&1 || nvm install 20
+              node -v
+              npm -v
 
-            cd ${{ secrets.FRONTEND_PATH }}
+              cd "${{ secrets.FRONTEND_PATH }}"
 
-            git fetch --all
-            git reset --hard origin/main   # change to origin/master if needed
+              git fetch --all
+              git reset --hard origin/main
 
-            # create/update CRA prod env on server
-            cat > .env.production << 'EOF'
-            REACT_APP_API_BASE=
-            REACT_APP_ADMIN_PASSKEY=DOCADMIN
-            REACT_APP_PRESIGN_URL=https://r2-presign.dok-uploads.workers.dev
-            REACT_APP_R2_READER_BASE=https://r2-read.dok-uploads.workers.dev
-            EOF
+              # --- Debug: show env files and any ${VAR} expansions (loops risk) ---
+              ls -la .env* || true
+              grep -nR "\${" .env* || true
 
-            if [ -f package-lock.json ]; then
-              npm ci
-            else
-              npm install
-            fi
+              # --- Create/overwrite production env file ---
+              cat > .env.production << "EOF"
+              REACT_APP_API_BASE=
+              REACT_APP_ADMIN_PASSKEY=DOCADMIN
+              REACT_APP_PRESIGN_URL=https://r2-presign.dok-uploads.workers.dev
+              REACT_APP_R2_READER_BASE=https://r2-read.dok-uploads.workers.dev
+              EOF
 
-            npm run build
+              if [ -f package-lock.json ]; then
+                npm ci
+              else
+                npm install
+              fi
 
-            # publish to nginx root
-            sudo rsync -a --delete build/ ${{ secrets.NGINX_WEB_ROOT }}/
+              # --- Build with a clean environment to avoid dotenv-expand recursion from exported vars ---
+              env -i \
+                HOME="$HOME" \
+                PATH="$PATH" \
+                NVM_DIR="$NVM_DIR" \
+                NODE_ENV=production \
+                bash -lc ". \"$NVM_DIR/nvm.sh\" --no-use && nvm use 20 >/dev/null && npm run build"
 
-            # reload nginx
-            sudo nginx -t && sudo systemctl reload nginx
+              test -d build || (echo "ERROR: build/ not found in $(pwd)" && exit 3)
+              test -d "${{ secrets.NGINX_WEB_ROOT }}" || (echo "ERROR: NGINX_WEB_ROOT not found: ${{ secrets.NGINX_WEB_ROOT }}" && exit 3)
+
+              sudo -n true || (echo "ERROR: sudo requires password (non-interactive). Fix sudoers." && exit 3)
+
+              sudo rsync -a --delete build/ "${{ secrets.NGINX_WEB_ROOT }}/"
+              sudo nginx -t
+              sudo systemctl reload nginx
+            '
