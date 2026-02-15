@@ -292,6 +292,7 @@ export default function SignUp() {
                         className="string_input_field"
                         value={group}
                         onChange={(e) => setGroup(e.target.value)}
+                        size={12}
                     >
                       <option value="">Select your group</option>
                       <option value="Psbs">Psbs</option>
