@@ -14,10 +14,10 @@ export default function PdfDropzone({
 
   const validateFile = (f) => {
     if (!f) return false;
-    if (f.type !== "application/pdf") {
+    /*if (f.type !== "application/pdf") {
       alert("Only PDF files allowed!");
       return false;
-    }
+    }*/
     if (f.size > 15 * 1024 * 1024) {
       alert("Max allowed size is 15MB");
       return false;
@@ -35,7 +35,7 @@ export default function PdfDropzone({
     new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open("PUT", url);
-      xhr.setRequestHeader("Content-Type", "application/pdf");
+      xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
 
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {
@@ -60,7 +60,7 @@ export default function PdfDropzone({
       const presignRes = await fetch(presignUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contentType: file.type }),
+        body: JSON.stringify({ contentType: file.type ||"application/octet-stream" }),
       });
 
       if (!presignRes.ok) throw new Error("Presign failed");
@@ -68,7 +68,7 @@ export default function PdfDropzone({
 
       if (!uploadURL || !fileURL) throw new Error("Invalid presign response");
 
-      setStatus("Uploading PDF...");
+      setStatus("Uploading ...");
       setProgress(0);
       await uploadWithProgress(uploadURL, file);
 
@@ -125,7 +125,7 @@ export default function PdfDropzone({
           </div>
         ) : (
           <div className="placeholder">
-            Drag & Drop PDF here
+            Drag & Drop File here
             <br />
             or click to browse
           </div>
@@ -134,7 +134,7 @@ export default function PdfDropzone({
 
       <input
         type="file"
-        accept="application/pdf"
+        accept="*/*"
         ref={fileInputRef}
         style={{ display: "none" }}
         disabled={disabled}
