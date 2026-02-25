@@ -10,7 +10,7 @@ const AboutCourse = () => {
     return (
         <div className={"about-course-view"}>
             <h1 className={"about-course-title"}>
-                About the Course
+                Test
             </h1>
             <p className="about-course-description">
                 Combined Science is a qualification blends Biology, Chemistry, and Physics.
