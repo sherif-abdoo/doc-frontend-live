@@ -9,6 +9,7 @@ const physIcon = "assets/landing_page/Physics-Icon.png";
 const AboutCourse = () => {
     return (
         <div className={"about-course-view"}>
+            {/* test */}
             <h1 className={"about-course-title"}>
                 Test
             </h1>
