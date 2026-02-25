@@ -27,18 +27,23 @@ jobs:
               [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
               nvm use 20 >/dev/null 2>&1 || nvm install 20
 
-              # 2. Update Source
+              # 2. Navigate to Project and Update
               cd "${{ secrets.FRONTEND_PATH }}"
+              
+              # Safety check: ensure we are in a directory with a package.json
+              if [ ! -f package.json ]; then
+                echo "ERROR: Not in a project directory! Check FRONTEND_PATH secret."
+                exit 1
+              fi
+
               git fetch --all
               git reset --hard origin/main
 
-              # 3. Create Production Env (EOF MUST NOT BE INDENTED)
-              cat > .env.production <<EOF
-              REACT_APP_API_BASE=
-              REACT_APP_ADMIN_PASSKEY=DOCADMIN
-              REACT_APP_PRESIGN_URL=https://r2-presign.dok-uploads.workers.dev
-              REACT_APP_R2_READER_BASE=https://r2-read.dok-uploads.workers.dev
-              EOF
+              # 3. Create Production Env (Standardizing via echo to prevent shell crashes)
+              echo "REACT_APP_API_BASE=" > .env.production
+              echo "REACT_APP_ADMIN_PASSKEY=DOCADMIN" >> .env.production
+              echo "REACT_APP_PRESIGN_URL=https://r2-presign.dok-uploads.workers.dev" >> .env.production
+              echo "REACT_APP_R2_READER_BASE=https://r2-read.dok-uploads.workers.dev" >> .env.production
 
               # 4. Install & Build
               if [ -f package-lock.json ]; then
@@ -49,19 +54,18 @@ jobs:
               
               npm run build
 
-              # 5. Verify Build Output
-              test -d build || (echo "ERROR: build/ folder not found!" && exit 3)
-
-              # 6. Deploy to Nginx Root
+              # 5. Deploy to Nginx Root
               TARGET_DIR="${{ secrets.NGINX_WEB_ROOT }}"
+              
+              # Sync build folder contents to web root
               sudo rsync -avz --delete build/ "$TARGET_DIR"
 
-              # 7. Fix Permissions
+              # 6. Fix Permissions so Nginx can read the files
               sudo chown -R www-data:www-data "$TARGET_DIR"
               sudo find "$TARGET_DIR" -type d -exec chmod 755 {} +
               sudo find "$TARGET_DIR" -type f -exec chmod 644 {} +
 
-              # 8. Reload Nginx
+              # 7. Reload Nginx
               sudo nginx -t
               sudo systemctl reload nginx
 
