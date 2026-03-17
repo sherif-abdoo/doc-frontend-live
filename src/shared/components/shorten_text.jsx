@@ -1,4 +1,4 @@
-const ShortenText = (text, limit = 40) => {
+const ShortenText = (text, limit = 60) => {
   if (typeof text !== "string") return ""; // safety check
   return text.length > limit ? text.slice(0, limit) + "..." : text;
 };
