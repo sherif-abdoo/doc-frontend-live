@@ -37,7 +37,7 @@ export default function AlertBanner({
             <Alert variant="filled" severity={computedSeverity}
                 sx={{
                     width: "100%", 
-                    fontSize: "15px",       // change font size here
+                    fontSize: "10px",       // change font size here
                     fontFamily: "Montserrat Regular",
                     "& .MuiAlert-icon": {
                         fontSize: "40px", // ⬅️ increase icon size here
