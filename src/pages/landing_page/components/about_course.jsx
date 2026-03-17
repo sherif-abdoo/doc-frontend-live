@@ -9,6 +9,7 @@ const physIcon = "assets/landing_page/Physics-Icon.png";
 const AboutCourse = () => {
     return (
         <div className={"about-course-view"}>
+            {/* test tfest*/}
             <h1 className={"about-course-title"}>
                 About the Course
             </h1>
