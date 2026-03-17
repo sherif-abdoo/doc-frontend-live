@@ -33,7 +33,7 @@ const TopicCard = ({ topic, onClick, canManage = false, onEdit, onDelete }) => {
     return (
         <div className="topic-card" onClick={onClick}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                <h3 style={{ margin: 0 }}>{ShortenText(topic.title, 23)}</h3>
+                <h3 style={{ margin: 0 }}>{ShortenText(topic.title,35)}</h3>
                 {canManage && (
                     <div style={{ display: "inline-flex", gap: 6, marginLeft: 6 }}>
                         <IconButton
