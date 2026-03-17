@@ -35,8 +35,7 @@ export default function PdfDropzone({
     new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open("PUT", url);
-      xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
-
+      xhr.setRequestHeader("Content-Type", "application/pdf");
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {
           const p = Math.round((event.loaded / event.total) * 100);
@@ -60,7 +59,7 @@ export default function PdfDropzone({
       const presignRes = await fetch(presignUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contentType: file.type ||"application/octet-stream" }),
+        body: JSON.stringify({ contentType: file.type }),
       });
 
       if (!presignRes.ok) throw new Error("Presign failed");
