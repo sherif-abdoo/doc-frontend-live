@@ -18,8 +18,8 @@ export default function PdfDropzone({
       alert("Only PDF files allowed!");
       return false;
     }*/
-    if (f.size > 100 * 1024 * 1024) {
-      alert("Max allowed size is 100MB");
+    if (f.size > 50 * 1024 * 1024) {
+      alert("Max allowed size is 50MB");
       return false;
     }
     return true;
