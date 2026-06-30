@@ -18,8 +18,8 @@ export default function PdfDropzone({
       alert("Only PDF files allowed!");
       return false;
     }*/
-    if (f.size > 50 * 1024 * 1024) {
-      alert("Max allowed size is 50MB");
+    if (f.size > 100 * 1024 * 1024) {
+      alert("Max allowed size is 100MB");
       return false;
     }
     return true;
@@ -127,6 +127,8 @@ export default function PdfDropzone({
             Drag & Drop File here
             <br />
             or click to browse
+            <br />
+            Note : please compress your pdf using ilovepdf/compress
           </div>
         )}
       </div>
