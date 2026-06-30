@@ -47,7 +47,7 @@ export default function Login() {
         if (!isEmail(email) || !passOk(password) || loading) return;
 
         const payload = {
-            email: sanitizeText(email, { maxLen: 254 }),
+            email: sanitizeText(email.toLowerCase(), { maxLen: 254 }),
             password: String(password ?? ""),
         };
 
