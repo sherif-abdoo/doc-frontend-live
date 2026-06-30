@@ -62,7 +62,10 @@ const LiveClassCard = ({ liveClass }) => {
         if (!canControlSession || actionLoading) return;
         try {
             setActionLoading(true);
-            const res = await authFetch("POST", "/session/startSession");
+
+            // 🚀 FIX: Added an empty object {} as the body argument
+            const res = await authFetch("POST", "/session/startSession", {});
+
             const ok =
                 res?.status === "success" ||
                 res?.ok === true ||
