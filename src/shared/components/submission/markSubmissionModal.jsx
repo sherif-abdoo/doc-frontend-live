@@ -8,12 +8,17 @@ export default function MarkSubmissionModal({
   submissionId,
   onMarked,
   authFetch,
+  mode = "mark", // "mark" | "remark"
+  initialScore = null,
 }) {
   const dialogRef = useRef(null);
   const [pdfUrl, setPdfUrl] = useState("");
+  const [existingPdfUrl, setExistingPdfUrl] = useState("");
   const [score, setScore] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [alert, setAlert] = useState({ open: false, message: "", error: false });
+
+  const isRemark = mode === "remark";
 
   // 🔥 the hosted blank PDF fallback link (replace with yours)
   const BLANK_MARKED_PDF = "https://mag.wcoomd.org/uploads/2018/05/blank.pdf";
@@ -26,11 +31,35 @@ export default function MarkSubmissionModal({
 
     if (open) {
       setPdfUrl("");
-      setScore("");
+      setExistingPdfUrl("");
+      setScore(initialScore != null ? String(initialScore) : "");
       setSubmitting(false);
       setAlert({ open: false, message: "", error: false });
     }
-  }, [open]);
+  }, [open, initialScore]);
+
+  // On a re-mark, grab the current marked PDF so we can keep it when no new
+  // file is uploaded (backend always overwrites `marked`, so we must re-send it).
+  useEffect(() => {
+    if (!open || !isRemark || submissionId == null) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await authFetch(
+          "GET",
+          `/admin/findSubmissionById/${encodeURIComponent(submissionId)}`
+        );
+        const current =
+          res?.data?.found?.marked || res?.found?.marked || res?.data?.marked || "";
+        if (!cancelled) setExistingPdfUrl(current || "");
+      } catch {
+        if (!cancelled) setExistingPdfUrl("");
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [open, isRemark, submissionId, authFetch]);
 
   const handleBackdrop = (e) => {
     if (e.target === dialogRef.current && !submitting) onClose?.();
@@ -39,15 +68,18 @@ export default function MarkSubmissionModal({
   const validScore =
     Number.isFinite(Number(score)) && Number(score) >= 0 && score !== "";
 
+  const canSubmit = validScore && !submitting;
+
   const handleSubmit = async () => {
-    if (!validScore || submitting) return;
+    if (!canSubmit) return;
 
     try {
       setSubmitting(true);
       setAlert({ open: false, message: "", error: false });
 
-      // ✅ if no pdf uploaded, use hosted blank pdf
-      const finalPdfUrl = pdfUrl || BLANK_MARKED_PDF;
+      // New upload wins. On a re-mark with no new file, keep the existing PDF.
+      // Otherwise (first mark, no file) fall back to the hosted blank PDF.
+      const finalPdfUrl = pdfUrl || existingPdfUrl || BLANK_MARKED_PDF;
 
       const res = await authFetch(
         "PATCH",
@@ -81,7 +113,7 @@ export default function MarkSubmissionModal({
   return (
     <dialog ref={dialogRef} className="ctm-dialog" onClick={handleBackdrop}>
       <form className="ctm-card" method="dialog" onSubmit={(e) => e.preventDefault()}>
-        <h3 className="ctm-title">Mark Submission</h3>
+        <h3 className="ctm-title">{isRemark ? "Re-mark Submission" : "Mark Submission"}</h3>
 
         <label className="ctm-label">
           Score
@@ -108,6 +140,10 @@ export default function MarkSubmissionModal({
 
           {pdfUrl ? (
             <small style={{ color: "green" }}>✅ Marked file uploaded</small>
+          ) : isRemark ? (
+            <small style={{ opacity: 0.7 }}>
+              No new file → the current marked PDF is kept unchanged.
+            </small>
           ) : (
             <small style={{ opacity: 0.7 }}>
               No file uploaded → will use hosted blank PDF
@@ -137,9 +173,9 @@ export default function MarkSubmissionModal({
             type="button"
             className="ctm-btn ctm-btn-primary"
             onClick={handleSubmit}
-            disabled={!validScore || submitting}
+            disabled={!canSubmit}
           >
-            {submitting ? "Saving…" : "Save"}
+            {submitting ? "Saving…" : isRemark ? "Re-mark" : "Save"}
           </button>
         </div>
       </form>

@@ -88,7 +88,9 @@ const SubmissionList = ({
     const [editingItem, setEditingItem] = useState(null);
     const [savingEdit, setSavingEdit] = useState(false);
 
-    const [adminView, setAdminView] = useState(false);
+    // "" = normal list, "unmarked" = unmarked submissions, "marked" = marked submissions
+    const [adminMode, setAdminMode] = useState("");
+    const adminView = adminMode !== "";
     const [adminSubs, setAdminSubs] = useState([]);
     const [adminLoading, setAdminLoading] = useState(false);
     const [adminError, setAdminError] = useState("");
@@ -273,18 +275,53 @@ const SubmissionList = ({
                 targetId: s.assignmentId ?? s.quizId ?? null,
             }));
             setAdminSubs(mapped);
-            setAdminView(true);
+            setAdminMode("unmarked");
         } catch (e) {
             setAdminError(e?.message || "Failed to load unmarked submissions");
             setAdminSubs([]);
-            setAdminView(true);
+            setAdminMode("unmarked");
+        } finally {
+            setAdminLoading(false);
+        }
+    }, []);
+
+    const loadMarkedSubs = useCallback(async () => {
+        setAdminLoading(true);
+        setAdminError("");
+        try {
+            const res = await authFetch("GET", "/admin/showMarkedSubmissions");
+            if (res?.status !== "success") {
+                throw new Error(res?.message || "Failed to load marked submissions");
+            }
+            const list = Array.isArray(res?.data?.submissions) ? res.data.submissions : [];
+            const mapped = list.map((s, idx) => ({
+                rowId: s.id ?? idx,
+                submissionId: s.id ?? null,
+                type: String(s.type || "").toLowerCase(),
+                subject: s.subject || undefined,
+                studentName: s.studentName || "Unknown",
+                studentGroup: s.studentGroup || "",
+                markedAt: s.markedAt,
+                score: s.score,
+                title:
+                    s.assignmentTitle ||
+                    s.quizTitle ||
+                    (s.type ? `${s.type} #${s.id ?? idx}` : `Submission #${idx + 1}`),
+                targetId: s.assignmentId ?? s.quizId ?? null,
+            }));
+            setAdminSubs(mapped);
+            setAdminMode("marked");
+        } catch (e) {
+            setAdminError(e?.message || "Failed to load marked submissions");
+            setAdminSubs([]);
+            setAdminMode("marked");
         } finally {
             setAdminLoading(false);
         }
     }, []);
 
     const leaveAdminView = () => {
-        setAdminView(false);
+        setAdminMode("");
         setAdminError("");
         setAdminSubs([]);
     };
@@ -311,14 +348,33 @@ const SubmissionList = ({
         setMarkModalOpen(true);
     };
 
-    const handleMarkedSuccess = () => {
-        const removedId = markRow?.submissionId;
-        if (removedId == null) return;
-
-        setAdminSubs((prev) => prev.filter((s) => s.submissionId !== removedId));
+    const handleMarkedSuccess = (_pdfUrl, score) => {
+        const sid = markRow?.submissionId;
         setMarkModalOpen(false);
-        setMarkRow(null);
 
+        if (adminMode === "marked") {
+            // Re-mark: keep the row, just refresh its score.
+            if (sid != null) {
+                setAdminSubs((prev) =>
+                    prev.map((s) =>
+                        s.submissionId === sid ? { ...s, score: Number(score) } : s
+                    )
+                );
+            }
+            setMarkRow(null);
+            setAlertState({
+                open: true,
+                error: false,
+                message: "✅ Submission re-marked.",
+            });
+            return;
+        }
+
+        // Unmarked view: remove it now that it's been marked.
+        if (sid != null) {
+            setAdminSubs((prev) => prev.filter((s) => s.submissionId !== sid));
+        }
+        setMarkRow(null);
         setAlertState({
             open: true,
             error: false,
@@ -377,6 +433,50 @@ const SubmissionList = ({
                 e?.payload?.message ||
                 e?.message ||
                 "Failed to fetch submission";
+            setAlertState({ open: true, error: true, message: msg });
+        } finally {
+            setViewPdfLoadingId(null);
+        }
+    };
+
+    // Opens the graded (marked) PDF for a marked submission in a new tab.
+    const handleViewMarkedPdf = async (row) => {
+        const subId = row?.submissionId;
+        if (subId == null) {
+            setAlertState({ open: true, error: true, message: "Missing submission id" });
+            return;
+        }
+
+        try {
+            setViewPdfLoadingId(subId);
+
+            const res = await authFetch(
+                "GET",
+                `/admin/findSubmissionById/${encodeURIComponent(subId)}`
+            );
+
+            const url =
+                res?.data?.found?.marked ||
+                res?.found?.marked ||
+                res?.data?.marked ||
+                null;
+
+            if (!url) {
+                setAlertState({
+                    open: true,
+                    error: true,
+                    message: "No marked PDF found for this submission.",
+                });
+                return;
+            }
+
+            window.open(url, "_blank", "noopener,noreferrer");
+        } catch (e) {
+            const msg =
+                e?.payload?.data?.message ||
+                e?.payload?.message ||
+                e?.message ||
+                "Failed to fetch marked submission";
             setAlertState({ open: true, error: true, message: msg });
         } finally {
             setViewPdfLoadingId(null);
@@ -505,23 +605,42 @@ const SubmissionList = ({
                 {!authLoading && canCreate && (
                     <div style={{ display: "flex", gap: 8 }}>
                         {!adminView ? (
-                            <button
-                                type="button"
-                                onClick={loadAdminSubs}
-                                style={{
-                                    padding: "8px 12px",
-                                    borderRadius: 10,
-                                    border: "1px solid #dcdcdc",
-                                    background: "#111827",
-                                    color: "#fff",
-                                    fontWeight: 600,
-                                    cursor: "pointer",
-                                }}
-                                disabled={adminLoading}
-                                title="Show unmarked submissions"
-                            >
-                                {adminLoading ? "Loading…" : "Show submissions"}
-                            </button>
+                            <>
+                                <button
+                                    type="button"
+                                    onClick={loadAdminSubs}
+                                    style={{
+                                        padding: "8px 12px",
+                                        borderRadius: 10,
+                                        border: "1px solid #dcdcdc",
+                                        background: "#111827",
+                                        color: "#fff",
+                                        fontWeight: 600,
+                                        cursor: "pointer",
+                                    }}
+                                    disabled={adminLoading}
+                                    title="Show unmarked submissions"
+                                >
+                                    {adminLoading ? "Loading…" : "Show submissions"}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={loadMarkedSubs}
+                                    style={{
+                                        padding: "8px 12px",
+                                        borderRadius: 10,
+                                        border: "1px solid #dcdcdc",
+                                        background: "transparent",
+                                        color: "#111827",
+                                        fontWeight: 600,
+                                        cursor: "pointer",
+                                    }}
+                                    disabled={adminLoading}
+                                    title="Show marked submissions"
+                                >
+                                    {adminLoading ? "Loading…" : "Show marked"}
+                                </button>
+                            </>
                         ) : (
                             <button
                                 type="button"
@@ -556,10 +675,14 @@ const SubmissionList = ({
                         <div className="empty-submission">
                             <img
                                 src="/assets/Classroom/notfound.png"
-                                alt="No unmarked submissions"
+                                alt={adminMode === "marked" ? "No marked submissions" : "No unmarked submissions"}
                                 className="empty-topic-image"
                             />
-                            <p>No unmarked submissions found</p>
+                            <p>
+                                {adminMode === "marked"
+                                    ? "No marked submissions found"
+                                    : "No unmarked submissions found"}
+                            </p>
                         </div>
                     ) : (
                         adminSubs.map((s) => {
@@ -610,50 +733,107 @@ const SubmissionList = ({
                                     </div>
 
                                     <div style={{ textAlign: "right", minWidth: 220, display: "grid", gap: 10 }}>
-                                        <div style={{ fontSize: 15 }}>
-                                            <strong>Submitted:</strong> {formatDateTime(s.submittedAt)}
-                                        </div>
-                                        {!authLoading && isAdmin && (
+                                        {adminMode === "marked" ? (
                                             <>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => openMarkModal(s)}
-                                                    style={{
-                                                        padding: "8px 12px",
-                                                        borderRadius: 10,
-                                                        border: "1px solid #dcdcdc",
-                                                        background: "#111827",
-                                                        color: "#fff",
-                                                        fontWeight: 600,
-                                                        cursor: "pointer",
-                                                        width: 140,
-                                                        justifySelf: "end",
-                                                    }}
-                                                    title="Mark this submission"
-                                                >
-                                                    Mark
-                                                </button>
+                                                <div style={{ fontSize: 15 }}>
+                                                    <strong>Score:</strong> {s.score ?? "—"}
+                                                </div>
+                                                <div style={{ fontSize: 15 }}>
+                                                    <strong>Marked:</strong> {formatDateTime(s.markedAt)}
+                                                </div>
+                                                {!authLoading && canManage && (
+                                                    <>
+                                                        <button
+                                                            type="button"
+                                                            onClick={opening ? undefined : () => handleViewMarkedPdf(s)}
+                                                            disabled={!canView || opening}
+                                                            style={{
+                                                                padding: "8px 12px",
+                                                                borderRadius: 10,
+                                                                border: "1px solid #dcdcdc",
+                                                                background: "#111827",
+                                                                color: "#fff",
+                                                                fontWeight: 600,
+                                                                cursor: opening ? "default" : "pointer",
+                                                                width: 140,
+                                                                justifySelf: "end",
+                                                                opacity: !canView || opening ? 0.7 : 1,
+                                                            }}
+                                                            title={canView ? "View marking" : "No submission id"}
+                                                        >
+                                                            {opening ? "Opening…" : "View marking"}
+                                                        </button>
 
-                                                <button
-                                                    type="button"
-                                                    onClick={opening ? undefined : () => handleViewPdf(s)}
-                                                    disabled={!canView || opening}
-                                                    style={{
-                                                        padding: "8px 12px",
-                                                        borderRadius: 10,
-                                                        border: "1px solid #dcdcdc",
-                                                        background: "#111827",
-                                                        color: "#fff",
-                                                        fontWeight: 600,
-                                                        cursor: opening ? "default" : "pointer",
-                                                        width: 140,
-                                                        justifySelf: "end",
-                                                        opacity: !canView || opening ? 0.7 : 1,
-                                                    }}
-                                                    title={canView ? "View submission" : "No submission id"}
-                                                >
-                                                    {opening ? "Opening…" : "View Pdf"}
-                                                </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => openMarkModal(s)}
+                                                            style={{
+                                                                padding: "8px 12px",
+                                                                borderRadius: 10,
+                                                                border: "1px solid #dcdcdc",
+                                                                background: "#111827",
+                                                                color: "#fff",
+                                                                fontWeight: 600,
+                                                                cursor: opening ? "default" : "pointer",
+                                                                width: 140,
+                                                                justifySelf: "end",
+                                                                opacity: !canView || opening ? 0.7 : 1,
+                                                            }}
+                                                            title="Re-mark this submission"
+                                                        >
+                                                            Re-mark
+                                                        </button>
+                                                    </>
+                                                )}
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div style={{ fontSize: 15 }}>
+                                                    <strong>Submitted:</strong> {formatDateTime(s.submittedAt)}
+                                                </div>
+                                                {!authLoading && isAdmin && (
+                                                    <>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => openMarkModal(s)}
+                                                            style={{
+                                                                padding: "8px 12px",
+                                                                borderRadius: 10,
+                                                                border: "1px solid #dcdcdc",
+                                                                background: "#111827",
+                                                                color: "#fff",
+                                                                fontWeight: 600,
+                                                                cursor: "pointer",
+                                                                width: 140,
+                                                                justifySelf: "end",
+                                                            }}
+                                                            title="Mark this submission"
+                                                        >
+                                                            Mark
+                                                        </button>
+
+                                                        <button
+                                                            type="button"
+                                                            onClick={opening ? undefined : () => handleViewPdf(s)}
+                                                            disabled={!canView || opening}
+                                                            style={{
+                                                                padding: "8px 12px",
+                                                                borderRadius: 10,
+                                                                border: "1px solid #dcdcdc",
+                                                                background: "#111827",
+                                                                color: "#fff",
+                                                                fontWeight: 600,
+                                                                cursor: opening ? "default" : "pointer",
+                                                                width: 140,
+                                                                justifySelf: "end",
+                                                                opacity: !canView || opening ? 0.7 : 1,
+                                                            }}
+                                                            title={canView ? "View submission" : "No submission id"}
+                                                        >
+                                                            {opening ? "Opening…" : "View Pdf"}
+                                                        </button>
+                                                    </>
+                                                )}
                                             </>
                                         )}
                                     </div>
@@ -717,6 +897,8 @@ const SubmissionList = ({
                 submissionId={markRow?.submissionId}
                 authFetch={authFetch}
                 onMarked={handleMarkedSuccess}
+                mode={adminMode === "marked" ? "remark" : "mark"}
+                initialScore={adminMode === "marked" ? markRow?.score : null}
             />
         </>
     );
