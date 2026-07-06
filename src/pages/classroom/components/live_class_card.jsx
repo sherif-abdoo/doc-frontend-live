@@ -7,7 +7,7 @@ import { useAuth } from "../../../hooks/useAuth";
 import { isDoc, isAssistant } from "../../../utils/roles";
 import { authFetch } from "../../../utils/authFetch";
 
-const ZOOM_LINK = "https://zoom.us/j/4826651599";
+const ZOOM_LINK = "https://zoom.us/j/8579941811";
 
 const LiveClassCard = ({ liveClass }) => {
     const { user, isLoading } = useAuth();
