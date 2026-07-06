@@ -76,7 +76,7 @@ export default function ForgotPasswordModal({
             const res = await fetch(`${API_BASE}/login/forgetPassword`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json", Accept: "application/json" },
-                body: JSON.stringify({ email: email.trim() }),
+                body: JSON.stringify({ email: email.trim().toLowerCase() }),
             });
             const json = await res.json().catch(() => ({}));
 
@@ -106,7 +106,7 @@ export default function ForgotPasswordModal({
             const res = await fetch(`${API_BASE}/login/otp`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json", Accept: "application/json" },
-                body: JSON.stringify({ email: email.trim(), otp: otp.trim() }),
+                body: JSON.stringify({ email: email.trim().toLowerCase(), otp: otp.trim() }),
             });
             const json = await res.json().catch(() => ({}));
 
@@ -137,11 +137,11 @@ export default function ForgotPasswordModal({
         setLoading(true);
         try {
             const res = await fetch(
-                `${API_BASE}/login/resetPassword/${encodeURIComponent(email.trim())}`,
+                `${API_BASE}/login/resetPassword/${encodeURIComponent(email.trim().toLowerCase())}`,
                 {
                     method: "POST",
                     headers: { "Content-Type": "application/json", Accept: "application/json" },
-                    body: JSON.stringify({ email: email.trim(), password }),
+                    body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
                 }
             );
             const json = await res.json().catch(() => ({}));
