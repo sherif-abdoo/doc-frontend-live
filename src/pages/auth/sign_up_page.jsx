@@ -300,7 +300,10 @@ export default function SignUp() {
                       <option value="Ice">Ice</option>
                       <option value="Ghis">Ghis</option>
                       <option value="Ohs, fbs, Sahara">Ohs, fbs, Sahara</option>
-<option value="ESC">ESC</option>  
+                      <option value="ESC">ESC</option>
+                      <option value="Alpha">Alpha</option>
+                      <option value="Beta">Beta</option>
+                      <option value="Sigma">Sigma</option>
                       <option value="A">A</option>  
                       <option value="B">B</option>
                       <option value="C">C</option>
