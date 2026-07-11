@@ -80,6 +80,16 @@
   top: 20px;
   right: 20px;
   z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+/* Slightly smaller pill buttons */
+.submission-button .secondary-btn {
+  font-size: 0.9rem;
+  padding: 0.55rem 1.4rem;
 }
 
 /* Bottom row - Status Bottom Right */
@@ -149,9 +159,22 @@
     display: none;
   }
 
-  /* Hide the top-right button */
+  /* Show buttons as a centered row at the bottom on mobile */
   .submission-button {
-    display: none;
+    position: static;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+    width: 100%;
+    order: 2; /* keep buttons below the status pill */
+  }
+
+  .submission-button .secondary-btn {
+    font-size: 0.8rem;
+    padding: 0.5rem 1.1rem;
   }
 
   /* Stack everything vertically */

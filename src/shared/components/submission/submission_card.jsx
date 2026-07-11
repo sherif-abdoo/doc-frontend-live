@@ -1,8 +1,11 @@
 // src/shared/components/submission/submission_card.jsx
+import { useState } from "react";
 import SecondaryButton from "../../../shared/components/secondary_button";
 import "../../style/submission/submission_card_style.css";
 import appColors from "../../../shared/components/app_colors";
 import IconButton from "../../../shared/components/icon_button";
+import { authFetch } from "../../../utils/authFetch";
+import { isStudent } from "../../../utils/roles";
 
 const EditIcon = ({ size = 20 }) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -42,6 +45,45 @@ const SubmissionCard = ({ submission, type, role, canManage = false, onEdit, onD
 
   const stateLabel = submittedFlag ? "Submitted" : "Unsubmitted";
   const pillBg = submittedFlag ? "#16a34a" /* green-600 */ : "#dc2626" /* red-600 */;
+
+  const [viewingSubmission, setViewingSubmission] = useState(false);
+
+  // Opens the student's own submitted PDF for this assignment in a new tab.
+  const handleViewSubmission = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (viewingSubmission) return;
+
+    setViewingSubmission(true);
+    try {
+      // 1) Find this student's submission id for the current assignment.
+      const listRes = await authFetch("GET", "/student/showMySubmission");
+      const submissions = listRes?.data?.submissions ?? [];
+      const mine = submissions.find(
+          (s) => String(s.assignmentId) === String(submission.id)
+      );
+
+      if (!mine?.id) {
+        alert("Could not find your submission for this assignment.");
+        return;
+      }
+
+      // 2) Fetch the submission to get the answers PDF URL.
+      const subRes = await authFetch("GET", `/student/showSubmission/${mine.id}`);
+      const pdfUrl = subRes?.data?.answers ?? null;
+
+      if (!pdfUrl) {
+        alert("No submission PDF was found.");
+        return;
+      }
+
+      window.open(pdfUrl, "_blank", "noopener,noreferrer");
+    } catch (err) {
+      alert(err?.message || "Failed to open your submission.");
+    } finally {
+      setViewingSubmission(false);
+    }
+  };
 
   const handleEditClick = (e) => {
     e.preventDefault();
@@ -95,6 +137,17 @@ const SubmissionCard = ({ submission, type, role, canManage = false, onEdit, onD
                 fontFamily="Montserrat Regular"
                 fontWeight="auto"
             />
+
+            {submittedFlag && isStudent({ role }) && (
+                <SecondaryButton
+                    label={viewingSubmission ? "Opening…" : "View Submission"}
+                    fontFamily="Montserrat Regular"
+                    fontWeight="auto"
+                    fill
+                    borderColor="#16a34a"
+                    onClick={handleViewSubmission}
+                />
+            )}
           </div>
 
           {/* ✅ Green/Red status pill */}
