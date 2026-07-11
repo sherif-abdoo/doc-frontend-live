@@ -56,9 +56,11 @@ const AssistantReport = ({ topicId }) => {
 
     const cap = (s) => (typeof s === "string" && s.length ? s[0].toUpperCase() + s.slice(1) : pretty(s));
 
-    // Check if group is a single letter
+    // Show attendance for single-letter groups and the named groups alpha, beta, sigma
     const showAttendance = useMemo(() => {
-        return typeof userGroup === "string" && userGroup.length === 1;
+        if (typeof userGroup !== "string") return false;
+        if (userGroup.length === 1) return true;
+        return ["alpha", "beta", "sigma"].includes(userGroup.trim().toLowerCase());
     }, [userGroup]);
 
     const assignmentCount = useMemo(() => {
