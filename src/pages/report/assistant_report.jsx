@@ -60,7 +60,7 @@ const AssistantReport = ({ topicId }) => {
     const showAttendance = useMemo(() => {
         if (typeof userGroup !== "string") return false;
         if (userGroup.length === 1) return true;
-        return ["alpha", "beta", "sigma", "gamma"].includes(userGroup.trim().toLowerCase());
+        return ["alpha", "beta", "sigma", "gamma", "delta"].includes(userGroup.trim().toLowerCase());
     }, [userGroup]);
 
     const assignmentCount = useMemo(() => {

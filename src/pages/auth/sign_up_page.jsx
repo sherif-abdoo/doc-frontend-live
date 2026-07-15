@@ -305,6 +305,7 @@ export default function SignUp() {
                       <option value="Beta">Beta</option>
                       <option value="Sigma">Sigma</option>
                       <option value="Gamma">Gamma</option>
+                      <option value="Delta">Delta</option>
                       <option value="A">A</option>  
                       <option value="B">B</option>
                       <option value="C">C</option>
