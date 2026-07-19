@@ -25,6 +25,9 @@ jobs:
               --exclude='.github' \
               --exclude='node_modules' \
               --exclude='build' \
+              --exclude='Dockerfile' \
+              --exclude='nginx.conf' \
+              --exclude='.dockerignore' \
               ./ $DOCKER_DIR/
             cd /home/sherif/docker
             sudo docker compose build frontend
