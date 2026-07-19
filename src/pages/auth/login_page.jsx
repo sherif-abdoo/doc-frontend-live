@@ -10,7 +10,7 @@ import AlertBanner from "../../shared/components/alert_banner";
 import { isEmail, passwordMin, sanitizeText } from "../../utils/validator";
 import AUTH_FEATURE_CARDS from "./cards";
 import { useAuth } from "../../context/authContext";
-import { setAccessToken } from "../../utils/authFetch";
+import { setAccessToken, extractErrorMessage } from "../../utils/authFetch";
 import ForgotPasswordModal from "./forget_password_model";
 
 const API_BASE = process.env.REACT_APP_API_BASE;
@@ -75,10 +75,7 @@ export default function Login() {
                 return;
             }
 
-            const msg =
-                (typeof data?.data?.message === "string" && data.data.message) ||
-                (typeof data?.message === "string" && data.message) ||
-                "Login failed";
+            const msg = extractErrorMessage(data, "Login failed");
             setAlertState({ open: true, message: msg, error: true });
         } catch (e) {
             console.error("[Login] error:", e);

@@ -50,6 +50,44 @@ const appendQuery = (url, data) => {
     return url.includes("?") ? `${url}&${qs}` : `${url}?${qs}`;
 };
 
+// Generic status tokens that are NOT human-readable messages
+const GENERIC_STATUSES = new Set(["error", "fail", "failed", "success"]);
+
+/**
+ * Pull a human-readable message out of a backend error payload.
+ * Known shapes: { message }, { error }, { status, data: { message } },
+ * and { status: "<sentence>" } (some endpoints put the message in `status`).
+ */
+export const extractErrorMessage = (payload, fallback) => {
+    if (typeof payload === "string") {
+        const text = payload.trim();
+        // Don't surface raw HTML (proxy/server error pages) in the banner
+        if (!text || text.startsWith("<")) return fallback;
+        return text;
+    }
+    if (!payload || typeof payload !== "object") return fallback;
+
+    const candidates = [
+        payload.message,
+        payload.error,
+        payload.data?.message,
+        payload.data?.error,
+    ];
+    for (const c of candidates) {
+        if (typeof c === "string" && c.trim()) return c.trim();
+    }
+
+    if (
+        typeof payload.status === "string" &&
+        payload.status.trim() &&
+        !GENERIC_STATUSES.has(payload.status.trim().toLowerCase())
+    ) {
+        return payload.status.trim();
+    }
+
+    return fallback;
+};
+
 /**
  * authFetch(method, endpoint, data?)
  * - method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE"
@@ -95,10 +133,7 @@ export async function authFetch(method, endpoint, data) {
         : await res.text();
 
     if (!res.ok) {
-        const msg =
-            (payload && typeof payload === "object" && (payload.message || payload.error)) ||
-            (typeof payload === "string" && payload) ||
-            `HTTP ${res.status}`;
+        const msg = extractErrorMessage(payload, `Request failed (HTTP ${res.status})`);
         const err = new Error(msg);
         err.status = res.status;
         err.payload = payload;

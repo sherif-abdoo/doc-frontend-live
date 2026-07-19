@@ -7,6 +7,7 @@ import PrimaryButton from "../../shared/components/primary_button";
 import FeatureCardsSlider from "../../shared/components/feature-cards-slider";
 import app_colors from "../../shared/components/app_colors";
 import AlertBanner from "../../shared/components/alert_banner";
+import { extractErrorMessage } from "../../utils/authFetch";
 
 import {
   sanitizeText,
@@ -167,11 +168,11 @@ export default function SignUp() {
       try { data = raw ? JSON.parse(raw) : {}; } catch {}
 
       if (!res.ok) {
-        if (res.status === 400) {
-          const backendMsg =
-              data?.data?.message || data?.message || data?.error || "Request failed (400)";
-          setAlertState({ open: true, message: backendMsg, error: true });
-        }
+        const backendMsg = extractErrorMessage(
+            data,
+            `Registration failed (HTTP ${res.status})`
+        );
+        setAlertState({ open: true, message: backendMsg, error: true });
         return;
       }
 

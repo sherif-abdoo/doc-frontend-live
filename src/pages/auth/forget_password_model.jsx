@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { extractErrorMessage } from "../../utils/authFetch";
 import "./forget_password.css";
 
 // ✅ use env var instead of hardcoded URL
@@ -81,7 +82,7 @@ export default function ForgotPasswordModal({
             const json = await res.json().catch(() => ({}));
 
             if (!res.ok) {
-                throw new Error(json?.message || "Could not send OTP.");
+                throw new Error(extractErrorMessage(json, "Could not send OTP."));
             }
 
             // Move to OTP step, start 5-min timer
@@ -111,7 +112,7 @@ export default function ForgotPasswordModal({
             const json = await res.json().catch(() => ({}));
 
             if (!res.ok) {
-                throw new Error(json?.message || "Invalid or expired OTP.");
+                throw new Error(extractErrorMessage(json, "Invalid or expired OTP."));
             }
 
             // proceed to reset
@@ -147,7 +148,7 @@ export default function ForgotPasswordModal({
             const json = await res.json().catch(() => ({}));
 
             if (!res.ok) {
-                throw new Error(json?.message || "Could not reset password.");
+                throw new Error(extractErrorMessage(json, "Could not reset password."));
             }
 
             setStep("done");
