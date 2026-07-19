@@ -8,66 +8,25 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Deploy over SSH (build on server)
+      - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            bash -lc '
-              set -euo pipefail
-              set -x
-
-              # 1. Setup Environment
-              export NVM_DIR="$HOME/.nvm"
-              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-              nvm use 20 >/dev/null 2>&1 || nvm install 20
-
-              # 2. Navigate to Project and Update
-              cd "${{ secrets.FRONTEND_PATH }}"
-              
-              # Safety check: ensure we are in a directory with a package.json
-              if [ ! -f package.json ]; then
-                echo "ERROR: Not in a project directory! Check FRONTEND_PATH secret."
-                exit 1
-              fi
-
-              git fetch --all
-              git reset --hard origin/main
-
-              # 3. Create Production Env (Standardizing via echo to prevent shell crashes)
-              echo "REACT_APP_API_BASE=" > .env.production
-              echo "REACT_APP_ADMIN_PASSKEY=DOCADMIN" >> .env.production
-              echo "REACT_APP_PRESIGN_URL=https://r2-presign.dok-uploads.workers.dev" >> .env.production
-              echo "REACT_APP_R2_READER_BASE=https://r2-read.dok-uploads.workers.dev" >> .env.production
-
-              # 4. Install & Build
-              if [ -f package-lock.json ]; then
-                npm ci
-              else
-                npm install
-              fi
-              
-              npm run build
-
-              # 5. Deploy to Nginx Root
-              TARGET_DIR="${{ secrets.NGINX_WEB_ROOT }}"
-              
-              # Sync build folder contents to web root
-              sudo rsync -avz --delete build/ "$TARGET_DIR"
-
-              # 6. Fix Permissions so Nginx can read the files
-              sudo chown -R www-data:www-data "$TARGET_DIR"
-              sudo find "$TARGET_DIR" -type d -exec chmod 755 {} +
-              sudo find "$TARGET_DIR" -type f -exec chmod 644 {} +
-
-              # 7. Reload Nginx
-              sudo nginx -t
-              sudo systemctl reload nginx
-
-              echo "Deployment Successful!"
-            '
+            set -e
+            DOCKER_DIR="/home/sherif/docker/frontend"
+            cd ${{ secrets.FRONTEND_PATH }}
+            git fetch --all
+            git reset --hard origin/main
+            rsync -av --delete \
+              --exclude='.git' \
+              --exclude='.github' \
+              --exclude='node_modules' \
+              --exclude='build' \
+              ./ $DOCKER_DIR/
+            cd /home/sherif/docker
+            sudo docker compose build frontend
+            sudo docker compose up -d --no-deps frontend
+            echo "✅ Frontend deployed successfully"
