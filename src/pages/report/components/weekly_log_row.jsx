@@ -18,6 +18,7 @@ const WeeklyLogRow = ({
                           qScoreText,
                           qFeedback,
                           submissionId, // 👈 now used safely
+                          hasMarkedPdf = false,
                       }) => {
     const navigate = useNavigate();
     const rowClass = isHeader ? "log-row header" : "log-row";
@@ -43,8 +44,9 @@ const WeeklyLogRow = ({
     const currentStatus = normalizeStatus(type === "Quiz" ? qStatus : status);
     const isMarked = currentStatus === "marked";
     const hasSubmissionId = submissionId != null && String(submissionId).toLowerCase() !== "n/a";
-    const canShowAnswers = isMarked && hasSubmissionId;
-    console.log(submissionId);
+    const canShowAnswers = isMarked && hasSubmissionId && hasMarkedPdf;
+    // Marked, but the assistant didn't attach a marked PDF → show a note instead.
+    const showNoMarkingPdf = isMarked && hasSubmissionId && !hasMarkedPdf;
     const renderDescription = () => {
         if (isHeader) return <span className="desc-text">{description ?? "N/A"}</span>;
 
@@ -93,6 +95,9 @@ const WeeklyLogRow = ({
                     <button className="show-answers-btn" type="button" onClick={handleShowAnswers}>
                         Show Answers
                     </button>
+                )}
+                {showNoMarkingPdf && (
+                    <span className="no-marking-pdf-text">No marking PDF</span>
                 )}
             </div>
 

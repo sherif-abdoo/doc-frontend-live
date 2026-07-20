@@ -122,6 +122,7 @@ const StudentReport = ({ topicId }) => {
                         String(report.quizData.submissionId).toLowerCase() !== "n/a"
                             ? report.quizData.submissionId
                             : null, // ✅ use the backend's submissionId safely
+                    hasMarkedPdf: !!report.quizData?.hasMarkedPdf,
                 },
             ]
             : [];
@@ -140,6 +141,7 @@ const StudentReport = ({ topicId }) => {
                 status: pretty(m?.status),
                 feedback: pretty(m?.feedback),
                 submissionId: isMarked && hasValidId ? rawId : null,
+                hasMarkedPdf: !!m?.hasMarkedPdf,
             };
         });
 
@@ -187,6 +189,7 @@ const StudentReport = ({ topicId }) => {
                                 qFeedback={entry.qFeedback}
                                 // ✅ pass it down so Show Answers can navigate correctly
                                 submissionId={entry.submissionId}
+                                hasMarkedPdf={entry.hasMarkedPdf}
                             />
                         ))
                     )}

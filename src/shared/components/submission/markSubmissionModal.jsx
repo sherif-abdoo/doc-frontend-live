@@ -20,9 +20,6 @@ export default function MarkSubmissionModal({
 
   const isRemark = mode === "remark";
 
-  // 🔥 the hosted blank PDF fallback link (replace with yours)
-  const BLANK_MARKED_PDF = "https://mag.wcoomd.org/uploads/2018/05/blank.pdf";
-
   useEffect(() => {
     const dlg = dialogRef.current;
     if (!dlg) return;
@@ -78,8 +75,9 @@ export default function MarkSubmissionModal({
       setAlert({ open: false, message: "", error: false });
 
       // New upload wins. On a re-mark with no new file, keep the existing PDF.
-      // Otherwise (first mark, no file) fall back to the hosted blank PDF.
-      const finalPdfUrl = pdfUrl || existingPdfUrl || BLANK_MARKED_PDF;
+      // If there's no PDF at all, send null so the DB column stays null
+      // (no placeholder PDF is stored).
+      const finalPdfUrl = pdfUrl || existingPdfUrl || null;
 
       const res = await authFetch(
         "PATCH",
@@ -146,7 +144,7 @@ export default function MarkSubmissionModal({
             </small>
           ) : (
             <small style={{ opacity: 0.7 }}>
-              No file uploaded → will use hosted blank PDF
+              No file uploaded → this submission will have no marked PDF
             </small>
           )}
         </div>

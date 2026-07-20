@@ -148,6 +148,14 @@
   transform: translateY(1px);
 }
 
+.no-marking-pdf-text {
+  font-size: 12px;
+  font-style: italic;
+  color: #6b7280;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 /* ===== DESKTOP (1200px+) ===== */
 @media (min-width: 1200px) {
   .log-row {
