@@ -8,7 +8,36 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy over SSH
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          REACT_APP_API_BASE: ''
+          REACT_APP_ADMIN_PASSKEY: DOCADMIN
+          REACT_APP_PRESIGN_URL: https://r2-presign.dok-uploads.workers.dev
+          REACT_APP_R2_READER_BASE: https://r2-read.dok-uploads.workers.dev
+
+      - name: Deploy build to VPS over SSH
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: "build/*"
+          target: "/home/sherif/docker/frontend/build_new"
+          strip_components: 1
+
+      - name: Swap build and reload nginx container
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -16,20 +45,15 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             set -e
-            DOCKER_DIR="/home/sherif/docker/frontend"
-            cd ${{ secrets.FRONTEND_PATH }}
-            git fetch --all
-            git reset --hard origin/main
-            rsync -av --delete \
-              --exclude='.git' \
-              --exclude='.github' \
-              --exclude='node_modules' \
-              --exclude='build' \
-              --exclude='Dockerfile' \
-              --exclude='nginx.conf' \
-              --exclude='.dockerignore' \
-              ./ $DOCKER_DIR/
-            cd /home/sherif/docker
-            sudo docker compose build frontend
-            sudo docker compose up -d --no-deps frontend
+            # Swap the build folder
+            rm -rf /home/sherif/docker/frontend/build_old
+            mv /home/sherif/docker/frontend/build /home/sherif/docker/frontend/build_old
+            mv /home/sherif/docker/frontend/build_new /home/sherif/docker/frontend/build
+
+            # Copy new build into running frontend container directly
+            sudo docker cp /home/sherif/docker/frontend/build/. dok_frontend:/usr/share/nginx/html/
+
+            # Reload nginx inside the container (no rebuild needed)
+            sudo docker exec dok_frontend nginx -s reload
+
             echo "✅ Frontend deployed successfully"
