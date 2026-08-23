@@ -9,7 +9,7 @@ import useDownloadToast from "./useDownloadToast";
 
 // PDF.js worker (same-origin module worker)
 try {
-    const workerUrl = `${import.meta?.env?.BASE_URL || process.env.PUBLIC_URL || ""}/pdf.worker.min.mjs`;
+    const workerUrl = `${process.env.PUBLIC_URL || ""}/pdf.worker.min.mjs`;
     const worker = new Worker(workerUrl, { type: "module" });
     pdfjs.GlobalWorkerOptions.workerPort = worker;
 } catch (e) {
