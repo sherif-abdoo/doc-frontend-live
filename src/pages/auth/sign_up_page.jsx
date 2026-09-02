@@ -334,6 +334,8 @@ export default function SignUp() {
                       <option value="X">X</option>
                       <option value="Y">Y</option>
                       <option value="Z">Z</option>
+                      <option value="Revision1">Revision 1</option>
+                      <option value="Revision2">Revision 2</option>
                     </select>
                   </div>
 
